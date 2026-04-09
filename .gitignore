@@ -1,0 +1,37 @@
+# Archivos generales y del sistema
+*.log
+.DS_Store
+Thumbs.db
+.phpunit.result.cache
+.phpactor.json
+/auth.json
+
+# Archivos de entorno de Laravel (¡Contraseñas!)
+.env
+.env.backup
+.env.production
+
+# Carpetas de configuración de editores
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+
+# --- EXCLUSIONES DE LARAVEL (Rutas corregidas) ---
+laravel/node_modules/
+laravel/public/build/
+laravel/public/hot
+laravel/public/storage
+laravel/storage/*.key
+laravel/storage/pail
+laravel/vendor/
+
+# Entornos virtuales de Laravel
+Homestead.json
+Homestead.yaml
+
+# --- EXCLUSIONES DE WORDPRESS ---
+# (Vital para no subir la contraseña de la BD al repositorio)
+wp/wp-config.php
