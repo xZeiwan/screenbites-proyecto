@@ -834,6 +834,162 @@
             }
         }
 
+        /* --- TEAM SECTION --- */
+        .team-section {
+            padding: 80px 5%;
+            background-color: var(--color-gris-oscuro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-top: 1px solid #222;
+        }
+
+        .team-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .team-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .team-header h2 {
+            font-size: 40px;
+            color: var(--color-blanco);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .team-header h2 span {
+            color: var(--color-amarillo);
+        }
+
+        .team-header p {
+            font-family: Arial, sans-serif;
+            color: #888888;
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .team-card {
+            background-color: var(--color-gris-tarjeta);
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: var(--color-amarillo);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            border-color: #555;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .team-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .team-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--color-negro);
+            border: 3px solid #333;
+            margin: 0 auto 20px;
+            object-fit: cover;
+            transition: border-color 0.3s ease;
+        }
+
+        .team-card:hover .team-avatar {
+            border-color: var(--color-amarillo);
+        }
+
+        .team-name {
+            font-size: 20px;
+            color: var(--color-blanco);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .team-role {
+            font-family: Arial, sans-serif;
+            color: var(--color-amarillo);
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .team-description {
+            font-family: Arial, sans-serif;
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .team-socials {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-link {
+            color: #666;
+            transition: color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .social-link svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .social-link:hover {
+            color: var(--color-amarillo);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 1024px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* --- FOOTER --- */
         footer {
             background-color: var(--color-negro);
@@ -1220,6 +1376,66 @@
                 </div>
             </div>
 
+        </div>
+    </section>
+
+    <!-- --- TEAM SECTION --- -->
+    <section class="team-section" id="team">
+        <div class="team-container">
+            <div class="team-header">
+                <h2>Meet The <span>Team</span></h2>
+                <p>The developers behind Screenbites Cinema. A team dedicated to bringing the best web experience for movie lovers.</p>
+            </div>
+
+            <div class="team-grid">
+                <!-- Member 1: Enrique -->
+                <div class="team-card">
+                    <img src="https://ui-avatars.com/api/?name=Enrique+Gomez&background=ffd000&color=000&bold=true&size=200" alt="Enrique Gómez" class="team-avatar">
+                    <h3 class="team-name">Enrique Gómez</h3>
+                    <p class="team-role">Lead Developer</p>
+                    <p class="team-description">Specialized in full-stack architecture, API integration, and ensuring a seamless booking experience.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
+
+                <!-- Member 2: Antonio -->
+                <div class="team-card">
+                    <img src="https://ui-avatars.com/api/?name=Antonio+Benitez&background=ffd000&color=000&bold=true&size=200" alt="Antonio Benitez" class="team-avatar">
+                    <h3 class="team-name">Antonio Benitez</h3>
+                    <p class="team-role">Frontend Specialist</p>
+                    <p class="team-description">Mastermind behind the user interface, CSS animations, and responsive design of the cinema.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
+
+                <!-- Member 3: Alejandro -->
+                <div class="team-card">
+                    <img src="https://ui-avatars.com/api/?name=Alejandro+Perez&background=ffd000&color=000&bold=true&size=200" alt="Alejandro Pérez" class="team-avatar">
+                    <h3 class="team-name">Alejandro Pérez</h3>
+                    <p class="team-role">Backend Developer</p>
+                    <p class="team-description">Focused on database architecture, secure authentication, and Laravel server-side logic.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
+
+                <!-- Member 4: Juan Pedro -->
+                <div class="team-card">
+                    <img src="https://ui-avatars.com/api/?name=Juan+Pedro&background=ffd000&color=000&bold=true&size=200" alt="Juan Pedro Lozano" class="team-avatar">
+                    <h3 class="team-name">Juan P. Lozano</h3>
+                    <p class="team-role">WordPress Integrator</p>
+                    <p class="team-description">Expert in Headless CMS content management, custom post types, and API data structures.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="GitHub"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
