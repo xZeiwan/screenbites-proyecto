@@ -684,13 +684,15 @@
 
             <ul class="sidebar-menu">
                 <li>
-                    <button class="tab-btn active" data-target="tab-profile">
+                    <!-- Pestaña 1: Se activa si NO hay errores de contraseña -->
+                    <button class="tab-btn {{ (!$errors->hasBag('updatePassword') && session('status') !== 'password-updated') ? 'active' : '' }}" data-target="tab-profile">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         Profile Settings
                     </button>
                 </li>
                 <li>
-                    <button class="tab-btn" data-target="tab-security">
+                    <!-- Pestaña 2: Se activa SI hay errores de contraseña o se actualizó con éxito -->
+                    <button class="tab-btn {{ ($errors->hasBag('updatePassword') || session('status') === 'password-updated') ? 'active' : '' }}" data-target="tab-security">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                         Security & Password
                     </button>
@@ -722,8 +724,7 @@
                     </ul>
                 </div>
             @endif
-            
-            <div id="tab-profile" class="tab-content active">
+                <div id="tab-profile" class="tab-content {{ (!$errors->hasBag('updatePassword') && session('status') !== 'password-updated') ? 'active' : '' }}">
                 <h2 class="content-title">Profile Settings</h2>
                 <p class="content-desc">Manage your public information and choose a custom avatar to represent you in Screenbites.</p>
 
@@ -759,9 +760,16 @@
                 </form>
             </div>
 
-            <div id="tab-security" class="tab-content">
+            <div id="tab-security" class="tab-content {{ ($errors->hasBag('updatePassword') || session('status') === 'password-updated') ? 'active' : '' }}">
                 <h2 class="content-title">Security & Password</h2>
                 <p class="content-desc">Ensure your account is using a long, random password to stay secure.</p>
+
+                
+                @if (session('status') === 'password-updated')
+                    <div class="alert-success">
+                        Password updated successfully!
+                    </div>
+                @endif
 
                 <form method="POST" action="{{ route('password.update') }}">
                     @csrf
@@ -770,16 +778,28 @@
                     <div class="form-group">
                         <label for="current_password">Current Password</label>
                         <input type="password" id="current_password" name="current_password" required>
+                        
+                        @error('current_password', 'updatePassword')
+                            <span style="color: #ff4444; font-size: 12px; margin-top: 5px; display: block;">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="password">New Password</label>
                         <input type="password" id="password" name="password" required>
+                        
+                        @error('password', 'updatePassword')
+                            <span style="color: #ff4444; font-size: 12px; margin-top: 5px; display: block;">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="password_confirmation">Confirm New Password</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" required>
+                        
+                        @error('password_confirmation', 'updatePassword')
+                            <span style="color: #ff4444; font-size: 12px; margin-top: 5px; display: block;">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <button type="submit" class="btn-save">Update Password</button>
