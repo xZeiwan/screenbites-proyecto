@@ -49,8 +49,11 @@
             
             <div class="form-group">
                 <label style="color: #ffd000; text-align: center; font-size: 14px;">Choose your Character</label>
+
+                @error('avatar') <span class="error" style="text-align: center; display: block;">Please select an avatar</span> @enderror
+
                 <div class="avatar-grid">
-                    <label><input type="radio" name="avatar" value="avatar1.png" required><img src="{{ asset('img/avatars/avatar1.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
+                    <label><input type="radio" name="avatar" value="avatar1.png"><img src="{{ asset('img/avatars/avatar1.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
                     <label><input type="radio" name="avatar" value="avatar2.png"><img src="{{ asset('img/avatars/avatar2.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
                     <label><input type="radio" name="avatar" value="avatar3.png"><img src="{{ asset('img/avatars/avatar3.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
                     <label><input type="radio" name="avatar" value="avatar4.png"><img src="{{ asset('img/avatars/avatar4.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>

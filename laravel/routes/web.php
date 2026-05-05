@@ -48,6 +48,8 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/registro', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/registro', [AuthController::class, 'register']);
+    Route::get('/2fa', [AuthController::class, 'show2faForm'])->name('2fa.form');
+    Route::post('/2fa', [AuthController::class, 'verify2fa'])->name('2fa.verify');
 });
 
 
@@ -58,6 +60,11 @@ Route::middleware('auth')->group(function () {
     
     // Perfil de usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Cambiar la contraseña
+    Route::put('/password', [\App\Http\Controllers\Auth\PasswordController::class, 'update'])->name('password.update');
 
     // Guardar reseñas (enviamos al controlador para procesar con WordPress)
     Route::post('/pelicula/{id}/review', [MovieController::class, 'storeReview'])->name('pelicula.review');
