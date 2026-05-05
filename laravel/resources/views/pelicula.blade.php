@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Screenbites Cinema - {{ $movie['title'] ?? 'Movie' }}</title>
+    <title>Screenbites Cinema - {!! $movie['title'] ?? 'Movie' !!}</title>
 
     <style>
         :root {
@@ -254,6 +254,8 @@
                         text-transform: uppercase;
                         line-height: 1.1;
                         text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+                        /* AÑADIDO: Brillo extra para que se lea sobre colores oscuros */
+                        filter: brightness(1.3);
                     }
 
                     .movie-meta {
@@ -363,115 +365,95 @@
             line-height: 1;
         }
 
-        /* --- MEDIA CAROUSEL INFINITO --- */
-        .media-carousel-section {
-            padding: 20px 5% 60px;
-            background-color: var(--color-negro);
-            max-width: 1400px;
-            margin: 0 auto;
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
+    
+        /* --- ESTILOS AÑADIDOS PARA EL NUEVO TRAILER Y CARRUSEL --- */
+        .trailer-featured { padding: 60px 0 80px 0; background: #050505; }
+        .movie-gallery { padding: 60px 0 60px 0; background: #000; }
 
-            .carousel-container {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 20px;
-                width: 100%;
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0, 0.4);
+            border: 1px solid #222;
+        }
+        .video-wrapper iframe {
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+        }
 
-                .media-nav-btn {
-                    background: transparent;
-                    border: none;
-                    color: var(--color-blanco);
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 10px;
-                    opacity: 0.6;
-                    transition: all 0.3s ease;
-                    flex-shrink: 0;
+        .video-cover {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center;
+            background-color: #000;
+        }
+        .video-cover img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
 
-                    svg {
-                        width: 36px;
-                        height: 36px;
-                        stroke-width: 3;
-                        transition: transform 0.3s ease;
-                    }
+        .custom-play-btn {
+            position: absolute; background: rgba(0,0,0,0.7); color: var(--color-blanco);
+            width: 80px; height: 80px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 35px;
+            border: 3px solid var(--color-principal); transition: all 0.3s ease;
+            padding-left: 6px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
 
-                    &:hover {
-                        opacity: 1;
-                        color: var(--color-principal);
-                    }
+        .no-video {
+            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: #111; color: #666; font-size: 1.5rem;
+        }
 
-                    &.prev:hover svg { transform: translateX(-5px); }
-                    &.next:hover svg { transform: translateX(5px); }
-                }
-
-                .carousel-viewport {
-                    flex: 1;
-                    overflow: hidden; 
-                    border-radius: 8px;
-                }
-
-                .carousel-track {
-                    display: flex;
-                    gap: 20px;
-                }
-
-                .media-item {
-                    flex: 0 0 calc(33.333% - 14px); 
-                    height: 300px;
-                    border-radius: 8px;
-                    background-color: #111;
-                    border: 1px solid #222;
-                    overflow: hidden;
-                    position: relative;
-                    cursor: pointer;
-                    transition: border-color 0.3s ease;
-
-                    &:hover {
-                        border-color: var(--color-principal);
-                    }
-
-                    img, iframe {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        border: none;
-                    }
-
-                    .play-icon {
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        width: 60px;
-                        height: 60px;
-                        background: rgba(0, 0, 0, 0.6);
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        color: var(--color-blanco);
-                        border: 2px solid var(--color-blanco);
-                        transition: all 0.3s ease;
-                        pointer-events: none;
-
-                        svg {
-                            width: 24px;
-                            height: 24px;
-                            margin-left: 4px;
-                            fill: currentColor;
-                        }
-                    }
-
-                    &:hover .play-icon {
-                        background: var(--color-principal);
-                        border-color: var(--color-principal);
-                        color: var(--color-texto-btn);
-                        transform: translate(-50%, -50%) scale(1.1);
-                    }
-                }
-            }
+        .clean-carousel-container { 
+            width: 100%; position: relative; 
+        }
+        
+        .clean-carousel-viewport { 
+            width: 100%; 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 15px; 
+            border: 1px solid #222; 
+            padding-bottom: 56.25%;
+            height: 0; 
+            box-shadow: 0 0 50px rgba(0,0,0, 0.4); 
+        }
+        
+        .clean-carousel-track { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+        
+        .clean-carousel-slide { 
+            min-width: 100%; height: 100%; position: relative; 
+        }
+        
+        .clean-carousel-slide img { 
+            width: 100%; height: 100%; object-fit: cover; 
+        }
+        
+        .clean-carousel-controls { 
+            display: flex; justify-content: center; align-items: center; 
+            gap: 40px; margin-top: 20px; 
+        }
+        
+        .clean-arrow { 
+            background: transparent; border: none; color: #666; 
+            font-size: 35px; cursor: pointer; transition: all 0.3s ease; 
+            padding: 0 10px; outline: none;
+        }
+        
+        .clean-arrow:hover { 
+            color: var(--color-principal); transform: scale(1.2); 
+            filter: drop-shadow(0 0 10px var(--color-principal));
         }
 
         /* --- EXCLUSIVE MENU --- */
@@ -846,7 +828,7 @@
 
             <div class="movie-info">
                 <span class="movie-id">TICKET #{{ $id }}</span>
-                <h1 class="movie-title">{{ $movie['title'] ?? 'Movie Title' }}</h1>
+                <h1 class="movie-title">{!! $movie['title'] ?? 'Movie Title' !!}</h1>
 
                 <div class="movie-meta">
                     <span class="age-badge">{{ $movie['age'] ?? '+18' }}</span>
@@ -857,7 +839,7 @@
                     </span>
                 </div>
 
-                <p class="movie-desc">{{ $movie['desc'] ?? 'Overview of the movie...' }}</p>
+                <p class="movie-desc">{!! $movie['desc'] ?? 'Overview of the movie...' !!}</p>
 
                 <div class="action-buttons">
                     @if(isset($movie['isComingSoon']) && $movie['isComingSoon'])
@@ -875,39 +857,53 @@
         </div>
     </div>
 
-    <section class="media-carousel-section">
-        <h2 class="section-title">Media & Trailers</h2>
-        
-        <div class="carousel-container">
-            <button class="media-nav-btn prev" onclick="moveCarousel(-1)" title="Previous">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-            </button>
-
-            <div class="carousel-viewport">
-                <div class="carousel-track" id="media-track">
-                    
-                    <div class="media-item">
-                        </div>
-                    
-                    <div class="media-item">
-                        </div>
-
-                    <div class="media-item">
-                        </div>
-
-                    <div class="media-item">
-                        </div>
-
-                </div>
+    <section class="trailer-featured">
+        <div class="container">
+            <h2 class="section-title">Official Trailer</h2>
+            <div class="video-wrapper">
+                @if(!empty($movie['trailer']))
+                    <div class="video-cover" id="video-cover" onclick="playVideo('{{ $movie['trailer'] }}')">
+                        <img src="{{ $movie['bgImg'] ?? $movie['poster'] }}" alt="Trailer Cover">
+                        <div class="custom-play-btn">▶</div>
+                    </div>
+                    <div id="iframe-container"></div>
+                @else
+                    <div class="no-video">Tráiler no disponible</div>
+                @endif
             </div>
-
-            <button class="media-nav-btn next" onclick="moveCarousel(1)" title="Next">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
         </div>
     </section>
 
-    @if($movie['menuSpecial']['enabled'])
+    <section class="movie-gallery">
+        <div class="container">
+            <h2 class="section-title">Movie Stills</h2>
+            
+            <div class="clean-carousel-container">
+                <div class="clean-carousel-viewport">
+                    <div class="clean-carousel-track" id="clean-track">
+                        @if(!empty($movie['gallery']) && count($movie['gallery']) > 0)
+                            @foreach($movie['gallery'] as $img)
+                                <div class="clean-carousel-slide">
+                                    <img src="{{ $img }}" alt="Movie Scene">
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="clean-carousel-slide">
+                                <div class="no-video">Imágenes no disponibles</div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="clean-carousel-controls">
+                    <button class="clean-arrow" onclick="moveCleanCarousel(-1)">&#10094;</button>
+                    <button class="clean-arrow" onclick="moveCleanCarousel(1)">&#10095;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if(!empty($movie['menuSpecial']) && $movie['menuSpecial']['enabled'])
         <section class="exclusive-movie-menu">
             <h2 class="section-title">Exclusive For This Movie</h2>
             
@@ -924,8 +920,8 @@
                 
                 <div class="exclusive-info">
                     <span class="tag">Limited Edition</span>
-                    <h3>{{ $movie['menuSpecial']['title'] ?? 'Exclusive Menu' }}</h3>
-                    <p>{{ $movie['menuSpecial']['text'] ?? 'Available for a limited time.' }}</p>
+                    <h3>{!! $movie['menuSpecial']['title'] ?? 'Exclusive Menu' !!}</h3>
+                    <p>{!! $movie['menuSpecial']['text'] ?? 'Available for a limited time.' !!}</p>
                     
                     <button class="btn-unlock" onclick="window.location.href='/booking/{{ $id }}'">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -941,78 +937,79 @@
 
     <section class="reviews-section" style="padding: 50px 10% 100px; background: #000; color: white;">
         @if(session('error'))
-    <div style="background: #721c24; color: #f8d7da; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-        {{ session('error') }}
-    </div>
-@endif
-
-@if(session('status'))
-    <div style="background: #155724; color: #d4edda; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-        {{ session('status') }}
-    </div>
-@endif
-    <h2 style="color: var(--color-principal); margin-bottom: 30px; font-size: 2rem;">Audience Reviews</h2>
-
-    @auth
-        <div style="background: #111; padding: 25px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #333;">
-            <h4 style="margin-bottom: 15px; color: #fff;">Hi {{ Auth::user()->name }}, share your thoughts!</h4>
-            
-            <form action="{{ route('pelicula.review', ['id' => $id]) }}" method="POST">
-                @csrf
-                <div style="margin-bottom: 15px;">
-                    <label style="color: #888; display: block; margin-bottom: 5px;">Score:</label>
-                    <select name="score" required style="background: #222; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px; width: 100px;">
-                        <option value="5">5 ★★★★★</option>
-                        <option value="4">4 ★★★★</option>
-                        <option value="3">3 ★★★</option>
-                        <option value="2">2 ★★</option>
-                        <option value="1">1 ★</option>
-                    </select>
-                </div>
-
-                <div style="margin-bottom: 15px;">
-                    <textarea name="content" required placeholder="Write your review here..." rows="4" style="width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 15px; border-radius: 8px; resize: none;"></textarea>
-                </div>
-
-                <button type="submit" style="background: var(--color-principal); color: #000; padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
-                    Submit Review
-                </button>
-            </form>
-        </div>
-    @else
-        <div style="background: #111; padding: 20px; border-radius: 10px; border: 1px dashed #444; text-align: center; margin-bottom: 40px;">
-            <p style="color: #aaa;">You must be <a href="{{ route('login') }}" style="color: var(--color-principal); text-decoration: none; font-weight: bold;">logged in</a> to write a review.</p>
-        </div>
-    @endauth
-
-    <div class="reviews-list" style="display: grid; gap: 20px;">
-    @forelse($reviews as $review)
-        <div style="background: #111; padding: 20px; border-radius: 12px; display: flex; gap: 20px; align-items: flex-start; border: 1px solid #222;">
-            
-            @php
-                // Generamos un hash del nombre o email para tener una imagen única
-                $userHash = md5(strtolower(trim($review['title']))); 
-                $avatarUrl = "https://www.gravatar.com/avatar/{$userHash}?d=identicon&s=100";
-            @endphp
-            <img src="{{ $avatarUrl }}" alt="User" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-principal);">
-
-            <div style="flex: 1;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <strong style="color: #fff;">{{ str_replace('Review by ', '', $review['title']) }}</strong>
-                    <span style="color: var(--color-principal);">
-                        {{ str_repeat('★', $review['score']) }}{{ str_repeat('☆', 5 - $review['score']) }}
-                    </span>
-                </div>
-                <p style="color: #aaa; font-size: 0.95rem; line-height: 1.4; margin: 0;">
-                    "{{ $review['content'] }}"
-                </p>
+            <div style="background: #721c24; color: #f8d7da; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                {{ session('error') }}
             </div>
+        @endif
+
+        @if(session('status'))
+            <div style="background: #155724; color: #d4edda; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <h2 style="color: var(--color-principal); margin-bottom: 30px; font-size: 2rem;">Audience Reviews</h2>
+
+        @auth
+            <div style="background: #111; padding: 25px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #333;">
+                <h4 style="margin-bottom: 15px; color: #fff;">Hi {{ Auth::user()->name }}, share your thoughts!</h4>
+                
+                <form action="{{ route('pelicula.review', ['id' => $id]) }}" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #888; display: block; margin-bottom: 5px;">Score:</label>
+                        <select name="score" required style="background: #222; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px; width: 100px;">
+                            <option value="5">5 ★★★★★</option>
+                            <option value="4">4 ★★★★</option>
+                            <option value="3">3 ★★★</option>
+                            <option value="2">2 ★★</option>
+                            <option value="1">1 ★</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <textarea name="content" required placeholder="Write your review here..." rows="4" style="width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 15px; border-radius: 8px; resize: none;"></textarea>
+                    </div>
+
+                    <button type="submit" style="background: var(--color-principal); color: #000; padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+                        Submit Review
+                    </button>
+                </form>
+            </div>
+        @else
+            <div style="background: #111; padding: 20px; border-radius: 10px; border: 1px dashed #444; text-align: center; margin-bottom: 40px;">
+                <p style="color: #aaa;">You must be <a href="{{ route('login') }}" style="color: var(--color-principal); text-decoration: none; font-weight: bold;">logged in</a> to write a review.</p>
+            </div>
+        @endauth
+
+        <div class="reviews-list" style="display: grid; gap: 20px;">
+            @forelse($reviews as $review)
+                <div style="background: #111; padding: 20px; border-radius: 12px; display: flex; gap: 20px; align-items: flex-start; border: 1px solid #222;">
+                    
+                    @php
+                        // Generamos un hash del nombre o email para tener una imagen única
+                        $userHash = md5(strtolower(trim($review['title']))); 
+                        $avatarUrl = "https://www.gravatar.com/avatar/{$userHash}?d=identicon&s=100";
+                    @endphp
+                    <img src="{{ $avatarUrl }}" alt="User" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-principal);">
+
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #fff;">{!! str_replace('Review by ', '', $review['title']) !!}</strong>
+                            <span style="color: var(--color-principal);">
+                                {{ str_repeat('★', $review['score']) }}{{ str_repeat('☆', 5 - $review['score']) }}
+                            </span>
+                        </div>
+                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.4; margin: 0;">
+                            "{!! $review['content'] !!}"
+                        </p>
+                    </div>
+                </div>
+            @empty
+                <p style="color: #666; font-style: italic;">No reviews yet. Be the first one!</p>
+            @endforelse
         </div>
-    @empty
-        <p style="color: #666; font-style: italic;">No reviews yet. Be the first one!</p>
-    @endforelse
-</div>
-</section>
+    </section>
 
     <footer>
         <div class="footer-content">
@@ -1067,86 +1064,34 @@
             }
         });
 
-        // Lógica de Carrusel Infinito y Auto-Play
-        document.addEventListener('DOMContentLoaded', () => {
-            const track = document.getElementById('media-track');
-            const items = Array.from(track.children);
-            const totalOriginals = items.length;
+        let currentSlide = 0;
+        const track = document.getElementById('clean-track');
+        const slides = document.querySelectorAll('.clean-carousel-slide');
+        const totalSlides = slides.length;
+
+        function moveCleanCarousel(direction) {
+            if (totalSlides <= 1) return; // No hacer nada si solo hay 1 foto
+
+            currentSlide += direction;
+
+            // Logica circular
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            if (currentSlide >= totalSlides) currentSlide = 0;
+
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        // Reproductor de Vídeo Personalizado
+        function playVideo(trailerUrl) {
+            // Ocultamos nuestra portada falsa
+            document.getElementById('video-cover').style.display = 'none';
             
-            // Si no hay items, no hacemos nada
-            if (totalOriginals === 0) return;
+            // Creamos el iframe inyectando autoplay=1 para que arranque solo
+            const iframeHTML = `<iframe src="${trailerUrl}?autoplay=1&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></iframe>`;
             
-            // Clonar items para el loop infinito (Añadir al final y al principio)
-            items.forEach(item => {
-                let clone = item.cloneNode(true);
-                track.appendChild(clone);
-            });
-            
-            items.slice().reverse().forEach(item => {
-                let clone = item.cloneNode(true);
-                track.insertBefore(clone, track.firstChild);
-            });
-
-            // Iniciar en el primer set original
-            let currentIndex = totalOriginals;
-            let isTransitioning = false;
-
-            function updatePosition() {
-                const itemElement = track.querySelector('.media-item');
-                const gap = 20; // Igual que en el CSS
-                const itemWidth = itemElement.getBoundingClientRect().width + gap;
-                track.style.transition = 'none';
-                track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-            }
-
-            // Reposicionar al cargar o cambiar el tamaño de ventana
-            setTimeout(updatePosition, 100);
-            window.addEventListener('resize', updatePosition);
-
-            window.moveCarousel = function(direction) {
-                if (isTransitioning) return;
-                isTransitioning = true;
-                
-                const itemElement = track.querySelector('.media-item');
-                const itemWidth = itemElement.getBoundingClientRect().width + 20;
-                
-                currentIndex += direction;
-                track.style.transition = 'transform 0.5s ease-in-out';
-                track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-
-                resetAutoPlay();
-            };
-
-            track.addEventListener('transitionend', () => {
-                isTransitioning = false;
-                const itemElement = track.querySelector('.media-item');
-                const itemWidth = itemElement.getBoundingClientRect().width + 20;
-
-                // Salto infinito de los clones al set real
-                if (currentIndex >= totalOriginals * 2) {
-                    track.style.transition = 'none';
-                    currentIndex = totalOriginals; 
-                    track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-                }
-                
-                if (currentIndex <= 0) {
-                    track.style.transition = 'none';
-                    currentIndex = totalOriginals;
-                    track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
-                }
-            });
-
-            let autoPlayInterval;
-            function resetAutoPlay() {
-                clearInterval(autoPlayInterval);
-                autoPlayInterval = setInterval(() => {
-                    moveCarousel(1);
-                }, 3500); // Se mueve cada 3.5 segundos
-            }
-
-            resetAutoPlay();
-        });
+            // Lo metemos en el contenedor
+            document.getElementById('iframe-container').innerHTML = iframeHTML;
+        }
     </script>
-
 </body>
 </html>
