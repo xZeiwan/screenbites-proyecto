@@ -1,48 +1,54 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Screenbites - Registro</title>
+    <title>Screenbites - Create Account</title>
     <style>
         body { margin: 0; font-family: 'Arial Black', sans-serif; background-color: #000; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 40px 0; }
         .auth-box { background: #111; padding: 40px; border-top: 5px solid #ffd000; border-radius: 8px; width: 100%; max-width: 500px; text-align: center; }
         .auth-box h1 { color: #ffd000; text-transform: uppercase; margin-bottom: 20px; }
         .form-group { margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 12px; margin-bottom: 5px; color: #aaa; text-transform: uppercase; }
-        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"], .form-group input[type="text"] { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; box-sizing: border-box; }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"] { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; box-sizing: border-box; }
         
         .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
         .avatar-grid label { cursor: pointer; }
-        .avatar-grid input[type="radio"] { display: none; }
+        .avatar-grid input[type="radio"] { 
+            position: absolute; 
+            opacity: 0; 
+            width: 0; 
+            height: 0; 
+        }
         .avatar-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 50%; border: 3px solid transparent; transition: all 0.2s; opacity: 0.5; }
         .avatar-grid input[type="radio"]:checked + img { border-color: #ffd000; opacity: 1; transform: scale(1.1); box-shadow: 0 0 15px rgba(255,208,0,0.5); }
         .avatar-grid img:hover { opacity: 1; }
 
-        /* Contenedor relativo para el ojito */
         .password-wrapper { position: relative; display: flex; align-items: center; }
         .password-wrapper input { padding-right: 40px; }
         .toggle-password { position: absolute; right: 10px; background: none; border: none; color: #888; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.3s ease; padding: 0; }
         .toggle-password:hover { color: #ffd000; }
 
-        .btn-submit { width: 100%; background: #ffd000; color: #000; padding: 15px; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; border-radius: 4px; margin-top: 20px; }
+        .btn-submit { width: 100%; background: #ffd000; color: #000; padding: 15px; border: none; font-weight: 900; text-transform: uppercase; cursor: pointer; border-radius: 4px; margin-top: 20px; transition: background 0.3s; }
         .btn-submit:hover { background: #fff; }
         .link { display: block; margin-top: 20px; color: #ffd000; text-decoration: none; font-size: 12px; }
-        .error { color: red; font-size: 12px; margin-bottom: 15px; }
+        .link:hover { text-decoration: underline; }
+        .error { color: #ff4444; font-size: 12px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
     <div class="auth-box">
-        <h1>Únete al Club</h1>
+        <h1>Join the Club</h1>
 
         @if($errors->any())
             <div class="error">{{ $errors->first() }}</div>
         @endif
 
-        <form action="{{ url('/registro') }}" method="POST">
+        <!-- Cambiada la ruta a la estándar de Laravel Auth -->
+        <form action="{{ route('register') }}" method="POST">
             @csrf
             
             <div class="form-group">
-                <label style="color: #ffd000; text-align: center; font-size: 14px;">Elige tu Personaje</label>
+                <label style="color: #ffd000; text-align: center; font-size: 14px;">Choose your Character</label>
                 <div class="avatar-grid">
                     <label><input type="radio" name="avatar" value="avatar1.png" required><img src="{{ asset('img/avatars/avatar1.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
                     <label><input type="radio" name="avatar" value="avatar2.png"><img src="{{ asset('img/avatars/avatar2.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
@@ -57,11 +63,11 @@
                 </div>
             </div>
 
-            <div class="form-group"><label>Nombre</label><input type="text" name="name" required></div>
-            <div class="form-group"><label>Email</label><input type="email" name="email" required></div>
+            <div class="form-group"><label>Full Name</label><input type="text" name="name" value="{{ old('name') }}" required></div>
+            <div class="form-group"><label>Email Address</label><input type="email" name="email" value="{{ old('email') }}" required></div>
             
             <div class="form-group">
-                <label>Contraseña (Mínimo 8 caracteres)</label>
+                <label>Password (Min 8 characters)</label>
                 <div class="password-wrapper">
                     <input type="password" name="password" id="reg-password" required>
                     <button type="button" class="toggle-password" onclick="toggleVisibility('reg-password', 'icon-reg1')">
@@ -74,7 +80,7 @@
             </div>
 
             <div class="form-group">
-                <label>Confirmar Contraseña</label>
+                <label>Confirm Password</label>
                 <div class="password-wrapper">
                     <input type="password" name="password_confirmation" id="reg-password-conf" required>
                     <button type="button" class="toggle-password" onclick="toggleVisibility('reg-password-conf', 'icon-reg2')">
@@ -86,10 +92,10 @@
                 </div>
             </div>
             
-            <button type="submit" class="btn-submit">Registrarse</button>
+            <button type="submit" class="btn-submit">Sign Up</button>
         </form>
-        <a href="{{ route('login') }}" class="link">¿Ya tienes cuenta? Entra aquí</a>
-        <a href="/" class="link" style="color: #666; margin-top: 10px;">Volver al inicio</a>
+        <a href="{{ route('login') }}" class="link">Already have an account? Sign in here</a>
+        <a href="{{ route('home') }}" class="link" style="color: #666; margin-top: 10px;">Back to Home</a>
     </div>
 
     <script>
