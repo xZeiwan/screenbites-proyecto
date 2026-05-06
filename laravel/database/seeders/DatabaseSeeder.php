@@ -22,11 +22,11 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        User::updateOrCreate(
+        \App\Models\User::updateOrCreate(
             ['email' => 'admin@admin.com'],
             [
                 'name' => 'admin',
-                'password' => Hash::make('admin123456'),
+                'password' => \Illuminate\Support\Facades\Hash::make('admin123456'),
                 'role' => 'admin',
             ]
         );
