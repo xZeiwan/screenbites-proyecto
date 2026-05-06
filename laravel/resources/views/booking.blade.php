@@ -378,6 +378,87 @@
                 }
             }
         }
+
+        /* --- CUSTOM MODAL ALERTS (ESTILO PREMIUM B&W) --- */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-modal-box {
+            background: #0a0a0a;
+            border: 2px solid var(--color-amarillo);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            transform: translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .custom-modal-overlay.active .custom-modal-box {
+            transform: translateY(0);
+        }
+
+        .custom-modal-box .modal-icon {
+            color: var(--color-blanco);
+            margin-bottom: 20px;
+        }
+
+        .custom-modal-box h3 {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--color-blanco);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .custom-modal-box p {
+            color: #aaa;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        #close-modal-btn {
+            background: var(--color-blanco);
+            color: var(--color-negro);
+            border: none;
+            padding: 14px 35px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        #close-modal-btn:hover {
+            background: var(--color-amarillo);
+            color: var(--color-texto-btn);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -507,6 +588,21 @@
         mt_srand();
     @endphp
 
+    <div id="seat-limit-modal" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <h3>Seat Limit Reached</h3>
+            <p>For large group bookings over 8 people, please contact the cinema directly. You can only select up to 8 seats per transaction.</p>
+            <button id="close-modal-btn">UNDERSTOOD</button>
+        </div>
+    </div>
+
     <script>
         const STANDARD_PRICE = 8.50;
         const VIP_PRICE = 12.00;
@@ -577,7 +673,7 @@
                 selectedSeats = selectedSeats.filter(s => s.id !== seatId);
             } else {
                 if(selectedSeats.length >= 8) {
-                    alert("You can only select up to 8 seats per transaction.");
+                    document.getElementById('seat-limit-modal').classList.add('active');
                     return;
                 }
                 seatElement.classList.add('selected');
@@ -628,6 +724,11 @@
         });
 
         generateSeats();
+
+        // Función para cerrar el modal
+        document.getElementById('close-modal-btn').addEventListener('click', () => {
+            document.getElementById('seat-limit-modal').classList.remove('active');
+        });
 
     </script>
 </body>
