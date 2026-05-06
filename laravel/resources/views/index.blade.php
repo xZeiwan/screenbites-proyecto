@@ -105,7 +105,7 @@
                     gap: 8px;
 
                     &:hover {
-                        color: var(--color-amarillo) !important;
+                        color: var(--hover-color, var(--color-amarillo)) !important;
                         transform: scale(1.05);
                     }
                 }
@@ -154,7 +154,7 @@
                     }
                     .user-name,
                     .chevron-icon {
-                        color: var(--color-amarillo);
+                        color: var(--hover-color, var(--color-amarillo)) !important;
                     }
                 }
             }
@@ -195,7 +195,7 @@
                 }
 
                 &:hover {
-                    color: var(--color-amarillo) !important;
+                    color: var(--hover-color, var(--color-amarillo)) !important;
                     transform: scale(1.1);
                 }
             }
@@ -1248,7 +1248,7 @@
                             <img src="{{ asset('img/img/Ticket-amarillo.png') }}" id="ticket-icon"> <span id="btn-buy-text">BUY TICKETS</span>
                         </button>
                     @else
-                        <button class="btn-primary" id="btn-buy" onclick="alert('window.location.href='/login'">
+                        <button class="btn-primary" id="btn-buy" onclick="window.location.href='/login'">
                             <img src="{{ asset('img/img/Ticket-amarillo.png') }}" id="ticket-icon"> <span id="btn-buy-text">LOGIN TO BUY</span>
                         </button>
                     @endauth
@@ -1684,16 +1684,12 @@
             mainHero.style.color = color;
             document.getElementById('movie-id').style.webkitTextStroke = `2px ${color}`;
 
-            // Actualizar la función del botón Hero según si estamos logueados
             const btnBuyHero = document.getElementById('btn-buy');
-            const btnBuyText = document.getElementById('btn-buy-text');
             
             if (isAuthenticated) {
                 btnBuyHero.setAttribute('onclick', `window.location.href='/booking/${activeMovie.id}'`);
-                if (btnBuyText) btnBuyText.innerText = 'BUY TICKETS';
             } else {
                 btnBuyHero.setAttribute('onclick', `window.location.href='/login'`);
-                if (btnBuyText) btnBuyText.innerText = 'LOGIN TO BUY';
             }
 
             const btnViewHero = document.getElementById('btn-view-film');
@@ -1703,6 +1699,13 @@
 
             if (!headerEl.classList.contains('scrolled')) {
                 headerEl.style.setProperty('--header-text-color', color);
+                
+                if (activeMovie.id === "01") {
+                    headerEl.style.setProperty('--hover-color', '#000000');
+                } else {
+                    headerEl.style.setProperty('--hover-color', 'var(--color-amarillo)');
+                }
+                
                 logoEl.src = color === "white" ? "{{ asset('img/img/Logo-Blanco.png') }}" : "{{ asset('img/img/Logo-Negro.png') }}";
             }
 
