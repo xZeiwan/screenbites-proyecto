@@ -305,11 +305,6 @@
                             align-items: center;
                             gap: 10px;
 
-                            img {
-                                width: 18px;
-                                filter: {{ ($movie['textColor'] ?? 'black') === 'white' ? 'invert(0)' : 'invert(1)' }}; 
-                            }
-
                             &:hover:not(:disabled) {
                                 background: var(--color-blanco);
                                 color: var(--color-negro);
@@ -848,7 +843,11 @@
                         </button>
                     @else
                         <button class="btn-buy" onclick="window.location.href='/booking/{{ $id }}'">
-                            <img src="{{ asset('img/img/Ticket-amarillo.png') }}" alt="Ticket"> BUY TICKETS
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+                                <path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>
+                            </svg>
+                            BUY TICKETS
                         </button>
                     @endif
                     <a href="/#cartelera" class="btn-back">BACK TO FILMS</a>
