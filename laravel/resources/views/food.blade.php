@@ -30,7 +30,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.05); 
             background-color: rgba(0,0,0,0.8);
             backdrop-filter: blur(10px);
-            position: sticky;
             top: 0;
             z-index: 100;
 
@@ -74,74 +73,92 @@
 
         .category-title {
             display: flex;
+            justify-content: center;
             align-items: center;
             gap: 15px;
-            font-size: 22px;
-            margin-bottom: 30px;
+            font-size: 24px;
+            margin-bottom: 40px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            color: var(--color-principal);
+            text-align: center;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
         }
 
+        /* 1. Hacemos que cada ítem parezca una tarjeta individual */
         .menu-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px dashed #333;
-            gap: 15px; /* Espacio entre la foto y el texto */
-        }
-
-        .menu-item:last-child {
-            border-bottom: none;
-        }
-
-        .item-image-wrapper {
-            width: 50px;
-            height: 50px;
-            border-radius: 6px;
-            overflow: hidden;
-            flex-shrink: 0;
+            flex-direction: column; /* Cambiamos a vertical para que la foto sea grande */
+            background-color: #1a1a1a; /* Un gris un poco más claro que el fondo */
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
             border: 1px solid #333;
-            background-color: #222;
+            transition: transform 0.3s, border-color 0.3s;
+            gap: 15px;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-principal);
+        }
+
+        /* 2. Hacemos la imagen mucho más grande */
+        .item-image-wrapper {
+            width: 100%; /* Ocupa todo el ancho de la tarjeta */
+            height: 180px; /* Altura fija para que todas sean iguales */
+            border-radius: 8px;
+            overflow: hidden;
+            border: none;
+            background-color: #000;
         }
 
         .item-image-wrapper img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
+            object-fit: cover; /* Esto hace que la imagen no se deforme */
         }
 
-        .menu-item:hover .item-image-wrapper img {
-            transform: scale(1.1);
-        }
-
+        /* 3. Ajustamos la información y los controles */
         .item-info {
-            flex: 1;
+            text-align: center;
+            margin-bottom: 5px;
         }
 
         .item-name {
-            font-family: Arial, sans-serif;
-            font-size: 15px;
-            color: #eee;
+            font-size: 20px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
         }
 
         .item-controls {
             display: flex;
+            flex-direction: column; 
             align-items: center;
+            justify-content: center;
             gap: 15px;
+            width: 100%;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        /* Ajuste de las columnas para que las cards queden bien */
+        .menu-list {
+            display: grid;
+            grid-template-columns: 1fr; /* Una card por fila dentro de cada columna */
+            gap: 10px;
         }
 
         .price-tag {
+            background: rgba(255, 208, 0, 0.1); /* Fondo suave del color principal */
             color: var(--color-principal);
-            border: 1px solid #333;
-            padding: 4px 8px;
+            border: 1px solid var(--color-principal);
+            padding: 6px 20px;
             border-radius: 4px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            font-weight: bold;
-            min-width: 60px;
-            text-align: center;
+            font-size: 18px;
+            font-family: 'Arial Black', sans-serif;
         }
 
         /* Controles de Cantidad */
@@ -149,8 +166,9 @@
             display: flex;
             align-items: center;
             background: #222;
-            border-radius: 4px;
-            overflow: hidden;
+            border: 1px solid #444;
+            border-radius: 50px;
+            padding: 5px 15px;
         }
 
         .btn-qty {
@@ -241,7 +259,6 @@
         }
 
         .btn-checkout:hover {
-            background: #fff;
             transform: scale(1.05);
         }
     </style>
@@ -277,7 +294,7 @@
                     @foreach($items as $item)
                         <div class="menu-item">
                             <div class="item-image-wrapper">
-                                <img src="{{ asset('img/food/' . $item['id'] . '.jpg') }}" onerror="this.src='https://via.placeholder.com/50x50/222/ffd000?text=+'" alt="{{ $item['name'] }}">
+                                <img src="{{ $item['image'] }}" onerror="this.src='https://via.placeholder.com/50x50/222/ffd000?text=+'" alt="{{ $item['name'] }}">
                             </div>
 
                             <div class="item-info">
