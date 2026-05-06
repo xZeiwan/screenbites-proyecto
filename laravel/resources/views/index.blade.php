@@ -1245,7 +1245,7 @@
                             <img src="{{ asset('img/img/Ticket-amarillo.png') }}" id="ticket-icon"> <span id="btn-buy-text">BUY TICKETS</span>
                         </button>
                     @else
-                        <button class="btn-primary" id="btn-buy" onclick="alert('You must be logged in to buy tickets!'); window.location.href='/login'">
+                        <button class="btn-primary" id="btn-buy" onclick="alert('window.location.href='/login'">
                             <img src="{{ asset('img/img/Ticket-amarillo.png') }}" id="ticket-icon"> <span id="btn-buy-text">LOGIN TO BUY</span>
                         </button>
                     @endauth
@@ -1610,7 +1610,7 @@
             // Generar tarjetas con el botón correcto dependiendo del login
             const buyButtonHtml = isAuthenticated 
                 ? `<button class="btn-card" onclick="window.location.href='/booking/${movie.id}'">Buy Tickets</button>`
-                : `<button class="btn-card" onclick="alert('You must be logged in to buy tickets!'); window.location.href='/login'">Login to Buy</button>`;
+                : `<button class="btn-card" onclick="window.location.href='/login'">Login to Buy</button>`;
 
             const npCard = document.createElement('div');
             npCard.classList.add('movie-card');
@@ -1688,7 +1688,7 @@
                 btnBuyHero.setAttribute('onclick', `window.location.href='/booking/${activeMovie.id}'`);
                 if (btnBuyText) btnBuyText.innerText = 'BUY TICKETS';
             } else {
-                btnBuyHero.setAttribute('onclick', `alert('You must be logged in to buy tickets!'); window.location.href='/login'`);
+                btnBuyHero.setAttribute('onclick', `window.location.href='/login'`);
                 if (btnBuyText) btnBuyText.innerText = 'LOGIN TO BUY';
             }
 
