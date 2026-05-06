@@ -447,7 +447,10 @@
 
             <button class="btn-checkout" id="btn-continue" disabled>
                 Continue to Food
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
             </button>
         </div>
 
@@ -617,7 +620,11 @@
         btnContinue.addEventListener('click', () => {
             const seatsParam = selectedSeats.map(s => s.id).join(',');
             const totalParam = currentTotal.toFixed(2);
-            window.location.href = `/booking/{{ $id }}/food?seats=${seatsParam}&ticketsTotal=${totalParam}`;
+            
+            const colorParam = encodeURIComponent('{{ $movie['bg'] ?? '#ffd000' }}');
+            const textColorParam = encodeURIComponent('{{ $movie['textColor'] ?? 'black' }}');
+            
+            window.location.href = `/booking/{{ $id }}/food?tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}`;
         });
 
         generateSeats();

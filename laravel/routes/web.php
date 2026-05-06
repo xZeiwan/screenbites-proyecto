@@ -41,6 +41,68 @@ Route::get('/booking/{id}', function ($id) {
     return view('booking', ['id' => $id, 'movie' => $movie]);
 })->name('booking.show');
 
+// Ruta Comida
+Route::get('/booking/{id}/food', function (\Illuminate\Http\Request $request, $id) {
+    // Recogemos el precio de los tickets de la URL (si no hay, será 0)
+    $ticketsTotal = $request->query('tickets', 0);
+    $seats = $request->query('seats', '');
+
+    $menu = [
+        'POPCORN & FOOD' => [
+            ['id' => 'p1', 'name' => 'Classic Salted Popcorn (M)', 'price' => 5.50],
+            ['id' => 'p2', 'name' => 'Classic Salted Popcorn (L)', 'price' => 7.00],
+            ['id' => 'p3', 'name' => 'Extra Butter Popcorn (L)', 'price' => 8.00],
+            ['id' => 'p4', 'name' => 'Sweet Caramel Popcorn (M)', 'price' => 6.50],
+            ['id' => 'p5', 'name' => 'Family Mega Bucket', 'price' => 9.50],
+            ['id' => 'p6', 'name' => 'Classic Hot Dog', 'price' => 5.00],
+            ['id' => 'p7', 'name' => 'XXL Cheese Hot Dog', 'price' => 6.50],
+            ['id' => 'p8', 'name' => 'Extra Cheese Nachos', 'price' => 6.50],
+            ['id' => 'p9', 'name' => 'Pepperoni Pizza Slice', 'price' => 4.00],
+        ],
+        'FRESH DRINKS' => [
+            ['id' => 'd1', 'name' => 'Coca-Cola / Zero (M)', 'price' => 4.00],
+            ['id' => 'd2', 'name' => 'Coca-Cola / Zero (L)', 'price' => 5.50],
+            ['id' => 'd3', 'name' => 'Fanta Orange (M)', 'price' => 4.00],
+            ['id' => 'd4', 'name' => 'Sprite (L)', 'price' => 5.50],
+            ['id' => 'd5', 'name' => 'Blue Icee Slush', 'price' => 5.00],
+            ['id' => 'd6', 'name' => 'Cherry Icee Slush', 'price' => 5.00],
+            ['id' => 'd7', 'name' => 'Bottled Mineral Water', 'price' => 3.00],
+            ['id' => 'd8', 'name' => 'Craft Beer (IPA)', 'price' => 6.50],
+            ['id' => 'd9', 'name' => 'Hot Coffee / Tea', 'price' => 3.50],
+        ],
+        'SNACKS & SWEETS' => [
+            ['id' => 's1', 'name' => 'Pretzel Bites', 'price' => 4.50],
+            ['id' => 's2', 'name' => 'Chocolate M&M\'s Bag', 'price' => 3.50],
+            ['id' => 's3', 'name' => 'Skittles Bag', 'price' => 3.50],
+            ['id' => 's4', 'name' => 'Gummy Bears', 'price' => 3.00],
+            ['id' => 's5', 'name' => 'Crispy Maltesers', 'price' => 3.50],
+            ['id' => 's6', 'name' => 'Lacasitos', 'price' => 3.00],
+            ['id' => 's7', 'name' => 'Red Licorice', 'price' => 2.50],
+            ['id' => 's8', 'name' => 'Snickers Bar', 'price' => 2.50],
+            ['id' => 's9', 'name' => 'Classic Magnum Ice Cream', 'price' => 4.00],
+        ]
+    ];
+
+    return view('food', [
+        'id' => $id, 
+        'menu' => $menu, 
+        'ticketsTotal' => $ticketsTotal,
+        'seats' => $seats
+    ]);
+})->name('booking.food');
+
+// RUTA PARA LA PÁGINA DE PAGO (CARRITO)
+Route::get('/booking/{id}/checkout', function (\Illuminate\Http\Request $request, $id) {
+    return view('checkout', [
+        'id' => $id,
+        'ticketsTotal' => $request->query('tickets', 0),
+        'seats' => $request->query('seats', 'None'),
+        'foodTotal' => $request->query('food', 0),
+        'color' => $request->query('color', '#ffd000'),
+        'textColor' => $request->query('textColor', 'black')
+    ]);
+})->name('booking.checkout');
+
 
 // --- 4. AUTENTICACIÓN (GUEST) ---
 Route::middleware('guest')->group(function () {
