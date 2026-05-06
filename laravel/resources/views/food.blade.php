@@ -18,10 +18,10 @@
             color: #fff;
             margin: 0;
             padding: 0;
-            padding-bottom: 120px; /* Espacio para el footer fijo */
+            padding-bottom: 120px; 
         }
 
-        /* --- HEADER NAVBAR --- */
+        /* --- HEADER (Igual que en Booking) --- */
         header { 
             padding: 20px 5%; 
             display: flex; 
@@ -30,28 +30,30 @@
             border-bottom: 1px solid rgba(255,255,255,0.05); 
             background-color: rgba(0,0,0,0.8);
             backdrop-filter: blur(10px);
+            position: sticky;
             top: 0;
             z-index: 100;
+        }
 
-            .logo img { 
-                height: 40px; 
-            }
+        header .logo img { 
+            height: 40px; 
+        }
 
-            .back-btn { 
-                color: var(--color-blanco); 
-                text-decoration: none; 
-                display: flex; 
-                align-items: center; 
-                gap: 8px; 
-                font-weight: bold; 
-                font-size: 14px; 
-                text-transform: uppercase; 
-                transition: color 0.3s ease; 
+        header .back-btn { 
+            font-family: 'Arial', sans-serif;
+            color: var(--color-blanco, #ffffff); 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            transition: color 0.3s ease; 
+        }
 
-                &:hover { 
-                    color: var(--color-amarillo); 
-                }
-            }
+        header .back-btn:hover { 
+            color: var(--color-principal); 
         }
 
         /* --- MENU LAYOUT --- */
@@ -266,21 +268,17 @@
 <body>
 
     <header>
-        <a href="{{ route('booking.show', ['id' => $id]) }}" class="back-btn">
+        <a href="javascript:history.back()" class="back-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
-            Back to Tickets
+            BACK TO TICKETS
         </a>
-        
         <div class="logo">
-            <a href="/">
-                <img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo">
-            </a>
+            <a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a>
         </div>
-        
-        <div style="width: 150px;"></div> 
+        <div style="width: 130px;"></div>
     </header>
 
     <div class="menu-container">
