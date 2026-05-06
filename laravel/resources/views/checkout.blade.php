@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Screenbites - Checkout</title>
     <style>
         :root {
@@ -351,9 +352,9 @@
     <div class="page-bg-gradient"></div>
 
     <header>
-        <a href="/booking/{{ $id }}/food" class="back-btn">
+        <a href="/cart" class="back-btn">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Back to Menu
+            Back to Cart
         </a>
         <div class="logo"><a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a></div>
         <div style="width: 130px;"></div>
@@ -463,8 +464,11 @@
     </div>
 
     <script>
-        // LEER LOS DATOS DEL CARRITO DESDE LA SESIÓN
-        const cartData = sessionStorage.getItem('screenbites_cart');
+        // 1. LA CLAVE MAESTRA (Igual que en el resto de tu web)
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+        
+        // 2. LEER LOS DATOS DEL CARRITO GLOBAL DEL USUARIO
+        const cartData = localStorage.getItem(CART_KEY);
 
         // --- 1. SELECCIÓN DE MÉTODO DE PAGO ---
         let currentMethod = 'card';
@@ -472,20 +476,16 @@
         function selectPaymentMethod(method) {
             currentMethod = method;
             
-            // 1. Quitar la clase 'active' de todos los botones
             document.getElementById('method-card').classList.remove('active');
             document.getElementById('method-paypal').classList.remove('active');
             document.getElementById('method-bizum').classList.remove('active');
             
-            // Poner la clase 'active' al botón pulsado
             document.getElementById('method-' + method).classList.add('active');
 
-            // 2. Ocultar todas las "cajas" de los formularios
             document.getElementById('form-card').style.display = 'none';
             document.getElementById('form-paypal').style.display = 'none';
             document.getElementById('form-bizum').style.display = 'none';
 
-            // 3. Quitar el 'required' de todos los inputs (para que el HTML no bloquee el pago si un input oculto está vacío)
             document.getElementById('card-name').required = false;
             document.getElementById('card-number').required = false;
             document.getElementById('card-expiry').required = false;
@@ -493,7 +493,6 @@
             document.getElementById('paypal-email').required = false;
             document.getElementById('bizum-phone').required = false;
 
-            // 4. Mostrar solo la caja elegida y volver a hacer obligatorios sus campos
             document.getElementById('form-' + method).style.display = 'block';
             
             if (method === 'card') {
@@ -509,91 +508,97 @@
         }
 
         // --- VALIDACIÓN PARA BIZUM ---
-        // Solo números y añade un espacio automático para que quede bonito: 600 000 000
         document.getElementById('bizum-phone').addEventListener('input', function (e) {
-            let value = this.value.replace(/\D/g, ''); // Deja solo los números
+            let value = this.value.replace(/\D/g, ''); 
             let formattedValue = '';
-            
             for (let i = 0; i < value.length; i++) {
-                // Pone espacios en las posiciones típicas de los móviles de España
-                if (i === 3 || i === 6) {
-                    formattedValue += ' ';
-                }
+                if (i === 3 || i === 6) formattedValue += ' ';
                 formattedValue += value[i];
             }
             this.value = formattedValue;
         });
 
-        // --- VALIDACIONES DE LA TARJETA EN TIEMPO REAL ---
-
-        // Validar Nombre: Solo letras y espacios
+        // --- VALIDACIONES DE LA TARJETA ---
         document.getElementById('card-name').addEventListener('input', function (e) {
-            // Reemplaza cualquier cosa que no sea una letra (mayúscula o minúscula) o un espacio
             this.value = this.value.replace(/[^A-Za-z\s]/g, '').toUpperCase();
         });
 
-        // Validar Número de Tarjeta: Solo números y añadir espacios cada 4 dígitos
         document.getElementById('card-number').addEventListener('input', function (e) {
-            // Eliminar cualquier letra o símbolo, dejar solo los números
             let value = this.value.replace(/\D/g, '');
-            
-            // Añadir un espacio cada 4 números
             let formattedValue = '';
             for (let i = 0; i < value.length; i++) {
-                if (i > 0 && i % 4 === 0) {
-                    formattedValue += ' ';
-                }
+                if (i > 0 && i % 4 === 0) formattedValue += ' ';
                 formattedValue += value[i];
             }
             this.value = formattedValue;
         });
 
-        // Validar Fecha (MM/YY): Solo números y añadir barra
         document.getElementById('card-expiry').addEventListener('input', function (e) {
-            let value = this.value.replace(/\D/g, ''); // Solo números
-            
+            let value = this.value.replace(/\D/g, '');
             if (value.length > 2) {
-                // Añade la barra si tiene más de 2 caracteres
                 this.value = value.substring(0, 2) + '/' + value.substring(2, 4);
             } else {
                 this.value = value;
             }
         });
 
-        // Validar CVC: Solo números, máximo 3
         document.getElementById('card-cvc').addEventListener('input', function (e) {
             this.value = this.value.replace(/\D/g, '');
         });
 
+        // --- 2. RENDERIZAR EL RESUMEN DEL CARRITO (TICKET) ---
         const cartContainer = document.getElementById('final-cart-list');
         const totalDisplay = document.getElementById('final-total');
         let grandTotal = 0;
 
         if (cartData) {
-            const cart = JSON.parse(cartData);
-            const items = Object.values(cart);
+            const globalCart = JSON.parse(cartData);
+            
+            if(globalCart.length > 0) {
+                cartContainer.innerHTML = ''; 
 
-            items.forEach(item => {
-                const itemTotal = item.isFixed ? item.price : item.price * item.qty;
-                grandTotal += itemTotal;
+                globalCart.forEach(order => {
+                    grandTotal += order.orderTotal;
 
-                const qtyText = item.isFixed ? '' : `${item.qty}x `;
-                
-                cartContainer.innerHTML += `
-                    <div class="final-item">
-                        <span>${qtyText}${item.name}</span>
-                        <span>$${itemTotal.toFixed(2)}</span>
-                    </div>
-                `;
-            });
+                    let title = order.movieTitle ? order.movieTitle.toUpperCase() : "MOVIE TICKET";
+                    cartContainer.innerHTML += `
+                        <div style="font-size: 13px; color: #000000; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; font-family: 'Arial Black', sans-serif; border-bottom: 1px solid rgba(0,0,0,0.2); padding-bottom: 3px;">
+                            ${title}
+                        </div>
+                    `;
 
-            totalDisplay.innerText = `$${grandTotal.toFixed(2)}`;
+                    if (order.tickets && order.tickets.price > 0) {
+                        cartContainer.innerHTML += `
+                            <div class="final-item">
+                                <span>Seats: ${order.tickets.seats}</span>
+                                <span>$${order.tickets.price.toFixed(2)}</span>
+                            </div>
+                        `;
+                    }
+
+                    if (order.food && order.food.length > 0) {
+                        order.food.forEach(item => {
+                            cartContainer.innerHTML += `
+                                <div class="final-item">
+                                    <span>${item.qty}x ${item.name}</span>
+                                    <span>$${item.total.toFixed(2)}</span>
+                                </div>
+                            `;
+                        });
+                    }
+                });
+
+                totalDisplay.innerText = `$${grandTotal.toFixed(2)}`;
+            } else {
+                cartContainer.innerHTML = '<div style="text-align:center; font-style:italic;">No items found.</div>';
+                document.getElementById('btn-pay').disabled = true;
+            }
         } else {
             cartContainer.innerHTML = '<div style="text-align:center; font-style:italic;">No items found.</div>';
             document.getElementById('btn-pay').disabled = true;
         }
 
-        // SIMULAR EL PROCESO DE PAGO
+        // --- 3. SIMULAR EL PROCESO DE PAGO Y ENVIAR A BD ---
         function processPayment(e) {
             e.preventDefault(); 
             
@@ -602,26 +607,44 @@
             const loader = document.getElementById('pay-loader');
             const successScreen = document.getElementById('success-screen');
 
-            // 1. Estado de carga (Simulando conexión con el banco)
             btn.disabled = true;
             btnText.innerText = 'Processing...';
             loader.style.display = 'block';
 
-            // Simulamos 2.5 segundos de "pensar"
-            setTimeout(() => {
-                
-                // 2. Mostrar la pantalla de éxito
-                successScreen.classList.add('show');
-                
-                // Vaciamos el carrito porque ya se ha pagado
-                sessionStorage.removeItem('screenbites_cart');
-                
-                // 3. Esperamos otros 2.5 segundos viendo el tick verde, y mandamos al perfil
-                setTimeout(() => {
-                    window.location.href = "/profile"; 
-                }, 2500);
+            // Leemos el carrito
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 
-            }, 2500);
+            // Enviamos los datos a Laravel
+            fetch('/process-payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ cart: globalCart })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    successScreen.classList.add('show');
+                    localStorage.removeItem(CART_KEY); // Vaciamos el carrito tras el éxito
+                    
+                    setTimeout(() => {
+                        window.location.href = "/profile"; 
+                    }, 2500);
+                } else {
+                    alert("Error en el pago.");
+                    btn.disabled = false;
+                    btnText.innerText = 'Confirm Payment';
+                    loader.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.disabled = false;
+                btnText.innerText = 'Confirm Payment';
+                loader.style.display = 'none';
+            });
         }
     </script>
 </body>

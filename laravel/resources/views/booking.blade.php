@@ -539,54 +539,9 @@
     </div>
 
     @php
-        // Convertimos el ID de la película en un número único.
-        // Así, Kill Bill (01) siempre generará el mismo patrón, y Godzilla (03) el suyo propio.
         $seed = crc32($id);
         mt_srand($seed);
-
         $rowsArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-        $seatsPerRowArray = 10;
-        $occupiedArray = [];
-
-        // Cada película tendrá entre 10 y 35 asientos ocupados (de 70 totales)
-        $targetOccupied = mt_rand(10, 35); 
-        $currentOccupied = 0;
-        $attempts = 0;
-
-        while ($currentOccupied < $targetOccupied && $attempts < 200) {
-            $attempts++;
-            
-            // Lógica de agrupaciones:
-            // Es mucho más común ver parejas (2) o tríos (3). 
-            // A veces va alguien solo (1) y rara vez grupos grandes (4 o 5).
-            $groupSizes = [1, 2, 2, 2, 3, 3, 4, 5];
-            $groupSize = $groupSizes[mt_rand(0, count($groupSizes) - 1)];
-
-            $randomRow = $rowsArray[mt_rand(0, count($rowsArray) - 1)];
-            $startSeat = mt_rand(1, $seatsPerRowArray - $groupSize + 1);
-
-            $canPlace = true;
-            $tempSeats = [];
-            
-            // Comprobar si ese bloque de butacas está libre
-            for ($i = 0; $i < $groupSize; $i++) {
-                $seatId = $randomRow . ($startSeat + $i);
-                if (in_array($seatId, $occupiedArray)) {
-                    $canPlace = false;
-                    break;
-                }
-                $tempSeats[] = $seatId;
-            }
-
-            // Si están libres, los ocupamos
-            if ($canPlace) {
-                $occupiedArray = array_merge($occupiedArray, $tempSeats);
-                $currentOccupied += $groupSize;
-            }
-        }
-        
-        // Devolvemos el generador a la normalidad para no afectar a Laravel
-        mt_srand();
     @endphp
 
     <div id="seat-limit-modal" class="custom-modal-overlay">
@@ -611,10 +566,13 @@
         
         const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
         const seatsPerRow = 10;
-        const vipRows = ['D', 'E']; // Filas D y E son VIP
-        
-        // RECIBIMOS LOS ASIENTOS OCUPADOS DESDE PHP
+        const vipRows = ['D', 'E'];
+
+        // 1. FORMA SEGURA DE RECIBIR DATOS
         const occupiedSeats = {!! json_encode($occupiedArray) !!};
+        
+        // DEBUG: Abre la consola (F12) y comprueba que sale la lista de asientos
+        console.log("Asientos ocupados traídos de la BD:", occupiedSeats);
 
         let selectedSeats = [];
         let currentTotal = 0;
@@ -625,14 +583,15 @@
         const totalPriceDisplay = document.getElementById('total-price');
         const btnContinue = document.getElementById('btn-continue');
 
-        // 1. GENERAR ASIENTOS
+        // 2. GENERAR ASIENTOS
         function generateSeats() {
-            seatsContainer.innerHTML = ''; // Limpiamos por si acaso
+            seatsContainer.innerHTML = ''; 
             
             rows.forEach(row => {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'seat-row';
                 
+                // Etiqueta de fila (A, B, C...)
                 const labelDiv = document.createElement('div');
                 labelDiv.className = 'row-label';
                 labelDiv.innerText = row;
@@ -644,9 +603,13 @@
                     seatDiv.className = 'seat';
                     seatDiv.dataset.seatId = seatId;
 
+                    // PRIORIDAD 1: ¿Está ocupado en la BD?
                     if (occupiedSeats.includes(seatId)) {
                         seatDiv.classList.add('occupied');
-                    } else {
+                        seatDiv.style.pointerEvents = 'none'; 
+                    } 
+                    // PRIORIDAD 2: Si no está ocupado, ¿es VIP o Standard?
+                    else {
                         if (vipRows.includes(row)) {
                             seatDiv.classList.add('vip');
                             seatDiv.dataset.price = VIP_PRICE;
@@ -659,16 +622,15 @@
                     rowDiv.appendChild(seatDiv);
                 }
                 
+                // ... resto del código de las etiquetas derechas ...
                 const labelDivRight = document.createElement('div');
                 labelDivRight.className = 'row-label';
                 labelDivRight.innerText = row;
                 rowDiv.appendChild(labelDivRight);
-
                 seatsContainer.appendChild(rowDiv);
             });
         }
 
-        // 2. SELECCIONAR / DESELECCIONAR
         function toggleSeat(seatElement) {
             const seatId = seatElement.dataset.seatId;
             const price = parseFloat(seatElement.dataset.price);
@@ -684,11 +646,9 @@
                 seatElement.classList.add('selected');
                 selectedSeats.push({ id: seatId, price: price });
             }
-
             updateSummary();
         }
 
-        // 3. ACTUALIZAR PANEL DE PRECIOS
         function updateSummary() {
             if (selectedSeats.length === 0) {
                 selectedSeatsDisplay.innerHTML = '<span style="color: #666; font-size: 13px; font-style: italic;">No seats selected yet.</span>';
@@ -701,7 +661,6 @@
 
             selectedSeatsDisplay.innerHTML = '';
             currentTotal = 0;
-
             selectedSeats.sort((a, b) => a.id.localeCompare(b.id));
 
             selectedSeats.forEach(seat => {
@@ -715,55 +674,45 @@
             const formattedTotal = `$${currentTotal.toFixed(2)}`;
             ticketsPriceDisplay.innerText = formattedTotal;
             totalPriceDisplay.innerText = formattedTotal;
-            
             btnContinue.disabled = false;
         }
 
-        // 4. BOTÓN CONTINUAR
         btnContinue.addEventListener('click', () => {
             const seatsParam = selectedSeats.map(s => s.id).join(',');
             const totalParam = currentTotal.toFixed(2);
-            
             const colorParam = encodeURIComponent('{{ $movie['bg'] ?? '#ffd000' }}');
             const textColorParam = encodeURIComponent('{{ $movie['textColor'] ?? 'black' }}');
-            
             const movieTitleText = document.querySelector('.movie-info h1').innerText;
             const titleParam = encodeURIComponent(movieTitleText);
             
             window.location.href = `/booking/{{ $id }}/food?tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}&title=${titleParam}`;
         });
 
-        // CERRAR MODAL
         document.getElementById('close-modal-btn').addEventListener('click', () => {
             document.getElementById('seat-limit-modal').classList.remove('active');
         });
 
-        // --- 5. MAGIA DE PRECARGA AL CARGAR LA PÁGINA ---
+        // --- PRECARGA ---
         document.addEventListener('DOMContentLoaded', () => {
-            
-            // 1. PRIMERO Generar los asientos para que existan en el HTML
             generateSeats();
             
-            // 2. Buscamos el carrito de este usuario
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-            
-            // 3. Buscamos si ya hay una reserva para ESTA película
             let existingOrder = globalCart.find(order => order.movieId === '{{ $id }}');
 
             if (existingOrder && existingOrder.tickets && existingOrder.tickets.seats !== 'None') {
-                // 4. Convertimos el texto "D8,D9" en un array ['D8', 'D9']. 
-                // Usamos split(',') sin espacio porque así se guarda en la URL y el carrito.
                 const savedSeats = existingOrder.tickets.seats.split(',');
 
                 savedSeats.forEach(seatId => {
-                    // 5. Buscamos el elemento del asiento en el mapa mediante su atributo data-seat-id
                     const seatElement = document.querySelector(`[data-seat-id="${seatId}"]`);
                     
-                    if (seatElement && !seatElement.classList.contains('selected')) {
-                        // 6. Ejecutamos la selección del asiento
-                        toggleSeat(seatElement); 
+                    // Solo auto-seleccionamos si el asiento no está ya ocupado en la BD
+                    if (seatElement && !seatElement.classList.contains('occupied')) {
+                        seatElement.classList.add('selected');
+                        const price = parseFloat(seatElement.dataset.price);
+                        selectedSeats.push({ id: seatId, price: price });
                     }
                 });
+                updateSummary();
             }
         });
     </script>

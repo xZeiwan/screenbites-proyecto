@@ -3,34 +3,33 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class CheckoutController extends Controller
 {
     public function processPayment(Request $request)
     {
-        // 1. Recibimos el total que viene del carrito
-        $totalGastado = $request->input('total', 0);
+        $cart = $request->input('cart');
 
-        // 2. Lógica de ascenso a VIP
-        // Si está logueado, es un usuario normal y ha gastado 40 o más...
-        if (Auth::check() && Auth::user()->role === 'user' && $totalGastado >= 40) {
-            $user = Auth::user();
-            $user->role = 'vip';
-            $user->save();
-            
-            // Mensaje especial de felicitación
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Payment successful! Congratulations, you are now a VIP member!',
-                'upgrade' => true
-            ]);
+        if (!$cart || empty($cart)) {
+            return response()->json(['status' => 'error', 'message' => 'Empty cart'], 400);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Payment successful! Thank you for your purchase.',
-            'upgrade' => false
-        ]);
+        foreach ($cart as $order) {
+            // Solo insertamos si hay asientos (por si en el futuro vendes solo comida)
+            if (isset($order['tickets']) && $order['tickets']['seats'] !== 'None') {
+                DB::table('bookings')->insert([
+                    'user_id' => Auth::id(),
+                    'movie_id' => $order['movieId'],
+                    'seats' => $order['tickets']['seats'],
+                    'total_price' => $order['orderTotal'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
+        return response()->json(['status' => 'success']);
     }
 }

@@ -41,28 +41,41 @@ Route::get('/booking/{id}', function ($id) {
     ];
 
     $movie = $bookingMovies[$id] ?? ["title" => "Película Desconocida", "bgImg" => "", "bg" => "#ffd000", "textColor" => "black"];
-    return view('booking', ['id' => $id, 'movie' => $movie]);
+    
+    // --- LÓGICA DE BACKEND PARA SACAR ASIENTOS OCUPADOS ---
+    $occupiedSeatsString = \Illuminate\Support\Facades\DB::table('bookings')
+        ->where('movie_id', $id)
+        ->pluck('seats')
+        ->implode(',');
+
+    // AÑADIMOS array_values() PARA QUE JAVASCRIPT LO ENTIENDA PERFECTAMENTE
+    $occupiedArray = array_values(array_filter(array_map('trim', explode(',', $occupiedSeatsString))));
+
+    return view('booking', [
+        'id' => $id, 
+        'movie' => $movie,
+        'occupiedArray' => $occupiedArray,
+    ]);
 })->name('booking.show');
 
 // Ruta Comida
 Route::get('/booking/{id}/food', [FoodController::class, 'index'])->name('booking.food');
 
-// RUTA PARA LA PÁGINA DE PAGO (CARRITO)
-Route::get('/booking/{id}/checkout', function (\Illuminate\Http\Request $request, $id) {
-    return view('checkout', [
-        'id' => $id,
-        'ticketsTotal' => $request->query('tickets', 0),
-        'seats' => $request->query('seats', 'None'),
-        'foodTotal' => $request->query('food', 0),
-        'color' => $request->query('color', '#ffd000'),
-        'textColor' => $request->query('textColor', 'black')
-    ]);
-})->name('booking.checkout');
-
-// --- NUEVA RUTA: EL CARRITO GLOBAL ---
+// --- EL CARRITO ---
 Route::get('/cart', function () {
     return view('cart');
 })->name('cart.index');
+
+// --- RUTA PARA LA PÁGINA DE PAGO ---
+Route::get('/checkout', function () {
+    return view('checkout', [
+        'id' => 'global', // Le pasamos un ID genérico para que no falle el HTML
+        'movie' => [
+            'title' => 'Complete your order',
+            'bgImg' => ''
+        ]
+    ]);
+})->middleware('auth')->name('checkout.index');
 
 
 // --- 4. AUTENTICACIÓN (GUEST) ---

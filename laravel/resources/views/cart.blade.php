@@ -48,18 +48,20 @@
         header .logo img { height: 40px; }
 
         header .back-btn { 
-            color: #aaa; 
+            color: var(--color-blanco, #ffffff); 
             text-decoration: none; 
             display: flex; 
             align-items: center; 
             gap: 8px; 
             font-weight: bold; 
-            font-size: 13px; 
-            letter-spacing: 1px;
-            transition: color 0.3s ease; 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            transition: color 0.3s ease;
         }
 
-        header .back-btn:hover { color: var(--color-amarillo); }
+        header .back-btn:hover { 
+            color: var(--color-amarillo, #ffd000); 
+        }
 
         /* --- CART LAYOUT --- */
         .cart-container {
@@ -407,16 +409,15 @@
 <body>
 
     <header>
-        <a href="javascript:history.back()" class="back-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a href="/#cartelera" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
                 <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
-            BACK TO BROWSING
+            Back to Browsing
         </a>
-        <div class="logo">
-            <a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a>
-        </div>
+        
+        <div class="logo"><a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a></div>
         <div style="width: 150px;"></div>
     </header>
 
@@ -666,31 +667,7 @@
         }
 
         function proceedToPayment() {
-            // Obtenemos el total del texto del DOM (quitando el símbolo $)
-            let totalText = document.getElementById('grand-total-display').innerText;
-            let totalValue = parseFloat(totalText.replace('$', ''));
-
-            // Enviamos el dato al controlador mediante una petición Fetch
-            fetch('{{ route("checkout.pay") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ total: totalValue })
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                // Vaciamos el carrito local
-                localStorage.removeItem(CART_KEY);
-                // Redirigimos al inicio
-                window.location.href = '/';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('There was an error processing your payment.');
-            });
+            window.location.href = '/checkout';
         }
     </script>
 </body>
