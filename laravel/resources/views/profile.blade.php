@@ -48,6 +48,15 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        .chevron-icon {
+            width: 14px;     
+            height: 14px;
+            margin-left: 2px; 
+            stroke-width: 2.5; 
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
         header .logo img { height: 50px; }
         header nav ul { list-style: none; display: flex; align-items: center; gap: 30px; }
         header nav a, header nav .logout-btn {
