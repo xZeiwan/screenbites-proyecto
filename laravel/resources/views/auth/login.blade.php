@@ -219,6 +219,7 @@
     </div>
 
     <script>
+
         function toggleVisibility(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);

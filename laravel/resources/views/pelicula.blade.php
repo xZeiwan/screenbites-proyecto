@@ -1133,12 +1133,16 @@
     </footer>
 
     <script>
+        // Creamos una llave única basada en el ID del usuario logueado. 
+        // Si no está logueado, usará la caja "guest".
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+
         document.addEventListener('DOMContentLoaded', () => {
             updateCartBadge();
         });
 
         function updateCartBadge() {
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let totalOrders = globalCart.length;
 
             const badge = document.getElementById('nav-cart-counter');

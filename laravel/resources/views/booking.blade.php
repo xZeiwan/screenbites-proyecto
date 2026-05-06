@@ -472,7 +472,8 @@
             Back to Movie
         </a>
         <div class="logo"><a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a></div>
-        <div style="width: 130px;"></div> </header>
+        <div style="width: 130px;"></div> 
+    </header>
 
     <div class="booking-container">
         
@@ -606,6 +607,7 @@
     <script>
         const STANDARD_PRICE = 8.50;
         const VIP_PRICE = 12.00;
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
         
         const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
         const seatsPerRow = 10;
@@ -738,41 +740,28 @@
 
         // --- 5. MAGIA DE PRECARGA AL CARGAR LA PÁGINA ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Primero dibujamos todos los asientos
+            
+            // 1. PRIMERO Generar los asientos para que existan en el HTML
             generateSeats();
-
-            // Luego buscamos en el carrito si ya teníamos asientos para esta peli
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            
+            // 2. Buscamos el carrito de este usuario
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+            
+            // 3. Buscamos si ya hay una reserva para ESTA película
             let existingOrder = globalCart.find(order => order.movieId === '{{ $id }}');
 
-            if (existingOrder && existingOrder.tickets && existingOrder.tickets.seats && existingOrder.tickets.seats !== 'None') {
-                // Separamos los asientos por la coma
-                let savedSeats = existingOrder.tickets.seats.split(',').map(s => s.trim());
-                
+            if (existingOrder && existingOrder.tickets && existingOrder.tickets.seats !== 'None') {
+                // 4. Convertimos el texto "D8,D9" en un array ['D8', 'D9']. 
+                // Usamos split(',') sin espacio porque así se guarda en la URL y el carrito.
+                const savedSeats = existingOrder.tickets.seats.split(',');
+
                 savedSeats.forEach(seatId => {
-                    let seatEl = document.querySelector(`.seat[data-seat-id="${seatId}"]`);
-                    if (seatEl) {
-                        // Sistema de seguridad: Si el script de PHP lo marcó como ocupado, lo "liberamos"
-                        // porque sabemos que esos asientos son los nuestros.
-                        if (seatEl.classList.contains('occupied')) {
-                            seatEl.classList.remove('occupied');
-                            
-                            // Le devolvemos su precio y su evento click
-                            const row = seatId.charAt(0);
-                            if (vipRows.includes(row)) {
-                                seatEl.classList.add('vip');
-                                seatEl.dataset.price = VIP_PRICE;
-                            } else {
-                                seatEl.dataset.price = STANDARD_PRICE;
-                            }
-                            seatEl.addEventListener('click', () => toggleSeat(seatEl));
-                        }
-                        
-                        // Simulamos un click en el asiento para que se marque visualmente 
-                        // y se sume al resumen lateral.
-                        if (!seatEl.classList.contains('selected')) {
-                            toggleSeat(seatEl);
-                        }
+                    // 5. Buscamos el elemento del asiento en el mapa mediante su atributo data-seat-id
+                    const seatElement = document.querySelector(`[data-seat-id="${seatId}"]`);
+                    
+                    if (seatElement && !seatElement.classList.contains('selected')) {
+                        // 6. Ejecutamos la selección del asiento
+                        toggleSeat(seatElement); 
                     }
                 });
             }

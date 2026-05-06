@@ -446,6 +446,10 @@
     </div>
 
     <script>
+        // Creamos una llave única basada en el ID del usuario logueado. 
+        // Si no está logueado, usará la caja "guest".
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+
         // Diccionario de Pósters basado en el ID de la película
         const moviePosters = {
             "01": "{{ asset('img/1-Kill-Bill/Mini.png') }}",
@@ -487,11 +491,11 @@
             const orderCountDisplay = document.getElementById('order-count');
             const btnProceed = document.getElementById('btn-proceed');
 
-            let rawCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            let rawCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let globalCart = rawCart.filter(item => item.movieId !== undefined);
             
             if (rawCart.length !== globalCart.length) {
-                localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+                localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
             }
 
             if (globalCart.length === 0) {
@@ -626,10 +630,13 @@
             grandTotalDisplay.innerText = '$' + grandTotal.toFixed(2);
             orderCountDisplay.innerText = globalCart.length + (globalCart.length === 1 ? ' order' : ' orders');
             btnProceed.disabled = false;
+
+            const badge = document.getElementById('nav-cart-counter');
+            if(badge) badge.innerText = globalCart.length;
         }
 
         function updateFoodQty(orderIndex, foodIndex, change) {
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let order = globalCart[orderIndex];
             let foodItem = order.food[foodIndex];
             
@@ -644,14 +651,14 @@
             let ticketsTotal = order.tickets ? order.tickets.price : 0;
             order.orderTotal = ticketsTotal + newFoodTotal;
             
-            localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+            localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
             renderCart();
         }
 
         function removeOrder(index) {
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             globalCart.splice(index, 1);
-            localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+            localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
             renderCart();
             
             const badge = document.getElementById('nav-cart-counter');
@@ -676,7 +683,7 @@
             .then(data => {
                 alert(data.message);
                 // Vaciamos el carrito local
-                localStorage.removeItem('screenbites_global_cart');
+                localStorage.removeItem(CART_KEY);
                 // Redirigimos al inicio
                 window.location.href = '/';
             })

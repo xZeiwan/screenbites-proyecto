@@ -574,6 +574,9 @@
     </div>
 
     <script>
+        // 1. AÑADIMOS LA DEFINICIÓN DE LA LLAVE MÁGICA AQUÍ TAMBIÉN
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+
         // Variables desde PHP
         let ticketsTotal = {{ $ticketsTotal }};
         let foodTotal = 0;
@@ -615,7 +618,8 @@
         }
 
         function addToCart() {
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            // 2. QUITAMOS LAS COMILLAS A CART_KEY
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 
             const urlParams = new URLSearchParams(window.location.search);
             const seatsSelected = urlParams.get('seats') || 'None';
@@ -672,8 +676,8 @@
                 globalCart.push(currentOrder);
             }
 
-            // Guardar y notificar
-            localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+            // Guardar y notificar (3. QUITAMOS LAS COMILLAS A CART_KEY)
+            localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
             updateCartBadgeLocally();
 
             const toast = document.getElementById('cart-toast');
@@ -685,7 +689,8 @@
         }
 
         function updateCartBadgeLocally() {
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            // 4. QUITAMOS LAS COMILLAS A CART_KEY
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let totalOrders = globalCart.length;
             const badge = document.getElementById('nav-cart-counter');
             if(badge) {
@@ -701,7 +706,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             updateCartBadgeLocally();
 
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            // 5. QUITAMOS LAS COMILLAS A CART_KEY
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let existingOrder = globalCart.find(order => order.movieId === '{{ $id }}');
 
             // Si hay un pedido previo, rellenamos las cantidades de comida

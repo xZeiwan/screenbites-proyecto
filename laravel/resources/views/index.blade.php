@@ -1151,8 +1151,7 @@
                         </li>
 
                         <li>
-                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                                @csrf
+                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">                                @csrf
                                 <button type="submit" class="logout-btn" title="Sign Out">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1216,6 +1215,10 @@
         </style>
 
         <script>
+            // Creamos una llave única basada en el ID del usuario logueado. 
+            // Si no está logueado, usará la caja "guest".
+            const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+
             // Autodestrucción del mensaje a los 4 segundos
             setTimeout(() => {
                 const toast = document.getElementById('toast-message');
@@ -1547,6 +1550,7 @@
     </footer>
 
     <script>
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
         // Le pasamos la información de la sesión al JavaScript usando una variable global
         const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
 
@@ -1733,7 +1737,7 @@
         });
 
         function updateCartBadge() {
-            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             
             // Simplemente contamos cuántos bloques de pedido hay
             let totalOrders = globalCart.length;
