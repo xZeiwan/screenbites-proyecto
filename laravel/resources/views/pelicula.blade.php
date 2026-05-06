@@ -254,7 +254,6 @@
                         text-transform: uppercase;
                         line-height: 1.1;
                         text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
-                        /* AÑADIDO: Brillo extra para que se lea sobre colores oscuros */
                         filter: brightness(1.3);
                     }
 
@@ -375,21 +374,19 @@
             box-shadow: 0 0 50px rgba(0,0,0, 0.4);
             border: 1px solid #222;
         }
-        .video-wrapper iframe {
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-        }
 
         .video-cover {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center;
-            background-color: #000;
+            background-color: #000; transition: transform 0.3s ease;
         }
+        
+        .video-cover:hover {
+            transform: scale(1.02);
+        }
+
         .video-cover img {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%; height: 100%; object-fit: cover; opacity: 0.8;
         }
 
         .custom-play-btn {
@@ -401,51 +398,105 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
+        .video-cover:hover .custom-play-btn {
+            transform: scale(1.1);
+            background: var(--color-principal);
+            color: var(--color-negro);
+        }
+
         .no-video {
             position: absolute; width: 100%; height: 100%; top: 0; left: 0;
             display: flex; align-items: center; justify-content: center;
             background: #111; color: #666; font-size: 1.5rem;
         }
 
-        .clean-carousel-container { 
-            width: 100%; position: relative; 
+        /* --- ESTILOS DEL MODAL DEL TRAILER --- */
+        .trailer-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
         }
-        
+
+        .trailer-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .trailer-modal-content {
+            width: 90%;
+            max-width: 1100px;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .trailer-modal-overlay.active .trailer-modal-content {
+            transform: scale(1);
+        }
+
+        .close-trailer-btn {
+            position: absolute;
+            top: -45px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 35px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-trailer-btn:hover {
+            color: var(--color-principal);
+        }
+
+        .video-responsive {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 2px solid #333;
+        }
+
+        .video-responsive iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        /* CARRUSEL DE IMÁGENES */
+        .clean-carousel-container { width: 100%; position: relative; }
         .clean-carousel-viewport { 
-            width: 100%; 
-            position: relative; 
-            overflow: hidden; 
-            border-radius: 15px; 
-            border: 1px solid #222; 
-            padding-bottom: 56.25%;
-            height: 0; 
-            box-shadow: 0 0 50px rgba(0,0,0, 0.4); 
+            width: 100%; position: relative; overflow: hidden; 
+            border-radius: 15px; border: 1px solid #222; 
+            padding-bottom: 56.25%; height: 0; box-shadow: 0 0 50px rgba(0,0,0, 0.4); 
         }
-        
         .clean-carousel-track { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
         }
-        
-        .clean-carousel-slide { 
-            min-width: 100%; height: 100%; position: relative; 
-        }
-        
-        .clean-carousel-slide img { 
-            width: 100%; height: 100%; object-fit: cover; 
-        }
+        .clean-carousel-slide { min-width: 100%; height: 100%; position: relative; }
+        .clean-carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
         
         .clean-carousel-controls { 
             display: flex; justify-content: center; align-items: center; 
             gap: 40px; margin-top: 20px; 
         }
-        
         .clean-arrow { 
             background: transparent; border: none; color: #666; 
             font-size: 35px; cursor: pointer; transition: all 0.3s ease; 
             padding: 0 10px; outline: none;
         }
-        
         .clean-arrow:hover { 
             color: var(--color-principal); transform: scale(1.2); 
             filter: drop-shadow(0 0 10px var(--color-principal));
@@ -856,6 +907,7 @@
         </div>
     </div>
 
+    <!-- SECCIÓN TRAILER CON LA FUNCIÓN MODIFICADA -->
     <section class="trailer-featured">
         <div class="container">
             <h2 class="section-title">Official Trailer</h2>
@@ -865,13 +917,22 @@
                         <img src="{{ $movie['bgImg'] ?? $movie['poster'] }}" alt="Trailer Cover">
                         <div class="custom-play-btn">▶</div>
                     </div>
-                    <div id="iframe-container"></div>
                 @else
                     <div class="no-video">Tráiler no disponible</div>
                 @endif
             </div>
         </div>
     </section>
+
+    <!-- EL NUEVO MODAL PARA EL TRAILER -->
+    <div id="trailer-modal" class="trailer-modal-overlay" onclick="closeTrailer()">
+        <div class="trailer-modal-content" onclick="event.stopPropagation()">
+            <button class="close-trailer-btn" onclick="closeTrailer()">✖</button>
+            <div class="video-responsive">
+                <iframe id="trailer-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
 
     <section class="movie-gallery">
         <div class="container">
@@ -970,7 +1031,7 @@
                         <textarea name="content" required placeholder="Write your review here..." rows="4" style="width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 15px; border-radius: 8px; resize: none;"></textarea>
                     </div>
 
-                    <button type="submit" style="background: var(--color-principal); color: #000; padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+                    <button type="submit" style="background: var(--color-principal); color: var(--color-texto-btn); padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
                         Submit Review
                     </button>
                 </form>
@@ -1059,20 +1120,67 @@
 
         function updateCartBadge() {
             let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
-            
-            // Simplemente contamos cuántos bloques de pedido hay
             let totalOrders = globalCart.length;
 
             const badge = document.getElementById('nav-cart-counter');
             if(badge) {
                 badge.innerText = totalOrders;
-                
                 if(totalOrders > 0) {
                     badge.style.transform = 'scale(1.2)';
                     setTimeout(() => badge.style.transform = 'scale(1)', 200);
                 }
             }
         }
+
+        /* --- SCRIPT DEL TRAILER (Extrae el ID y abre el Modal) --- */
+        function playVideo(url) {
+            let videoId = '';
+            // Expresión regular infalible para sacar el ID de cualquier enlace de YouTube
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                videoId = match[2];
+            } else {
+                alert("El enlace del tráiler no es válido.");
+                return;
+            }
+
+            const iframe = document.getElementById('trailer-iframe');
+            // Le añadimos autoplay=1 para que arranque solo
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+            
+            const modal = document.getElementById('trailer-modal');
+            modal.classList.add('active');
+        }
+
+        // Función para cerrar el pop-up y apagar el vídeo
+        function closeTrailer() {
+            const modal = document.getElementById('trailer-modal');
+            modal.classList.remove('active');
+            
+            // Borramos el src para que el vídeo se pare al cerrar la ventana
+            const iframe = document.getElementById('trailer-iframe');
+            iframe.src = '';
+        }
+
+        /* --- SCRIPT DEL CARRUSEL DE IMÁGENES --- */
+        let currentSlide = 0;
+        function moveCleanCarousel(direction) {
+            const track = document.getElementById('clean-track');
+            if (!track) return;
+            
+            const slides = track.children;
+            if (slides.length === 0) return;
+            
+            const totalSlides = slides.length;
+            
+            // Fórmula mágica para avanzar y retroceder en bucle
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
     </script>
 </body>
+
 </html>

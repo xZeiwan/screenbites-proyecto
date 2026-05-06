@@ -430,8 +430,8 @@
                         </div>
                         <div>
                             <span class="badge" style="background: #ffd000; color: #000;">KILL BILL ONLY</span>
-                            <!-- Hidden input para integrarlo con la logica del carrito -->
-                            <input type="hidden" id="qty-ex-01" class="qty-input" data-id="ex-01" data-name="Vengeance Combo" data-price="14.99" value="0">
+                            <!-- Hidden input con data-image -->
+                            <input type="hidden" id="qty-ex-01" class="qty-input" data-id="ex-01" data-name="Vengeance Combo" data-price="14.99" data-image="{{ asset('img/1-Kill-Bill/kill-bill.jpeg') }}" value="0">
                             
                             @if($id == '01')
                                 <button id="btn-ex-01" class="btn-exclusive" onclick="toggleExclusive('ex-01', 14.99)">+ ADD 14.99</button>
@@ -454,7 +454,8 @@
                         </div>
                         <div>
                             <span class="badge" style="background: #e85d04; color: #fff;">OPPENHEIMER ONLY</span>
-                            <input type="hidden" id="qty-ex-04" class="qty-input" data-id="ex-04" data-name="Atomic Combo" data-price="15.50" value="0">
+                            <!-- Hidden input con data-image -->
+                            <input type="hidden" id="qty-ex-04" class="qty-input" data-id="ex-04" data-name="Atomic Combo" data-price="15.50" data-image="{{ asset('img/4-Oppenheimer/oppenheimer.png') }}" value="0">
                             
                             @if($id == '04')
                                 <button id="btn-ex-04" class="btn-exclusive" onclick="toggleExclusive('ex-04', 15.50)">+ ADD 15.50</button>
@@ -477,7 +478,8 @@
                         </div>
                         <div>
                             <span class="badge" style="background: #ffcf75; color: #000;">BARBIE ONLY</span>
-                            <input type="hidden" id="qty-ex-09" class="qty-input" data-id="ex-09" data-name="Dreamhouse Snack" data-price="13.99" value="0">
+                            <!-- Hidden input con data-image -->
+                            <input type="hidden" id="qty-ex-09" class="qty-input" data-id="ex-09" data-name="Dreamhouse Snack" data-price="13.99" data-image="{{ asset('img/9-Barbie/barbie.png') }}" value="0">
                             
                             @if($id == '09')
                                 <button id="btn-ex-09" class="btn-exclusive" onclick="toggleExclusive('ex-09', 13.99)">+ ADD 13.99</button>
@@ -526,7 +528,8 @@
                                     
                                     <div class="qty-wrapper">
                                         <button class="btn-qty" onclick="updateItem('{{ $item['id'] }}', -1, {{ $item['price'] }})">-</button>
-                                        <input type="text" id="qty-{{ $item['id'] }}" class="qty-input" data-id="{{ $item['id'] }}" data-name="{{ $item['name'] }}" data-price="{{ $item['price'] }}" value="0">
+                                        <!-- Input normal con data-image -->
+                                        <input type="text" id="qty-{{ $item['id'] }}" class="qty-input" data-id="{{ $item['id'] }}" data-name="{{ $item['name'] }}" data-price="{{ $item['price'] }}" data-image="{{ !empty($item['image']) ? $item['image'] : '' }}" value="0">
                                         <button class="btn-qty" onclick="updateItem('{{ $item['id'] }}', 1, {{ $item['price'] }})">+</button>
                                     </div>
                                 </div>
@@ -622,7 +625,7 @@
 
             let existingOrderIndex = globalCart.findIndex(order => order.movieId === '{{ $id }}');
 
-            // Leer lo que hay seleccionado AHORA en pantalla
+            // Leer lo que hay seleccionado AHORA en pantalla y extraer el data-image
             let foodItemsToAdd = [];
             document.querySelectorAll('.qty-input').forEach(input => {
                 let qty = parseInt(input.value);
@@ -631,6 +634,7 @@
                         id: input.dataset.id,
                         name: input.dataset.name,
                         price: parseFloat(input.dataset.price),
+                        image: input.dataset.image, // Extraemos la imagen
                         qty: qty,
                         total: qty * parseFloat(input.dataset.price)
                     });
@@ -638,7 +642,7 @@
             });
 
             if (existingOrderIndex > -1) {
-                // --- NUEVO LÓGICA: REEMPLAZAR (SOBREESCRIBIR) EN LUGAR DE SUMAR ---
+                // --- REEMPLAZAR (SOBREESCRIBIR) EN LUGAR DE SUMAR ---
                 let existingOrder = globalCart[existingOrderIndex];
 
                 // 1. Sobreescribimos los tickets
@@ -677,7 +681,7 @@
             toast.style.opacity = '1';
 
             // Redirigir a la cartelera
-            setTimeout(() => { window.location.href = '/cart'; }, 1000); // Redirigimos al carrito directamente para ver los cambios
+            setTimeout(() => { window.location.href = '/cart'; }, 1000);
         }
 
         function updateCartBadgeLocally() {
@@ -693,7 +697,7 @@
             }
         }
 
-        // --- NUEVO: PRECARGAR DATOS AL ENTRAR A LA PÁGINA ---
+        // --- PRECARGAR DATOS AL ENTRAR A LA PÁGINA ---
         document.addEventListener('DOMContentLoaded', () => {
             updateCartBadgeLocally();
 
