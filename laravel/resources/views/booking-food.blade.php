@@ -386,6 +386,8 @@
                 </div>
             @endif
 
+            
+
             <div class="food-category">
                 <h2>Popcorn & Food</h2>
                 <div class="food-grid">

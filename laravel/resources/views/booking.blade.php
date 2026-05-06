@@ -611,7 +611,7 @@
         const seatsPerRow = 10;
         const vipRows = ['D', 'E']; // Filas D y E son VIP
         
-        // RECIBIMOS LOS ASIENTOS OCUPADOS DESDE PHP PARA ESTA PELÍCULA EN CONCRETO
+        // RECIBIMOS LOS ASIENTOS OCUPADOS DESDE PHP
         const occupiedSeats = {!! json_encode($occupiedArray) !!};
 
         let selectedSeats = [];
@@ -623,7 +623,10 @@
         const totalPriceDisplay = document.getElementById('total-price');
         const btnContinue = document.getElementById('btn-continue');
 
+        // 1. GENERAR ASIENTOS
         function generateSeats() {
+            seatsContainer.innerHTML = ''; // Limpiamos por si acaso
+            
             rows.forEach(row => {
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'seat-row';
@@ -648,7 +651,6 @@
                         } else {
                             seatDiv.dataset.price = STANDARD_PRICE;
                         }
-
                         seatDiv.addEventListener('click', () => toggleSeat(seatDiv));
                     }
 
@@ -664,6 +666,7 @@
             });
         }
 
+        // 2. SELECCIONAR / DESELECCIONAR
         function toggleSeat(seatElement) {
             const seatId = seatElement.dataset.seatId;
             const price = parseFloat(seatElement.dataset.price);
@@ -683,6 +686,7 @@
             updateSummary();
         }
 
+        // 3. ACTUALIZAR PANEL DE PRECIOS
         function updateSummary() {
             if (selectedSeats.length === 0) {
                 selectedSeatsDisplay.innerHTML = '<span style="color: #666; font-size: 13px; font-style: italic;">No seats selected yet.</span>';
@@ -713,6 +717,7 @@
             btnContinue.disabled = false;
         }
 
+        // 4. BOTÓN CONTINUAR
         btnContinue.addEventListener('click', () => {
             const seatsParam = selectedSeats.map(s => s.id).join(',');
             const totalParam = currentTotal.toFixed(2);
@@ -726,13 +731,52 @@
             window.location.href = `/booking/{{ $id }}/food?tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}&title=${titleParam}`;
         });
 
-        generateSeats();
-
-        // Función para cerrar el modal
+        // CERRAR MODAL
         document.getElementById('close-modal-btn').addEventListener('click', () => {
             document.getElementById('seat-limit-modal').classList.remove('active');
         });
 
+        // --- 5. MAGIA DE PRECARGA AL CARGAR LA PÁGINA ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Primero dibujamos todos los asientos
+            generateSeats();
+
+            // Luego buscamos en el carrito si ya teníamos asientos para esta peli
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            let existingOrder = globalCart.find(order => order.movieId === '{{ $id }}');
+
+            if (existingOrder && existingOrder.tickets && existingOrder.tickets.seats && existingOrder.tickets.seats !== 'None') {
+                // Separamos los asientos por la coma
+                let savedSeats = existingOrder.tickets.seats.split(',').map(s => s.trim());
+                
+                savedSeats.forEach(seatId => {
+                    let seatEl = document.querySelector(`.seat[data-seat-id="${seatId}"]`);
+                    if (seatEl) {
+                        // Sistema de seguridad: Si el script de PHP lo marcó como ocupado, lo "liberamos"
+                        // porque sabemos que esos asientos son los nuestros.
+                        if (seatEl.classList.contains('occupied')) {
+                            seatEl.classList.remove('occupied');
+                            
+                            // Le devolvemos su precio y su evento click
+                            const row = seatId.charAt(0);
+                            if (vipRows.includes(row)) {
+                                seatEl.classList.add('vip');
+                                seatEl.dataset.price = VIP_PRICE;
+                            } else {
+                                seatEl.dataset.price = STANDARD_PRICE;
+                            }
+                            seatEl.addEventListener('click', () => toggleSeat(seatEl));
+                        }
+                        
+                        // Simulamos un click en el asiento para que se marque visualmente 
+                        // y se sume al resumen lateral.
+                        if (!seatEl.classList.contains('selected')) {
+                            toggleSeat(seatEl);
+                        }
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
