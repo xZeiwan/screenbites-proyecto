@@ -678,7 +678,6 @@
                             border-bottom: 1px solid #333;
                             padding-bottom: 15px;
 
-                            /* CLASE PARA TUS IMÁGENES DE ICONOS */
                             .food-icon-img {
                                 width: 35px;
                                 height: 35px;
@@ -1118,6 +1117,14 @@
 
                     @auth
                     <div class="user-nav">
+                        {{-- Botón Panel Admin --}}
+                        @if(Auth::user()->role === 'admin')
+                        <li>
+                            <a href="{{ route('admin.index') }}" style="color: #ff4444 !important; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 4px;">
+                                ⚙️ ADMIN
+                            </a>
+                        </li>
+                        @endif
                         <li>
                             <a href="/profile" class="user-profile" title="My Profile">
                                 <img src="{{ asset('img/avatars/' . Auth::user()->avatar) }}" alt="Avatar"
@@ -1133,9 +1140,8 @@
 
                         <li>
                             <button class="nav-cart" onclick="window.location.href='/cart'">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="9" cy="21" r="1"></circle>
                                     <circle cx="20" cy="21" r="1"></circle>
                                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
@@ -1234,9 +1240,15 @@
                     </div>
                 </div>
                 <div class="hero-buttons">
-                    <button class="btn-primary" id="btn-buy" onclick="window.location.href='/booking/01'">
-                        <img src="{{ asset('img/img/Ticket-amarillo.png') }}" id="ticket-icon"> BUY TICKETS
-                    </button>
+                    @auth
+                        <button class="btn-primary" id="btn-buy" onclick="window.location.href='/booking/01'">
+                            <img src="{{ asset('img/img/Ticket-amarillo.png') }}" id="ticket-icon"> <span id="btn-buy-text">BUY TICKETS</span>
+                        </button>
+                    @else
+                        <button class="btn-primary" id="btn-buy" onclick="alert('You must be logged in to buy tickets!'); window.location.href='/login'">
+                            <img src="{{ asset('img/img/Ticket-amarillo.png') }}" id="ticket-icon"> <span id="btn-buy-text">LOGIN TO BUY</span>
+                        </button>
+                    @endauth
                     <button class="btn-secondary" id="btn-view-film">VIEW FILM</button>
                 </div>
             </div>
@@ -1535,6 +1547,9 @@
     </footer>
 
     <script>
+        // Le pasamos la información de la sesión al JavaScript usando una variable global
+        const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+
         const movies = [
             { id: "01", title: "Kill Bill", age: "+18", rating: 4, genre: "Action, Suspense", bg: "#ffd000", textColor: "black", bgImg: "{{ asset('img/1-Kill-Bill/Portada.png') }}", poster: "{{ asset('img/1-Kill-Bill/Mini.png') }}" },
             { id: "02", title: "Five Nights", age: "+16", rating: 3, genre: "Horror, Thriller", bg: "#1a0429", textColor: "white", bgImg: "{{ asset('img/2-Five-Nights/Portada.png') }}", poster: "{{ asset('img/2-Five-Nights/Mini.png') }}" },
@@ -1592,6 +1607,11 @@
             });
             sliderTrack.appendChild(slideDiv);
 
+            // Generar tarjetas con el botón correcto dependiendo del login
+            const buyButtonHtml = isAuthenticated 
+                ? `<button class="btn-card" onclick="window.location.href='/booking/${movie.id}'">Buy Tickets</button>`
+                : `<button class="btn-card" onclick="alert('You must be logged in to buy tickets!'); window.location.href='/login'">Login to Buy</button>`;
+
             const npCard = document.createElement('div');
             npCard.classList.add('movie-card');
             npCard.innerHTML = `
@@ -1599,7 +1619,7 @@
                 <div class="movie-card-overlay">
                     <h4 class="movie-card-title" onclick="window.location.href='/pelicula/${movie.id}'">${movie.title}</h4>
                     <p class="movie-card-genre">${movie.genre}</p>
-                    <button class="btn-card" onclick="window.location.href='/booking/${movie.id}'">Buy Tickets</button>
+                    ${buyButtonHtml}
                     <button class="btn-card btn-outline" style="margin-top:8px;" onclick="window.location.href='/pelicula/${movie.id}'">More Info</button>
                 </div>
             `;
@@ -1660,8 +1680,17 @@
             mainHero.style.color = color;
             document.getElementById('movie-id').style.webkitTextStroke = `2px ${color}`;
 
+            // Actualizar la función del botón Hero según si estamos logueados
             const btnBuyHero = document.getElementById('btn-buy');
-            btnBuyHero.setAttribute('onclick', `window.location.href='/booking/${activeMovie.id}'`);
+            const btnBuyText = document.getElementById('btn-buy-text');
+            
+            if (isAuthenticated) {
+                btnBuyHero.setAttribute('onclick', `window.location.href='/booking/${activeMovie.id}'`);
+                if (btnBuyText) btnBuyText.innerText = 'BUY TICKETS';
+            } else {
+                btnBuyHero.setAttribute('onclick', `alert('You must be logged in to buy tickets!'); window.location.href='/login'`);
+                if (btnBuyText) btnBuyText.innerText = 'LOGIN TO BUY';
+            }
 
             const btnViewHero = document.getElementById('btn-view-film');
             btnViewHero.onclick = function () {

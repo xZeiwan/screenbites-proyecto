@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\FoodController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\AdminController;
 
 // --- 1. PORTADA ---
 Route::get('/', function () {
@@ -89,4 +91,11 @@ Route::middleware('auth')->group(function () {
 
     // Guardar reseñas (enviamos al controlador para procesar con WordPress)
     Route::post('/pelicula/{id}/review', [MovieController::class, 'storeReview'])->name('pelicula.review');
+
+    Route::post('/process-payment', [CheckoutController::class, 'processPayment'])->name('checkout.pay');
+
+    Route::get('/admin-panel', [AdminController::class, 'index'])->name('admin.index');
+    Route::patch('/admin/user/{user}/role', [AdminController::class, 'updateRole'])->name('admin.updateRole');
+    Route::delete('/admin/user/{user}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
+    Route::delete('/admin/review/{id}', [AdminController::class, 'deleteReview'])->name('admin.deleteReview');
 });

@@ -465,6 +465,8 @@
             "15": "{{ asset('img/15-Kraven/Mini.png') }}"
         };
 
+        const currentUserRole = "{{ Auth::check() ? Auth::user()->role : 'guest' }}";
+
         // Función de respaldo por si el producto no trae imagen o es un pedido viejo
         function getFallbackFoodImage(name) {
             const n = name.toLowerCase();
@@ -510,7 +512,18 @@
             let grandTotal = 0;
 
             globalCart.forEach((order, index) => {
-                grandTotal += order.orderTotal;
+                let orderTotal = order.orderTotal;
+                let discountHtml = '';
+                
+                // --- LÓGICA VIP ---
+                if (currentUserRole === 'vip') {
+                    let discount = orderTotal * 0.10; // 10% de descuento
+                    orderTotal = orderTotal - discount;
+                    discountHtml = `<div style="color: #4ade80; font-size: 14px; margin-top: 5px;">VIP Discount (10%): -$${discount.toFixed(2)}</div>`;
+                }
+                
+                grandTotal += orderTotal;
+                //... (resto de tu código: themeColor, title, posterSrc...)
                 let themeColor = order.color || '#ffd000';
                 let title = order.movieTitle ? order.movieTitle.toUpperCase() : "MOVIE";
                 let posterSrc = moviePosters[order.movieId] || 'https://via.placeholder.com/200x300/111/333?text=Poster';
@@ -599,6 +612,10 @@
                             </div>
                             <div class="order-subtotal" style="color: ${themeColor}">
                                 Subtotal: $${order.orderTotal.toFixed(2)}
+                                ${discountHtml}
+                            </div>
+                            <div style="text-align: right; font-size: 24px; color: #fff; margin-top: 10px; font-family: 'Arial Black', sans-serif;">
+                                Final: $${orderTotal.toFixed(2)}
                             </div>
                         </div>
                     </div>
@@ -642,7 +659,31 @@
         }
 
         function proceedToPayment() {
-            window.location.href = '/checkout';
+            // Obtenemos el total del texto del DOM (quitando el símbolo $)
+            let totalText = document.getElementById('grand-total-display').innerText;
+            let totalValue = parseFloat(totalText.replace('$', ''));
+
+            // Enviamos el dato al controlador mediante una petición Fetch
+            fetch('{{ route("checkout.pay") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ total: totalValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                // Vaciamos el carrito local
+                localStorage.removeItem('screenbites_global_cart');
+                // Redirigimos al inicio
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error processing your payment.');
+            });
         }
     </script>
 </body>
