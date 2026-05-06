@@ -1132,7 +1132,7 @@
                         </li>
 
                         <li>
-                            <button class="nav-cart" onclick="alert('Checkout functionality in development')">
+                            <button class="nav-cart" onclick="window.location.href='/cart'">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                     stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1698,6 +1698,27 @@
 
         updateCarousel();
         resetAutoPlay();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+        });
+
+        function updateCartBadge() {
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            
+            // Simplemente contamos cuántos bloques de pedido hay
+            let totalOrders = globalCart.length;
+
+            const badge = document.getElementById('nav-cart-counter');
+            if(badge) {
+                badge.innerText = totalOrders;
+                
+                if(totalOrders > 0) {
+                    badge.style.transform = 'scale(1.2)';
+                    setTimeout(() => badge.style.transform = 'scale(1)', 200);
+                }
+            }
+        }
     </script>
 </body>
 

@@ -720,7 +720,10 @@
             const colorParam = encodeURIComponent('{{ $movie['bg'] ?? '#ffd000' }}');
             const textColorParam = encodeURIComponent('{{ $movie['textColor'] ?? 'black' }}');
             
-            window.location.href = `/booking/{{ $id }}/food?tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}`;
+            const movieTitleText = document.querySelector('.movie-info h1').innerText;
+            const titleParam = encodeURIComponent(movieTitleText);
+            
+            window.location.href = `/booking/{{ $id }}/food?tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}&title=${titleParam}`;
         });
 
         generateSeats();

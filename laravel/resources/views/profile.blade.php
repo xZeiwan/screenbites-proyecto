@@ -652,7 +652,7 @@
                     </li>
 
                     <li>
-                        <button class="nav-cart" onclick="alert('Checkout functionality in development')">
+                        <button class="nav-cart" onclick="window.location.href='/cart'">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                             <div class="cart-badge" id="nav-cart-counter">0</div>
                         </button>
@@ -952,6 +952,33 @@
             imgElement.classList.add('selected');
             document.getElementById('avatar-input').value = filename;
             document.getElementById('sidebar-avatar').src = imgElement.src;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+        });
+
+        // Esta función lee la memoria del navegador y actualiza el número rojo
+        function updateCartBadge() {
+            // Usamos localStorage para que no se borre si cierras la pestaña
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            
+            let totalItems = 0;
+            // Sumamos la cantidad de cosas que hay en el carrito
+            globalCart.forEach(item => {
+                totalItems += item.qty;
+            });
+
+            const badge = document.getElementById('nav-cart-counter');
+            if(badge) {
+                badge.innerText = totalItems;
+                
+                // Efecto visual: si hay cosas, el badge late un poquito para llamar la atención
+                if(totalItems > 0) {
+                    badge.style.transform = 'scale(1.2)';
+                    setTimeout(() => badge.style.transform = 'scale(1)', 200);
+                }
+            }
         }
     </script>
 

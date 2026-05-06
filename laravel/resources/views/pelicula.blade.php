@@ -759,7 +759,7 @@
                     </li>
 
                     <li>
-                        <button class="nav-cart" onclick="alert('Checkout functionality in development')">
+                        <button class="nav-cart" onclick="window.location.href='/cart'">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="9" cy="21" r="1"></circle>
@@ -1053,43 +1053,25 @@
     </footer>
 
     <script>
-        // Header scroll effect
-        window.addEventListener('scroll', () => {
-            const headerEl = document.getElementById('main-header');
-            if (window.scrollY > 50) {
-                headerEl.classList.add('scrolled');
-            } else {
-                headerEl.classList.remove('scrolled');
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
         });
 
-        let currentSlide = 0;
-        const track = document.getElementById('clean-track');
-        const slides = document.querySelectorAll('.clean-carousel-slide');
-        const totalSlides = slides.length;
-
-        function moveCleanCarousel(direction) {
-            if (totalSlides <= 1) return; // No hacer nada si solo hay 1 foto
-
-            currentSlide += direction;
-
-            // Logica circular
-            if (currentSlide < 0) currentSlide = totalSlides - 1;
-            if (currentSlide >= totalSlides) currentSlide = 0;
-
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-        }
-
-        // Reproductor de Vídeo Personalizado
-        function playVideo(trailerUrl) {
-            // Ocultamos nuestra portada falsa
-            document.getElementById('video-cover').style.display = 'none';
+        function updateCartBadge() {
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
             
-            // Creamos el iframe inyectando autoplay=1 para que arranque solo
-            const iframeHTML = `<iframe src="${trailerUrl}?autoplay=1&rel=0&modestbranding=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></iframe>`;
-            
-            // Lo metemos en el contenedor
-            document.getElementById('iframe-container').innerHTML = iframeHTML;
+            // Simplemente contamos cuántos bloques de pedido hay
+            let totalOrders = globalCart.length;
+
+            const badge = document.getElementById('nav-cart-counter');
+            if(badge) {
+                badge.innerText = totalOrders;
+                
+                if(totalOrders > 0) {
+                    badge.style.transform = 'scale(1.2)';
+                    setTimeout(() => badge.style.transform = 'scale(1)', 200);
+                }
+            }
         }
     </script>
 </body>

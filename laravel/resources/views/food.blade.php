@@ -328,7 +328,20 @@
                 <span class="total-value grand-total">$<span id="grand-total">{{ number_format($ticketsTotal, 2) }}</span></span>
             </div>
         </div>
-        <button class="btn-checkout" onclick="goToCheckout()">REVIEW CART & PAY</button>
+        <button class="btn-checkout" onclick="addToCart()">
+            ADD TO CART 
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 8px; vertical-align: middle;">
+                <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="cart-toast" style="position: fixed; top: 120px; right: 5%; background-color: var(--color-principal); color: var(--color-texto-btn); padding: 15px 25px; border-radius: 6px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; z-index: 9999; box-shadow: 0 10px 30px rgba(0,0,0,0.8); transform: translateX(150%); opacity: 0; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            Added to cart successfully!
+        </div>
     </div>
 
     <script>
@@ -341,10 +354,8 @@
             let currentQty = parseInt(input.value);
             
             if (currentQty + change >= 0) {
-                // Actualizar cantidad visual
                 input.value = currentQty + change;
                 
-                // Actualizar totales de la barra inferior
                 foodTotal += (change * price);
                 let grandTotal = ticketsTotal + foodTotal;
 
@@ -353,51 +364,116 @@
             }
         }
 
-        function goToCheckout() {
-            // 1. Preparamos el carrito vacío
-            let cart = {};
+        function addToCart() {
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
 
-            // 2. Metemos las entradas como el primer producto del carrito
             const urlParams = new URLSearchParams(window.location.search);
             const seatsSelected = urlParams.get('seats') || 'None';
-            
-            cart['tickets'] = {
-                name: 'Movie Tickets (Seats: ' + seatsSelected + ')',
-                price: ticketsTotal,
-                qty: 1,
-                isFixed: true // Tu checkout usa isFixed para no multiplicar por cantidad
-            };
+            const colorParam = urlParams.get('color') || '#ffd000';
+            const textColorParam = urlParams.get('textColor') || 'black';
+            const movieTitleParam = urlParams.get('title') || 'Movie';
 
-            // 3. Buscamos toda la comida que el usuario haya sumado (> 0)
-            const inputs = document.querySelectorAll('.qty-input');
-            inputs.forEach(input => {
-                let qty = parseInt(input.value);
-                if (qty > 0) {
-                    let id = input.id.replace('qty-', ''); // Sacamos el id (ej: p1, d2)
-                    let itemRow = input.closest('.menu-item');
-                    let name = itemRow.querySelector('.item-name').innerText;
-                    let priceText = itemRow.querySelector('.price-tag').innerText.replace('$', '');
-                    let price = parseFloat(priceText);
+            // 1. Buscamos si ya existe un pedido para ESTA misma película (por ID)
+            let existingOrderIndex = globalCart.findIndex(order => order.movieId === '{{ $id }}');
 
-                    // Lo añadimos al carrito
-                    cart[id] = {
-                        name: name,
-                        price: price,
-                        qty: qty,
-                        isFixed: false
-                    };
+            if (existingOrderIndex > -1) {
+                // --- ¡FUSIÓN! Ya existe la película en el carrito ---
+                let existingOrder = globalCart[existingOrderIndex];
+
+                // Sumamos los asientos (evitando duplicados si el usuario vuelve atrás)
+                if (ticketsTotal > 0 && !existingOrder.tickets.seats.includes(seatsSelected)) {
+                    existingOrder.tickets.seats += ", " + seatsSelected;
+                    existingOrder.tickets.price += ticketsTotal;
                 }
-            });
 
-            // 4. Guardamos todo en el sessionStorage que usa tu checkout
-            sessionStorage.setItem('screenbites_cart', JSON.stringify(cart));
+                // Procesamos la comida seleccionada
+                const inputs = document.querySelectorAll('.qty-input');
+                inputs.forEach(input => {
+                    let qty = parseInt(input.value);
+                    if (qty > 0) {
+                        let itemId = input.id.replace('qty-', '');
+                        let itemRow = input.closest('.menu-item');
+                        let name = itemRow.querySelector('.item-name').innerText;
+                        let price = parseFloat(itemRow.querySelector('.price-tag').innerText.replace('$', ''));
 
-            // 5. Redirigimos a la página de pago
-            const colorParam = encodeURIComponent(urlParams.get('color') || '#ffd000');
-            const textColorParam = encodeURIComponent(urlParams.get('textColor') || 'black');
-            
-            window.location.href = `/booking/{{ $id }}/checkout?color=${colorParam}&textColor=${textColorParam}`;
+                        // ¿Ya teníamos este snack en esta película?
+                        let existingFoodIndex = existingOrder.food.findIndex(f => f.id === itemId);
+                        if (existingFoodIndex > -1) {
+                            existingOrder.food[existingFoodIndex].qty += qty;
+                            existingOrder.food[existingFoodIndex].total = existingOrder.food[existingFoodIndex].qty * price;
+                        } else {
+                            existingOrder.food.push({
+                                id: itemId, name: name, price: price, qty: qty, total: price * qty
+                            });
+                        }
+                    }
+                });
+
+                // Recalculamos el total del pedido fusionado
+                let foodSum = existingOrder.food.reduce((sum, item) => sum + item.total, 0);
+                existingOrder.orderTotal = existingOrder.tickets.price + foodSum;
+
+            } else {
+                // --- NUEVO TICKET: La película no estaba en el carrito ---
+                let currentOrder = {
+                    id: 'ORD-' + Date.now(),
+                    movieId: '{{ $id }}',
+                    movieTitle: movieTitleParam,
+                    color: colorParam,
+                    textColor: textColorParam,
+                    tickets: { seats: seatsSelected, price: ticketsTotal },
+                    food: [],
+                    orderTotal: 0
+                };
+
+                const inputs = document.querySelectorAll('.qty-input');
+                inputs.forEach(input => {
+                    let qty = parseInt(input.value);
+                    if (qty > 0) {
+                        let itemRow = input.closest('.menu-item');
+                        currentOrder.food.push({
+                            id: input.id.replace('qty-', ''),
+                            name: itemRow.querySelector('.item-name').innerText,
+                            price: parseFloat(itemRow.querySelector('.price-tag').innerText.replace('$', '')),
+                            qty: qty,
+                            total: qty * parseFloat(itemRow.querySelector('.price-tag').innerText.replace('$', ''))
+                        });
+                    }
+                });
+
+                currentOrder.orderTotal = ticketsTotal + currentOrder.food.reduce((s, f) => s + f.total, 0);
+                globalCart.push(currentOrder);
+            }
+
+            // 2. Guardamos y notificamos
+            localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+            updateCartBadgeLocally();
+
+            const toast = document.getElementById('cart-toast');
+            toast.style.transform = 'translateX(0)';
+            toast.style.opacity = '1';
+
+            setTimeout(() => { window.location.href = '/#cartelera'; }, 1500);
         }
+
+        // --- AHORA EL BADGE CUENTA LOS PEDIDOS, NO LOS PRODUCTOS ---
+        function updateCartBadgeLocally() {
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            
+            // Cada elemento del array es un pedido completo (película + asientos + comida)
+            let totalOrders = globalCart.length;
+
+            const badge = document.getElementById('nav-cart-counter');
+            if(badge) {
+                badge.innerText = totalOrders;
+                if(totalOrders > 0) {
+                    badge.style.transform = 'scale(1.3)';
+                    setTimeout(() => badge.style.transform = 'scale(1)', 200);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateCartBadgeLocally);
     </script>
 </body>
 </html>

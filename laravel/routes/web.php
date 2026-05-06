@@ -57,6 +57,11 @@ Route::get('/booking/{id}/checkout', function (\Illuminate\Http\Request $request
     ]);
 })->name('booking.checkout');
 
+// --- NUEVA RUTA: EL CARRITO GLOBAL ---
+Route::get('/cart', function () {
+    return view('cart');
+})->name('cart.index');
+
 
 // --- 4. AUTENTICACIÓN (GUEST) ---
 Route::middleware('guest')->group(function () {

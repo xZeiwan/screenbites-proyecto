@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Screenbites</title>
+    <style>
+        :root {
+            --color-negro: #000000;
+            --color-gris-oscuro: #0a0a0a;
+            --color-gris-tarjeta: #141414;
+            --color-gris-claro: #333333;
+            --color-blanco: #ffffff;
+            --color-amarillo: #ffd000;
+        }
+
+        body {
+            font-family: 'Arial Black', Arial, sans-serif;
+            background-color: var(--color-negro);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 120px; 
+        }
+
+        /* --- HEADER --- */
+        header { 
+            padding: 20px 5%; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid rgba(255,255,255,0.05); 
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header .logo img { height: 40px; }
+
+        header .back-btn { 
+            font-family: 'Arial', sans-serif;
+            color: #ffffff; 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            transition: color 0.3s ease; 
+        }
+
+        header .back-btn:hover { color: var(--color-amarillo); }
+
+        /* --- CART LAYOUT --- */
+        .cart-container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 0 5%;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 40px;
+        }
+
+        .cart-header h1 {
+            font-size: 32px;
+            margin: 0;
+            text-transform: uppercase;
+            border-left: 5px solid var(--color-amarillo);
+            padding-left: 15px;
+        }
+
+        .empty-cart-msg {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--color-gris-tarjeta);
+            border-radius: 8px;
+            border: 1px dashed #444;
+            color: #888;
+            font-family: Arial, sans-serif;
+        }
+
+        .empty-cart-msg a {
+            color: var(--color-amarillo);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* --- ORDER CARDS --- */
+        #orders-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .order-card {
+            background: var(--color-gris-tarjeta);
+            border-radius: 8px;
+            border: 1px solid #333;
+            border-top: 4px solid var(--color-amarillo); /* Se cambiará por JS */
+            padding: 30px;
+            position: relative;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #222;
+            padding-bottom: 15px;
+        }
+
+        .order-header h3 {
+            margin: 0;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-redirect {
+            background: transparent;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-redirect:hover {
+            color: var(--color-blanco);
+            transform: scale(1.1);
+        }
+
+        /* Ajuste para que los dos botones estén juntos */
+        .order-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-remove {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .btn-remove:hover {
+            color: #ff4444;
+        }
+
+        .order-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .order-list li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 15px;
+            color: #ccc;
+            padding: 0;
+            align-items: center;
+        }
+
+        .order-list li .item-price {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .order-subtotal {
+            text-align: right;
+            font-size: 18px;
+            color: var(--color-amarillo);
+            border-top: 1px dashed #444;
+            padding-top: 15px;
+        }
+
+        /* --- CONTROLES DE CANTIDAD EN EL CARRITO --- */
+        .qty-controls {
+            display: inline-flex;
+            align-items: center;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 0 5px;
+            margin-left: 15px;
+        }
+
+        .qty-btn {
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s, transform 0.1s;
+        }
+
+        .qty-btn:hover {
+            color: var(--color-blanco);
+            transform: scale(1.1);
+        }
+
+        .qty-number {
+            color: var(--color-blanco);
+            font-weight: bold;
+            min-width: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* --- BOTTOM SUMMARY BAR --- */
+        .summary-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0a0a0a;
+            border-top: 1px solid #333;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+
+        .grand-total-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grand-total-label {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: Arial, sans-serif;
+        }
+
+        .grand-total-value {
+            font-size: 32px;
+            color: var(--color-amarillo);
+        }
+
+        .btn-checkout {
+            background: var(--color-amarillo);
+            color: #000;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 900;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-size: 15px;
+            letter-spacing: 1px;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .btn-checkout:hover:not(:disabled) {
+            transform: scale(1.05);
+            background: #fff;
+        }
+
+        .btn-checkout:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="javascript:history.back()" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            BACK TO BROWSING
+        </a>
+        <div class="logo">
+            <a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a>
+        </div>
+        <div style="width: 150px;"></div>
+    </header>
+
+    <div class="cart-container">
+        <div class="cart-header">
+            <h1>Your Order</h1>
+            <span id="order-count" style="color: #888; font-family: Arial, sans-serif;">0 items</span>
+        </div>
+
+        <div id="orders-wrapper">
+            </div>
+    </div>
+
+    <div class="summary-bar">
+        <div class="grand-total-box">
+            <span class="grand-total-label">Grand Total</span>
+            <span class="grand-total-value" id="grand-total-display">$0.00</span>
+        </div>
+        <button class="btn-checkout" id="btn-proceed" onclick="proceedToPayment()">
+            PROCEED TO PAYMENT
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', renderCart);
+
+        function renderCart() {
+            const wrapper = document.getElementById('orders-wrapper');
+            const grandTotalDisplay = document.getElementById('grand-total-display');
+            const orderCountDisplay = document.getElementById('order-count');
+            const btnProceed = document.getElementById('btn-proceed');
+
+            let rawCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            
+            let globalCart = rawCart.filter(item => item.movieId !== undefined);
+            
+            if (rawCart.length !== globalCart.length) {
+                localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+            }
+
+            if (globalCart.length === 0) {
+                wrapper.innerHTML = `
+                    <div class="empty-cart-msg">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                        <h2>YOUR CART IS EMPTY</h2>
+                        <p>You haven't added any tickets or snacks yet. <br><br> <a href="/#cartelera">Go to Films</a></p>
+                    </div>`;
+                grandTotalDisplay.innerText = '$0.00';
+                orderCountDisplay.innerText = '0 items';
+                btnProceed.disabled = true;
+                return;
+            }
+
+            let html = '';
+            let grandTotal = 0;
+
+            globalCart.forEach((order, index) => {
+                grandTotal += order.orderTotal;
+                let themeColor = order.color || '#ffd000';
+                // Si por algún error no tiene título, ponemos "MOVIE"
+                let title = order.movieTitle ? order.movieTitle.toUpperCase() : "MOVIE";
+
+                html += `
+                <div class="order-card" style="border-top-color: ${themeColor}">
+                    <div class="order-header">
+                        <h3 style="color: ${themeColor}">${title} TICKET</h3>
+                        
+                        <div class="order-actions">
+                            <button class="btn-redirect" onclick="window.location.href='/booking/${order.movieId}'" title="Edit or add more items">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                            </button>
+
+                            <button class="btn-remove" onclick="removeOrder(${index})" title="Remove entire order">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <ul class="order-list">`;
+                
+                if (order.tickets && order.tickets.price > 0) {
+                    html += `
+                        <li>
+                            <div style="display:flex; align-items:center;">
+                                <span style="font-size: 16px; margin-right: 12px;"></span>
+                                <span>Tickets (Seats: <span style="color:${themeColor}; font-weight:bold;">${order.tickets.seats}</span>)</span>
+                            </div>
+                            <span class="item-price" style="min-width: 70px; text-align: right;">$${order.tickets.price.toFixed(2)}</span>
+                        </li>`;
+                }
+
+                if (order.food && order.food.length > 0) {
+                    order.food.forEach((item, foodIndex) => {
+                        html += `
+                        <li style="margin-top: 15px;">
+                            <div style="display:flex; align-items:center;">
+                                <span style="font-size: 16px; margin-right: 12px;"></span>
+                                <span style="color: ${themeColor}; font-family: 'Arial Black', sans-serif; font-size: 15px; margin-right: 10px;">${item.qty}x</span>
+                                <span>${item.name}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap: 15px;">
+                                <div class="qty-controls" style="margin: 0; padding: 0; display: flex;">
+                                    <button class="qty-btn" onclick="updateFoodQty(${index}, ${foodIndex}, -1)" title="Decrease">-</button>
+                                    <button class="qty-btn" onclick="updateFoodQty(${index}, ${foodIndex}, 1)" title="Increase">+</button>
+                                </div>
+                                <span class="item-price" style="min-width: 70px; text-align: right;">$${item.total.toFixed(2)}</span>
+                            </div>
+                        </li>`;
+                    });
+                }
+
+                html += `
+                    </ul>
+                    <div class="order-subtotal" style="color: ${themeColor}">
+                        Subtotal: $${order.orderTotal.toFixed(2)}
+                    </div>
+                </div>`;
+            });
+
+            wrapper.innerHTML = html;
+            grandTotalDisplay.innerText = '$' + grandTotal.toFixed(2);
+            orderCountDisplay.innerText = globalCart.length + (globalCart.length === 1 ? ' order' : ' orders');
+            btnProceed.disabled = false;
+        }
+
+        function updateFoodQty(orderIndex, foodIndex, change) {
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            let order = globalCart[orderIndex];
+            let foodItem = order.food[foodIndex];
+            foodItem.qty += change;
+            if (foodItem.qty <= 0) {
+                order.food.splice(foodIndex, 1);
+            } else {
+                foodItem.total = foodItem.qty * foodItem.price;
+            }
+            let newFoodTotal = order.food.reduce((sum, item) => sum + item.total, 0);
+            let ticketsTotal = order.tickets ? order.tickets.price : 0;
+            order.orderTotal = ticketsTotal + newFoodTotal;
+            localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+            renderCart();
+        }
+
+        function removeOrder(index) {
+            let globalCart = JSON.parse(localStorage.getItem('screenbites_global_cart')) || [];
+            globalCart.splice(index, 1);
+            localStorage.setItem('screenbites_global_cart', JSON.stringify(globalCart));
+            renderCart();
+            // Actualizar el numerito rojo del header si existe
+            const badge = document.getElementById('nav-cart-counter');
+            if(badge) badge.innerText = globalCart.length;
+        }
+
+        function proceedToPayment() {
+            window.location.href = '/checkout';
+        }
+    </script>
+</body>
+</html>
