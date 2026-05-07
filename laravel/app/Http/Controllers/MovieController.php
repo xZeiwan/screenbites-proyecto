@@ -20,7 +20,8 @@ class MovieController extends Controller
             ]);
 
             if ($response->failed()) {
-                return "Error de API: La URL " . $wordpressUrl . "/wp-json/wp/v2/pelicula no es válida o WP está caído.";
+                // Si la API falla, mostramos el 404 en lugar de texto plano
+                return response()->view('errors.404', [], 404);
             }
 
             $allMovies = $response->json();
@@ -31,7 +32,8 @@ class MovieController extends Controller
             });
 
             if (!$wpMovie) {
-                return abort(404, "No existe película en WP con id_laravel: " . $id);
+                // SOLUCIÓN: Devolvemos tu nueva vista 404 directamente
+                return response()->view('errors.404', [], 404);
             }
 
             $acf = $wpMovie['acf'];
@@ -68,7 +70,7 @@ class MovieController extends Controller
             ];
 
             // 4. Buscamos las sesiones de ESTA película a partir de hoy
-            $showtimes = DB::table('showtimes')
+            $showtimes = \DB::table('showtimes')
                 ->join('rooms', 'showtimes.room_id', '=', 'rooms.id')
                 ->select('showtimes.*', 'rooms.name as room_name')
                 ->where('movie_id', $id)
@@ -98,7 +100,7 @@ class MovieController extends Controller
             return view('pelicula', compact('id', 'movie', 'showtimes', 'reviews'));
 
         } catch (\Exception $e) {
-            return "ERROR CRÍTICO: " . $e->getMessage();
+            return response()->view('errors.404', [], 404);
         }
     }
 }
