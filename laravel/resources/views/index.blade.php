@@ -1407,7 +1407,7 @@
     
     <!-- Member 1: Elena (Executive Producer - Traje elegante/Ejecutiva) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&h=200&q=80" alt="Elena Rostova" class="team-avatar">
+        <img src="{{ asset('img/img/team/1.jpg') }}" alt="Elena Rostova" class="team-avatar">
         <h3 class="team-name">Elena Rostova</h3>
         <p class="team-role">Chief Executive Producer</p>
         <p class="team-description">Oversees all cinema operations, securing exclusive premieres and ensuring top-tier experiences for our VIP members.</p>
@@ -1419,7 +1419,7 @@
 
     <!-- Member 2: Marcus (Projectionist - Look técnico) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=200&h=200&q=80" alt="Marcus Sterling" class="team-avatar">
+        <img src="{{ asset('img/img/team/2.jpg') }}" alt="Marcus Sterling" class="team-avatar">
         <h3 class="team-name">Marcus Sterling</h3>
         <p class="team-role">Head of Projection</p>
         <p class="team-description">The mastermind behind our IMAX and 70mm setups, guaranteeing flawless visual immersion in every room.</p>
@@ -1431,7 +1431,7 @@
 
     <!-- Member 3: Sofia (Culinary - Ropa de chef/hostelería elegante) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?auto=format&fit=crop&w=200&h=200&q=80" alt="Sofia Laurent" class="team-avatar">
+        <img src="{{ asset('img/img/team/3.jpg') }}" alt="Sofia Laurent" class="team-avatar">
         <h3 class="team-name">Sofia Laurent</h3>
         <p class="team-role">Culinary Director</p>
         <p class="team-description">Curates the exclusive Screenbites menus, elegantly blending high-end gourmet gastronomy with classic cinema snacks.</p>
@@ -1443,7 +1443,7 @@
 
     <!-- Member 4: Julian (Curator - Look bohemio/vintage) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&h=200&q=80" alt="Julian Vance" class="team-avatar">
+        <img src="{{ asset('img/img/team/4.jpg') }}" alt="Julian Vance" class="team-avatar">
         <h3 class="team-name">Julian Vance</h3>
         <p class="team-role">Chief Film Curator</p>
         <p class="team-description">Handpicks the weekly selections, balancing blockbuster hits with indie gems and classic 35mm retrospectives.</p>
@@ -1457,7 +1457,7 @@
 
     <!-- Member 5: Isabella (Guest Experience - Uniforme impecable) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&h=200&q=80" alt="Isabella Rossi" class="team-avatar">
+        <img src="{{ asset('img/img/team/5.jpg') }}" alt="Isabella Rossi" class="team-avatar">
         <h3 class="team-name">Isabella Rossi</h3>
         <p class="team-role">Guest Experience Lead</p>
         <p class="team-description">Ensures every visitor receives the red-carpet treatment, managing front-of-house staff from box office to credits.</p>
@@ -1469,7 +1469,7 @@
 
     <!-- Member 6: David (Sound Engineer - Auriculares/Estudio) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=200&h=200&q=80" alt="David Chen" class="team-avatar">
+        <img src="{{ asset('img/img/team/6.jpg') }}" alt="David Chen" class="team-avatar">
         <h3 class="team-name">David Chen</h3>
         <p class="team-role">Lead Sound Engineer</p>
         <p class="team-description">Calibrates the acoustic architecture of our theaters to deliver bone-rattling bass and crystal-clear dialogue.</p>
@@ -1481,7 +1481,7 @@
 
     <!-- Member 7: Clara (Art Director - Estilo moderno/creativo) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&h=200&q=80" alt="Clara Dubois" class="team-avatar">
+        <img src="{{ asset('img/img/team/7.jpg') }}" alt="Clara Dubois" class="team-avatar">
         <h3 class="team-name">Clara Dubois</h3>
         <p class="team-role">Art & Marketing Director</p>
         <p class="team-description">Designs our vintage posters, manages premiere events, and keeps the cinema's aesthetic flawless across all platforms.</p>
@@ -1493,7 +1493,7 @@
 
     <!-- Member 8: Oliver (Mixologist - Look de barman de speakeasy) -->
     <div class="team-card">
-        <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&h=200&q=80" alt="Oliver Hayes" class="team-avatar">
+        <img src="{{ asset('img/img/team/8.jpg') }}" alt="Oliver Hayes" class="team-avatar">
         <h3 class="team-name">Oliver Hayes</h3>
         <p class="team-role">Head Mixologist</p>
         <p class="team-description">Crafts exclusive film-inspired signature cocktails at our lounge bar, adding flavor to your pre-show experience.</p>
