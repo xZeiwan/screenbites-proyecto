@@ -79,8 +79,7 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        // Y pon esta, que te manda a la raíz de la web:
-        return Redirect::to('/')->with('status', 'Perfil actualizado con éxito');
+        return Redirect::route('profile.edit')->with('status', 'Profile updated');
     }
 
     /**

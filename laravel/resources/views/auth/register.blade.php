@@ -11,17 +11,17 @@
         .form-group label { display: block; font-size: 12px; margin-bottom: 5px; color: #aaa; text-transform: uppercase; }
         .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"] { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; box-sizing: border-box; }
         
-        .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
-        .avatar-grid label { cursor: pointer; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-top: 15px; margin-bottom: 25px; }
+        .avatar-grid label { cursor: pointer; position: relative; }
         .avatar-grid input[type="radio"] { 
             position: absolute; 
             opacity: 0; 
             width: 0; 
             height: 0; 
         }
-        .avatar-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 50%; border: 3px solid transparent; transition: all 0.2s; opacity: 0.5; }
-        .avatar-grid input[type="radio"]:checked + img { border-color: #ffd000; opacity: 1; transform: scale(1.1); box-shadow: 0 0 15px rgba(255,208,0,0.5); }
-        .avatar-grid img:hover { opacity: 1; }
+        .avatar-grid img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 50%; border: 3px solid transparent; transition: all 0.3s; filter: brightness(0.6); }
+        .avatar-grid input[type="radio"]:checked + img { border-color: #ffd000; filter: brightness(1.2); transform: scale(1.1); box-shadow: 0 0 15px rgba(255,208,0,0.5); }
+        .avatar-grid img:hover { filter: brightness(1); transform: scale(1.05); }
 
         .password-wrapper { position: relative; display: flex; align-items: center; }
         .password-wrapper input { padding-right: 40px; }
@@ -43,26 +43,36 @@
             <div class="error">{{ $errors->first() }}</div>
         @endif
 
-        <!-- Cambiada la ruta a la estándar de Laravel Auth -->
         <form action="{{ route('register') }}" method="POST">
             @csrf
             
             <div class="form-group">
-                <label style="color: #ffd000; text-align: center; font-size: 14px;">Choose your Character</label>
+                <label style="color: #ffd000; text-align: center; font-size: 14px; margin-bottom: 15px;">Choose your Character</label>
 
                 @error('avatar') <span class="error" style="text-align: center; display: block;">Please select an avatar</span> @enderror
 
+                @php
+                    $avatars = [
+                        'avatar-spiderman.png',
+                        'avatar-alien.jpg',
+                        'avatar-barbie.jpg',
+                        'avatar-godzilla.jpg',
+                        'avatar-interstellar.jpg',
+                        'avatar-joker.jpg',
+                        'avatar-oppenheimer.jpg',
+                        'avatar-venom.webp',
+                        'avatar-deadpool.jpg',
+                        'avatar-kraven.jpg'
+                    ];
+                @endphp
+
                 <div class="avatar-grid">
-                    <label><input type="radio" name="avatar" value="avatar1.png"><img src="{{ asset('img/avatars/avatar1.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar2.png"><img src="{{ asset('img/avatars/avatar2.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar3.png"><img src="{{ asset('img/avatars/avatar3.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar4.png"><img src="{{ asset('img/avatars/avatar4.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar5.png"><img src="{{ asset('img/avatars/avatar5.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar6.png"><img src="{{ asset('img/avatars/avatar6.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar7.png"><img src="{{ asset('img/avatars/avatar7.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar8.png"><img src="{{ asset('img/avatars/avatar8.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar9.png"><img src="{{ asset('img/avatars/avatar9.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
-                    <label><input type="radio" name="avatar" value="avatar10.png"><img src="{{ asset('img/avatars/avatar10.png') }}" onerror="this.src='https://via.placeholder.com/100/333/ffd000'"></label>
+                    @foreach($avatars as $index => $avatarName)
+                        <label>
+                            <input type="radio" name="avatar" value="{{ $avatarName }}" required {{ $index === 0 ? 'checked' : '' }}>
+                            <img src="{{ asset('img/avatars/' . $avatarName) }}" alt="Avatar" onerror="this.src='https://via.placeholder.com/100/333/ffd000?text=Avatar'">
+                        </label>
+                    @endforeach
                 </div>
             </div>
 

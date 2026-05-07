@@ -276,13 +276,29 @@
                     
                     <label class="form-group"><label>Character Avatar</label></label>
                     <div class="avatar-grid">
-                        <input type="hidden" name="avatar" id="avatar-input" value="{{ Auth::user()->avatar ?? 'avatar1.png' }}">
-                        @for ($i = 1; $i <= 6; $i++)
-                            @php $imgName = 'avatar'.$i.'.png'; @endphp
+                        <input type="hidden" name="avatar" id="avatar-input" value="{{ Auth::user()->avatar ?? 'spiderman.png' }}">
+                        
+                        @php
+                            $avatars = [
+                                'avatar-spiderman.png',
+                                'avatar-alien.jpg',
+                                'avatar-barbie.jpg',
+                                'avatar-godzilla.jpg',
+                                'avatar-interstellar.jpg',
+                                'avatar-joker.jpg',
+                                'avatar-oppenheimer.jpg',
+                                'avatar-venom.webp',
+                                'avatar-deadpool.jpg',
+                                'avatar-kraven.jpg'
+                            ];
+                        @endphp
+
+                        @foreach($avatars as $imgName)
                             <img src="{{ asset('img/avatars/'.$imgName) }}" 
-                                 class="avatar-option {{ Auth::user()->avatar == $imgName ? 'selected' : '' }}" 
-                                 onclick="selectAvatar(this, '{{ $imgName }}')">
-                        @endfor
+                                class="avatar-option {{ Auth::user()->avatar == $imgName ? 'selected' : '' }}" 
+                                onclick="selectAvatar(this, '{{ $imgName }}')"
+                                onerror="this.src='https://via.placeholder.com/70/333/ffd000'">
+                        @endforeach
                     </div>
 
                     <div class="form-group">
@@ -290,12 +306,13 @@
                         <input type="text" name="name" value="{{ Auth::user()->name }}" required>
                     </div>
                     <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" name="email" value="{{ Auth::user()->email }}" required>
-                    </div>
-                    <button type="submit" class="btn-save">Save Changes</button>
-                </form>
+                <label>Email Address</label>
+                <input type="email" name="email" value="{{ Auth::user()->email }}" required>
             </div>
+            
+            <button type="submit" class="btn-save">Save Changes</button>
+        </form>
+    </div>
 
             <div id="tab-security" class="tab-content">
                 <h2 class="content-title">Security & Password</h2>
@@ -560,5 +577,30 @@
             <button onclick="closeReceipt()" id="close-modal-btn">CLOSE</button>
         </div>
     </div>
+
+    @if (session('status') === 'Profile updated')
+        <div id="profile-toast" style="position: fixed; top: 120px; right: 20px; opacity: 0; background: var(--color-amarillo); color: #000; padding: 12px 20px; border-radius: 6px; font-family: 'Arial Black', sans-serif; font-size: 13px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: opacity 0.3s ease; z-index: 10000; pointer-events: none;">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            Profile Updated!
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toast = document.getElementById('profile-toast');
+                
+                // Aparece en su sitio (debajo del nav)
+                setTimeout(() => {
+                    toast.style.opacity = '1';
+                }, 10); 
+                
+                // Desaparece a los 2 segundos
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                }, 2000); 
+            });
+        </script>
+    @endif
 </body>
 </html>
