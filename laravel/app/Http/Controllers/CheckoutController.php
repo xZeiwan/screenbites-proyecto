@@ -17,12 +17,12 @@ class CheckoutController extends Controller
         }
 
         foreach ($cart as $order) {
-            // Solo insertamos si hay asientos (por si en el futuro vendes solo comida)
             if (isset($order['tickets']) && $order['tickets']['seats'] !== 'None') {
-                DB::table('bookings')->insert([
-                    'user_id' => Auth::id(),
-                    'movie_id' => $order['movieId'],
-                    'seats' => $order['tickets']['seats'],
+                \DB::table('bookings')->insert([
+                    'user_id' => \Illuminate\Support\Facades\Auth::id(),
+                    'showtime_id' => $order['sessionId'], 
+                    'seats' => $order['tickets']['seats'],          
+                    'food' => isset($order['food']) ? json_encode($order['food']) : null,                    
                     'total_price' => $order['orderTotal'],
                     'created_at' => now(),
                     'updated_at' => now(),

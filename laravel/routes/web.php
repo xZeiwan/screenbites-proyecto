@@ -7,6 +7,9 @@ use App\Http\Controllers\MovieController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\AdminController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 // --- 1. PORTADA ---
 Route::get('/', function () {
@@ -18,10 +21,8 @@ Route::get('/', function () {
 // Esta ruta es la que carga los datos desde WordPress a través del MovieController
 Route::get('/pelicula/{id}', [MovieController::class, 'show'])->name('pelicula.show');
 
-
 // --- 3. RESERVA DE ENTRADAS (BOOKING) ---
-// Mantenemos el array estático aquí para que funcione rápido sin depender de la API de WP para el diseño
-Route::get('/booking/{id}', function ($id) {
+Route::get('/booking/{id}', function (Request $request, $id) {
     $bookingMovies = [
         "01" => ["title" => "Kill Bill", "bgImg" => "img/1-Kill-Bill/Portada.png", "bg" => "#ffd000", "textColor" => "black"],
         "02" => ["title" => "Five Nights at Freddy's", "bgImg" => "img/2-Five-Nights/Portada.png", "bg" => "#8c44f7", "textColor" => "white"],
@@ -42,18 +43,46 @@ Route::get('/booking/{id}', function ($id) {
 
     $movie = $bookingMovies[$id] ?? ["title" => "Película Desconocida", "bgImg" => "", "bg" => "#ffd000", "textColor" => "black"];
     
-    // --- LÓGICA DE BACKEND PARA SACAR ASIENTOS OCUPADOS ---
-    $occupiedSeatsString = \Illuminate\Support\Facades\DB::table('bookings')
+    // 1. Buscamos TODOS los horarios futuros para esta película
+    $showtimes = DB::table('showtimes')
+        ->join('rooms', 'showtimes.room_id', '=', 'rooms.id')
+        ->select('showtimes.*', 'rooms.name as room_name')
         ->where('movie_id', $id)
-        ->pluck('seats')
-        ->implode(',');
+        ->where('date', '>=', Carbon::today()->toDateString())
+        ->orderBy('date')
+        ->orderBy('time')
+        ->get();
 
-    // AÑADIMOS array_values() PARA QUE JAVASCRIPT LO ENTIENDA PERFECTAMENTE
-    $occupiedArray = array_values(array_filter(array_map('trim', explode(',', $occupiedSeatsString))));
+    // 2. Averiguamos qué sesión estamos viendo ahora mismo (Por URL o la primera)
+    $selectedSessionId = $request->query('session');
+    $selectedSession = null;
+
+    if ($showtimes->isNotEmpty()) {
+        if ($selectedSessionId) {
+            $selectedSession = $showtimes->firstWhere('id', $selectedSessionId);
+        }
+        if (!$selectedSession) {
+            $selectedSession = $showtimes->first(); 
+            $selectedSessionId = $selectedSession->id;
+        }
+    }
+
+    // 3. Sacamos los asientos ocupados SOLO para esta sesión exacta
+    $occupiedArray = [];
+    if ($selectedSessionId) {
+        $occupiedSeatsString = DB::table('bookings')
+            ->where('showtime_id', $selectedSessionId) 
+            ->pluck('seats')
+            ->implode(',');
+
+        $occupiedArray = array_values(array_filter(array_map('trim', explode(',', $occupiedSeatsString))));
+    }
 
     return view('booking', [
         'id' => $id, 
         'movie' => $movie,
+        'showtimes' => $showtimes,
+        'selectedSession' => $selectedSession,
         'occupiedArray' => $occupiedArray,
     ]);
 })->name('booking.show');

@@ -38,7 +38,7 @@
             
             @if($demoUser)
             <div style="margin-top: 20px; padding: 10px; border: 1px dashed #ffd000; color: #ffd000; text-align: center; border-radius: 5px; font-size: 12px;">
-                🛠️ <strong>DEMO MODE:</strong> The code is: 
+                <strong>DEMO MODE:</strong> The code is: 
                 <span style="font-size: 16px; font-family: monospace; font-weight: bold;">{{ $demoUser->two_factor_code }}</span>
             </div>
             @endif

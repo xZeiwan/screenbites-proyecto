@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MovieController extends Controller
 {
@@ -23,7 +25,7 @@ class MovieController extends Controller
 
             $allMovies = $response->json();
 
-            // 2. Buscar por id_laravel
+            // 1. Buscar por id_laravel
             $wpMovie = collect($allMovies)->first(function($m) use ($id) {
                 return isset($m['acf']['id_laravel']) && (int)$m['acf']['id_laravel'] === (int)$id;
             });
@@ -34,7 +36,7 @@ class MovieController extends Controller
 
             $acf = $wpMovie['acf'];
 
-            // 3. Procesar Trailers y Galería
+            // 2. Procesar Trailers y Galería
             $trailerRaw = $acf['trailer_url'] ?? '';
             $trailerEmbed = str_replace(['watch?v=', 'youtu.be/'], ['embed/', 'youtube.com/embed/'], $trailerRaw);
 
@@ -43,7 +45,7 @@ class MovieController extends Controller
                 if (!empty($acf["imagen_$i"])) $gallery[] = $acf["imagen_$i"];
             }
 
-            // 4. Mapear datos para el Blade 
+            // 3. Mapear datos para el Blade 
             $movie = [
                 "title"   => $wpMovie['title']['rendered'],
                 "desc"    => strip_tags($wpMovie['content']['rendered']),
@@ -65,6 +67,17 @@ class MovieController extends Controller
                 ]
             ];
 
+            // 4. Buscamos las sesiones de ESTA película a partir de hoy
+            $showtimes = DB::table('showtimes')
+                ->join('rooms', 'showtimes.room_id', '=', 'rooms.id')
+                ->select('showtimes.*', 'rooms.name as room_name')
+                ->where('movie_id', $id)
+                ->where('date', '>=', Carbon::today()->toDateString())
+                ->orderBy('date')
+                ->orderBy('time')
+                ->get()
+                ->groupBy('date');
+
             // 5. Obtener Reseñas
             $reviews = [];
             $resReviews = Http::withoutVerifying()->get("{$wordpressUrl}/wp-json/wp/v2/reviews?per_page=100");
@@ -81,7 +94,8 @@ class MovieController extends Controller
                 }
             }
 
-            return view('pelicula', compact('id', 'movie', 'reviews'));
+            // 6. RETORNAMOS TODO DE GOLPE
+            return view('pelicula', compact('id', 'movie', 'showtimes', 'reviews'));
 
         } catch (\Exception $e) {
             return "ERROR CRÍTICO: " . $e->getMessage();

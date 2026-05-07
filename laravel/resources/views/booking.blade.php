@@ -478,9 +478,48 @@
     <div class="booking-container">
         
         <div class="seating-section">
-            <div class="movie-info">
-                <h1>{{ $movie['title'] ?? 'Movie' }}</h1>
-                <p>Today, 20:30 &nbsp;•&nbsp; Room 4 &nbsp;•&nbsp; {{ $movie['age'] ?? '+18' }}</p>
+            <div class="movie-info" style="width: 100%; max-width: 600px; margin: 0 auto 50px;">
+                <h1 style="margin-bottom: 10px;">{{ $movie['title'] ?? 'Movie' }}</h1>
+                
+                @if($showtimes->isNotEmpty() && $selectedSession)
+                    <p style="color: var(--color-amarillo); font-size: 14px; font-weight: bold; margin-bottom: 25px; letter-spacing: 1px; text-transform: uppercase;">
+                        {{ \Carbon\Carbon::parse($selectedSession->date)->format('l, d M') }} &nbsp;•&nbsp; 
+                        {{ \Carbon\Carbon::parse($selectedSession->time)->format('H:i') }} &nbsp;•&nbsp; 
+                        {{ $selectedSession->room_name }}
+                    </p>
+
+                    <div class="showtimes-scroll" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;">
+                        @foreach($showtimes as $session)
+                            @php
+                                // Comprobamos si este botón es el de la sesión actual
+                                $isActive = $selectedSession->id == $session->id;
+                                $dateObj = \Carbon\Carbon::parse($session->date);
+                                $timeObj = \Carbon\Carbon::parse($session->time);
+                            @endphp
+                            
+                            <a href="/booking/{{ $id }}?session={{ $session->id }}" 
+                               style="flex-shrink: 0; text-decoration: none; padding: 10px 20px; border-radius: 8px; text-align: center; transition: all 0.3s;
+                                      border: 2px solid {{ $isActive ? 'var(--color-amarillo)' : '#333' }};
+                                      background-color: {{ $isActive ? 'var(--color-amarillo)' : '#111' }};
+                                      color: {{ $isActive ? '#000' : '#fff' }};">
+                                
+                                <span style="display: block; font-size: 10px; text-transform: uppercase;">{{ $dateObj->format('d M') }}</span>
+                                <span style="display: block; font-size: 18px; font-weight: bold; margin: 2px 0;">{{ $timeObj->format('H:i') }}</span>
+                                <span style="display: block; font-size: 9px; opacity: 0.8;">{{ $session->room_name }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                    
+                    <style>
+                        /* Ocultar la barra de scroll fea pero mantener funcionalidad */
+                        .showtimes-scroll::-webkit-scrollbar { height: 6px; }
+                        .showtimes-scroll::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+                        .showtimes-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+                        .showtimes-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-amarillo); }
+                    </style>
+                @else
+                    <p style="color: #ff4444; font-size: 14px; margin-top: 15px;">No hay sesiones disponibles para esta película.</p>
+                @endif
             </div>
 
             <div class="screen-container">
@@ -677,15 +716,19 @@
             btnContinue.disabled = false;
         }
 
+        // 4. BOTÓN CONTINUAR
         btnContinue.addEventListener('click', () => {
             const seatsParam = selectedSeats.map(s => s.id).join(',');
             const totalParam = currentTotal.toFixed(2);
+            
             const colorParam = encodeURIComponent('{{ $movie['bg'] ?? '#ffd000' }}');
             const textColorParam = encodeURIComponent('{{ $movie['textColor'] ?? 'black' }}');
+            
             const movieTitleText = document.querySelector('.movie-info h1').innerText;
             const titleParam = encodeURIComponent(movieTitleText);
+            const sessionParam = '{{ $selectedSession ? $selectedSession->id : "" }}';
             
-            window.location.href = `/booking/{{ $id }}/food?tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}&title=${titleParam}`;
+            window.location.href = `/booking/{{ $id }}/food?session=${sessionParam}&tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}&title=${titleParam}`;
         });
 
         document.getElementById('close-modal-btn').addEventListener('click', () => {

@@ -311,15 +311,103 @@
 
             <div id="tab-bookings" class="tab-content">
                 <h2 class="content-title">My Tickets</h2>
-                <p class="content-desc">Review your upcoming movie experiences.</p>
-                <div class="booking-card">
-                    <div class="booking-poster"><img src="{{ asset('img/1-Kill-Bill/Mini.png') }}"></div>
-                    <div class="booking-info">
-                        <h3>Kill Bill Vol. 1</h3>
-                        <p>Friday, Oct 24 • 20:30 • Room 4</p>
-                        <p style="margin-top:10px; color: var(--color-amarillo);">Confirmed Order #BKG-84729</p>
+                <p class="content-desc">Review your upcoming and past movie experiences.</p>
+
+                @if($bookings->isEmpty())
+                    <div style="text-align: center; padding: 40px; color: #666; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px dashed #333;">
+                        <p>You haven't booked any tickets yet.</p>
+                        <a href="/#cartelera" style="color: var(--color-amarillo); text-decoration: none; margin-top: 10px; display: inline-block; font-weight: bold;">Browse Movies</a>
                     </div>
-                </div>
+                @else
+                    <div style="display: flex; gap: 30px; margin-bottom: 30px; border-bottom: 1px solid #333;">
+                        <button class="ticket-tab" onclick="filterTickets('active', this)" 
+                                style="background: none; border: none; border-bottom: 3px solid var(--color-amarillo); color: #fff; padding-bottom: 10px; font-family: 'Arial Black', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: all 0.3s;">
+                            Active Tickets
+                        </button>
+                        <button class="ticket-tab" onclick="filterTickets('expired', this)" 
+                                style="background: none; border: none; border-bottom: 3px solid transparent; color: #888; padding-bottom: 10px; font-family: 'Arial Black', sans-serif; font-size: 14px; cursor: pointer; text-transform: uppercase; transition: all 0.3s;">
+                            Expired Tickets
+                        </button>
+                    </div>
+
+                    @foreach($bookings as $booking)
+                        @php
+                            $movie = $movieData[$booking->movie_id] ?? ['title' => 'Película Desconocida', 'poster' => ''];
+                            
+                            // Lógica de expiración
+                            $sessionDateTime = \Carbon\Carbon::parse($booking->movie_date . ' ' . $booking->movie_time);
+                            $isExpired = $sessionDateTime->isPast();
+                            
+                            // Clase CSS dinámica para el filtro de Javascript
+                            $statusClass = $isExpired ? 'ticket-expired' : 'ticket-active';
+                        @endphp
+
+                        <div class="booking-card {{ $statusClass }}" style="padding: 20px; border: 1px solid #333; border-radius: 8px; margin-bottom: 20px; background: #111; display: flex; gap: 20px; align-items: flex-start; {{ $isExpired ? 'filter: grayscale(1); opacity: 0.6;' : '' }} transition: all 0.3s;">
+                            
+                            <div style="width: 100px; flex-shrink: 0;">
+                                <img src="{{ $movie['poster'] }}" alt="Poster" onerror="this.src='https://via.placeholder.com/100x150/222/ffd000'" style="width: 100%; border-radius: 6px; object-fit: cover;">
+                            </div>
+
+                            <div style="flex: 1; display: flex; flex-direction: column;">
+                                
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                                            <span style="font-size: 11px; color: var(--color-amarillo); font-weight: bold; letter-spacing: 1px;">BOOKING ID: #BKG-{{ $booking->id }}</span>
+                                            
+                                            @if($isExpired)
+                                                <span style="background: #d32f2f; color: #fff; font-size: 10px; font-family: 'Arial Black', sans-serif; padding: 2px 8px; border-radius: 12px; letter-spacing: 1px;">EXPIRED</span>
+                                            @else
+                                                <span style="background: #388e3c; color: #fff; font-size: 10px; font-family: 'Arial Black', sans-serif; padding: 2px 8px; border-radius: 12px; letter-spacing: 1px;">ACTIVE</span>
+                                            @endif
+                                        </div>
+
+                                        <h3 style="margin: 5px 0 10px 0; font-size: 24px; text-transform: uppercase;">{!! $movie['title'] !!}</h3>
+                                        <p style="color: #ccc; font-size: 14px; margin: 0;">
+                                            <strong>{{ \Carbon\Carbon::parse($booking->movie_date)->format('d M, Y') }}</strong> • 
+                                            {{ \Carbon\Carbon::parse($booking->movie_time)->format('H:i') }} • 
+                                            {{ $booking->room_name }}
+                                        </p>
+                                    </div>
+
+                                    <div style="text-align: right;">
+                                        <p style="font-family: 'Arial Black'; font-size: 24px; color: #fff; margin: 0 0 10px 0;">${{ number_format($booking->total_price, 2) }}</p>
+                                        <button onclick="toggleDetails({{ $booking->id }})"
+                                                style="background: transparent; border: 1px solid #555; color: #ccc; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 11px; text-transform: uppercase; font-weight: bold; transition: all 0.3s;">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="details-{{ $booking->id }}" style="display: none; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #444;">
+                                    <h4 style="color: var(--color-amarillo); margin-bottom: 20px; font-size: 16px; font-family: 'Arial Black', 'Arial Bold', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Order Summary</h4>
+
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                        <span style="color: #999; font-size: 12px; font-family: 'Arial Black', 'Arial Bold', sans-serif; text-transform: uppercase; letter-spacing: 1.5px;">Seats</span>
+                                        <span style="color: #fff; font-size: 12px; font-family: 'Arial Black', 'Arial Bold', sans-serif; letter-spacing: 1px;">{{ $booking->seats }}</span>
+                                    </div>
+
+                                    @php
+                                        $foodItems = !empty($booking->food) ? json_decode($booking->food, true) : [];
+                                    @endphp
+
+                                    @if(!empty($foodItems))
+                                        <div style="margin-top: 20px;">
+                                            <span style="color: #999; font-size: 12px; font-family: 'Arial Black', 'Arial Bold', sans-serif; text-transform: uppercase; margin-bottom: 12px; display: block; letter-spacing: 1.5px;">Food & Drinks</span>
+                                            @foreach($foodItems as $item)
+                                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                                    <span style="color: #ddd; font-size: 14px; font-family: 'Arial Black', 'Arial Bold', sans-serif;">{{ $item['qty'] }}x {{ $item['name'] }}</span>
+                                                    <span style="color: #fff; font-size: 14px; font-family: 'Arial Black', 'Arial Bold', sans-serif;">${{ number_format($item['total'], 2) }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+
+                            </div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
         </main>
     </div>
@@ -390,6 +478,87 @@
             if(badge) badge.innerText = globalCart.length;
         }
         document.addEventListener('DOMContentLoaded', updateCartBadge);
+
+        function showReceipt(movieId, seats, total) {
+            document.getElementById('modal-movie-title').innerText = "Movie ID: " + movieId;
+            document.getElementById('modal-seats').innerText = seats;
+            document.getElementById('modal-total').innerText = "$" + parseFloat(total).toFixed(2);
+            
+            document.getElementById('receipt-modal').classList.add('active');
+        }
+
+        function closeReceipt() {
+            document.getElementById('receipt-modal').classList.remove('active');
+        }
+
+        // Estilo extra para el botón de detalles
+        document.addEventListener('DOMContentLoaded', () => {
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .view-details-btn:hover {
+                    border-color: var(--color-amarillo) !important;
+                    color: var(--color-amarillo) !important;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+
+        function toggleDetails(bookingId) {
+            const detailsDiv = document.getElementById('details-' + bookingId);
+            
+            // Si está oculto, lo mostramos. Si está visible, lo ocultamos.
+            if (detailsDiv.style.display === 'none') {
+                detailsDiv.style.display = 'block';
+            } else {
+                detailsDiv.style.display = 'none';
+            }
+        }
+
+        // Filtro de tickets
+        function filterTickets(status, btnElement) {
+            // 1. Quitar el estado 'activo' de todos los botones y ponérselo al que hemos clicado
+            const allTabs = document.querySelectorAll('.ticket-tab');
+            allTabs.forEach(tab => {
+                tab.style.borderBottom = '3px solid transparent';
+                tab.style.color = '#888';
+            });
+            btnElement.style.borderBottom = '3px solid var(--color-amarillo)';
+            btnElement.style.color = '#fff';
+
+            // 2. Mostrar u ocultar las tarjetas según su clase
+            const allCards = document.querySelectorAll('.booking-card');
+            allCards.forEach(card => {
+                if (card.classList.contains('ticket-' + status)) {
+                    card.style.display = 'flex'; // Usamos flex porque tu diseño depende de ello
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Ejecutar el filtro nada más cargar la página para que muestre los Activos por defecto
+        document.addEventListener('DOMContentLoaded', () => {
+            const activeTabBtn = document.querySelector('.ticket-tab'); // Selecciona el primer botón (Activos)
+            if(activeTabBtn) {
+                filterTickets('active', activeTabBtn);
+            }
+        });
     </script>
+
+    <div id="receipt-modal" class="custom-modal-overlay">
+        <div class="custom-modal-box" style="max-width: 350px; border-color: #fff;">
+            <h3 id="modal-movie-title">Order Summary</h3>
+            <div style="text-align: left; background: #111; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #333;">
+                <p style="font-size: 12px; margin-bottom: 10px;">SEATS: <span id="modal-seats" style="color: var(--color-amarillo); font-weight: bold;"></span></p>
+                <p style="font-size: 12px; margin-bottom: 10px;">STATUS: <span style="color: #4ade80;">● Confirmed</span></p>
+                <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
+                <p style="display: flex; justify-content: space-between; font-weight: bold;">
+                    <span>TOTAL PAID</span>
+                    <span id="modal-total" style="color: var(--color-amarillo);"></span>
+                </p>
+            </div>
+            <button onclick="closeReceipt()" id="close-modal-btn">CLOSE</button>
+        </div>
+    </div>
 </body>
 </html>

@@ -618,7 +618,6 @@
         }
 
         function addToCart() {
-            // 2. QUITAMOS LAS COMILLAS A CART_KEY
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -626,8 +625,12 @@
             const colorParam = urlParams.get('color') || '#ffd000';
             const textColorParam = urlParams.get('textColor') || 'black';
             const movieTitleParam = urlParams.get('title') || 'Movie';
+            
+            // 1. CAPTURAMOS LA SESIÓN DE LA URL
+            const sessionIdParam = urlParams.get('session') || '';
 
-            let existingOrderIndex = globalCart.findIndex(order => order.movieId === '{{ $id }}');
+            // 2. BUSCAMOS POR SESIÓN (para permitir comprar horarios distintos de la misma peli)
+            let existingOrderIndex = globalCart.findIndex(order => order.sessionId === sessionIdParam);
 
             // Leer lo que hay seleccionado AHORA en pantalla y extraer el data-image
             let foodItemsToAdd = [];
@@ -638,7 +641,7 @@
                         id: input.dataset.id,
                         name: input.dataset.name,
                         price: parseFloat(input.dataset.price),
-                        image: input.dataset.image, // Extraemos la imagen
+                        image: input.dataset.image,
                         qty: qty,
                         total: qty * parseFloat(input.dataset.price)
                     });
@@ -649,16 +652,16 @@
                 // --- REEMPLAZAR (SOBREESCRIBIR) EN LUGAR DE SUMAR ---
                 let existingOrder = globalCart[existingOrderIndex];
 
-                // 1. Sobreescribimos los tickets
+                // Sobreescribimos los tickets
                 existingOrder.tickets = {
                     seats: seatsSelected,
                     price: ticketsTotal
                 };
 
-                // 2. Sobreescribimos la comida con lo que hay ahora en pantalla
+                // Sobreescribimos la comida con lo que hay ahora en pantalla
                 existingOrder.food = foodItemsToAdd;
 
-                // 3. Recalculamos el total exacto
+                // Recalculamos el total exacto
                 existingOrder.orderTotal = ticketsTotal + foodItemsToAdd.reduce((sum, item) => sum + item.total, 0);
 
             } else {
@@ -666,6 +669,7 @@
                 let currentOrder = {
                     id: 'ORD-' + Date.now(),
                     movieId: '{{ $id }}',
+                    sessionId: sessionIdParam, // 3. LO GUARDAMOS EN EL OBJETO DEL CARRITO
                     movieTitle: movieTitleParam,
                     color: colorParam,
                     textColor: textColorParam,
@@ -676,7 +680,7 @@
                 globalCart.push(currentOrder);
             }
 
-            // Guardar y notificar (3. QUITAMOS LAS COMILLAS A CART_KEY)
+            // Guardar y notificar
             localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
             updateCartBadgeLocally();
 
@@ -684,7 +688,7 @@
             toast.style.transform = 'translateX(0)';
             toast.style.opacity = '1';
 
-            // Redirigir a la cartelera
+            // Redirigir al carrito
             setTimeout(() => { window.location.href = '/cart'; }, 1000);
         }
 
