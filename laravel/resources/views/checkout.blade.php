@@ -400,17 +400,16 @@
                     
                     <div class="form-group">
                         <label>Card Number</label>
-                        <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                        <input type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19" minlength="19" pattern=".{19,}" title="Please enter all 16 digits" required>                    
                     </div>
-
                     <div class="form-row">
                         <div class="form-group">
                             <label>Expiry Date</label>
-                            <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" required>
+                            <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" minlength="5" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" title="Format must be MM/YY" required>
                         </div>
                         <div class="form-group">
                             <label>CVC</label>
-                            <input type="password" id="card-cvc" placeholder="123" maxlength="3" required>
+                            <input type="password" id="card-cvc" placeholder="123" maxlength="3" minlength="3" pattern=".{3,}" title="Please enter 3 digits" required>
                         </div>
                     </div>
                 </div>
@@ -426,7 +425,7 @@
                 <div id="form-bizum" style="display: none;">
                     <div class="form-group">
                         <label>Bizum Phone Number</label>
-                        <input type="tel" id="bizum-phone" placeholder="600 000 000" maxlength="11">
+                        <input type="tel" id="bizum-phone" placeholder="600 000 000" maxlength="11" minlength="11" pattern=".{11,}" title="Please enter 9 digits">
                     </div>
                     <p style="font-size: 12px; color: #888; margin-bottom: 20px;">Enter your phone number registered with Bizum. You will receive a notification in your bank's app.</p>
                 </div>
@@ -602,6 +601,28 @@
         function processPayment(e) {
             e.preventDefault(); 
             
+            // --- PASO 1: VALIDACIONES ESTRICTAS ANTES DE SEGUIR ---
+            if (currentMethod === 'card') {
+                const num = document.getElementById('card-number').value.replace(/\s/g, '');
+                const exp = document.getElementById('card-expiry').value;
+                const cvc = document.getElementById('card-cvc').value;
+                
+                if (num.length < 16) return alert("Please enter all 16 digits of your card number.");
+                if (exp.length < 5) return alert("Please enter a valid expiry date (MM/YY).");
+                if (cvc.length < 3) return alert("Please enter the 3-digit CVC.");
+                
+            } else if (currentMethod === 'bizum') {
+                const phone = document.getElementById('bizum-phone').value.replace(/\s/g, '');
+                if (phone.length < 9) return alert("Please enter a valid 9-digit phone number.");
+                
+            } else if (currentMethod === 'paypal') {
+                const email = document.getElementById('paypal-email').value;
+                if (!email.includes('@') || !email.includes('.')) {
+                    return alert("Please enter a valid PayPal email address.");
+                }
+            }
+
+            // --- PASO 2: ACTUALIZAR INTERFAZ (Botón cargando) ---
             const btn = document.getElementById('btn-pay');
             const btnText = document.getElementById('btn-text');
             const loader = document.getElementById('pay-loader');
@@ -611,17 +632,34 @@
             btnText.innerText = 'Processing...';
             loader.style.display = 'block';
 
-            // Leemos el carrito
+            // --- PASO 3: PREPARAR DATOS PARA EL SERVIDOR ---
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+            let paymentData = {};
 
-            // Enviamos los datos a Laravel
+            if (currentMethod === 'card') {
+                paymentData = {
+                    cardNumber: document.getElementById('card-number').value.replace(/\s/g, ''),
+                    cardExpiry: document.getElementById('card-expiry').value,
+                    cardCVC: document.getElementById('card-cvc').value
+                };
+            } else if (currentMethod === 'bizum') {
+                paymentData = { phone: document.getElementById('bizum-phone').value.replace(/\s/g, '') };
+            } else if (currentMethod === 'paypal') {
+                paymentData = { email: document.getElementById('paypal-email').value };
+            }
+
+            // --- PASO 4: ENVIAR A LARAVEL ---
             fetch('/process-payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
-                body: JSON.stringify({ cart: globalCart })
+                body: JSON.stringify({ 
+                    cart: globalCart,
+                    method: currentMethod,       // Le decimos si usó card, bizum o paypal
+                    payment_data: paymentData    // Le pasamos los números limpios
+                })
             })
             .then(response => response.json())
             .then(data => {
@@ -633,7 +671,8 @@
                         window.location.href = "/profile"; 
                     }, 2500);
                 } else {
-                    alert("Error en el pago.");
+                    // Si el servidor (Laravel) rechaza los datos, mostramos error
+                    alert("Error processing payment. Please check your details.");
                     btn.disabled = false;
                     btnText.innerText = 'Confirm Payment';
                     loader.style.display = 'none';
@@ -641,6 +680,7 @@
             })
             .catch(error => {
                 console.error('Error:', error);
+                alert("Server error. Please try again later.");
                 btn.disabled = false;
                 btnText.innerText = 'Confirm Payment';
                 loader.style.display = 'none';
