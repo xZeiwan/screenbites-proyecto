@@ -317,12 +317,58 @@
             <div id="tab-security" class="tab-content">
                 <h2 class="content-title">Security & Password</h2>
                 <p class="content-desc">Ensure your account is protected with a strong password.</p>
+
+                @if ($errors->updatePassword->any())
+                    <div style="background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: left;">
+                        <ul style="margin: 0; padding-left: 20px; color: #ff4444; font-family: 'Arial', sans-serif; font-size: 13px;">
+                            @foreach ($errors->updatePassword->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('password.update') }}">
                     @csrf @method('PUT')
-                    <div class="form-group"><label>Current Password</label><input type="password" name="current_password" required></div>
-                    <div class="form-group"><label>New Password</label><input type="password" name="password" required></div>
-                    <div class="form-group"><label>Confirm Password</label><input type="password" name="password_confirmation" required></div>
-                    <button type="submit" class="btn-save">Update Password</button>
+                    
+                    <div class="form-group">
+                        <label>Current Password</label>
+                        <input type="password" name="current_password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" name="password" id="profile-new-pass" required>
+                        
+                        <div style="background-color: #1a1a1a; padding: 12px; border-radius: 6px; margin-top: 8px; border: 1px solid #333;">
+                            <div class="rule" id="prof-rule-length" style="display: flex; align-items: center; font-size: 11px; color: #888; margin-bottom: 4px; font-family: 'Arial', sans-serif; transition: color 0.3s;">
+                                <svg style="width: 12px; height: 12px; margin-right: 6px; transition: color 0.3s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                At least 8 characters
+                            </div>
+                            <div class="rule" id="prof-rule-case" style="display: flex; align-items: center; font-size: 11px; color: #888; margin-bottom: 4px; font-family: 'Arial', sans-serif; transition: color 0.3s;">
+                                <svg style="width: 12px; height: 12px; margin-right: 6px; transition: color 0.3s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Uppercase & lowercase letters
+                            </div>
+                            <div class="rule" id="prof-rule-number" style="display: flex; align-items: center; font-size: 11px; color: #888; margin-bottom: 4px; font-family: 'Arial', sans-serif; transition: color 0.3s;">
+                                <svg style="width: 12px; height: 12px; margin-right: 6px; transition: color 0.3s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                At least one number (0-9)
+                            </div>
+                            <div class="rule" id="prof-rule-symbol" style="display: flex; align-items: center; font-size: 11px; color: #888; margin-bottom: 4px; font-family: 'Arial', sans-serif; transition: color 0.3s;">
+                                <svg style="width: 12px; height: 12px; margin-right: 6px; transition: color 0.3s;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                At least one symbol (e.g. !@#$%^&*)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" name="password_confirmation" id="profile-conf-pass" required>
+                        <div id="profile-match-error" style="color: #ff4444; font-size: 11px; margin-top: 5px; display: none; font-family: 'Arial', sans-serif;">
+                            Passwords do not match.
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save" id="btn-update-pass" disabled style="transition: all 0.3s;">Update Password</button>
                 </form>
             </div>
 
@@ -467,7 +513,6 @@
 
     <script>
         // Creamos una llave única basada en el ID del usuario logueado. 
-        // Si no está logueado, usará la caja "guest".
         const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
 
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -560,6 +605,49 @@
                 filterTickets('active', activeTabBtn);
             }
         });
+
+        // --- VALIDACIÓN DE CAMBIO DE CONTRASEÑA EN TIEMPO REAL ---
+        const profPassInput = document.getElementById('profile-new-pass');
+        const profConfInput = document.getElementById('profile-conf-pass');
+        const btnUpdatePass = document.getElementById('btn-update-pass');
+        const profMatchError = document.getElementById('profile-match-error');
+
+        const reqLength = /.{8,}/;
+        const reqCase = /(?=.*[a-z])(?=.*[A-Z])/;
+        const reqNumber = /[0-9]/;
+        const reqSymbol = /[^A-Za-z0-9]/;
+
+        function validateProfilePassword() {
+            if (!profPassInput) return;
+            const val = profPassInput.value;
+            let isValid = true;
+
+            const setRuleColor = (id, valid) => {
+                const el = document.getElementById(id);
+                if(valid) { el.style.color = '#4ade80'; el.querySelector('svg').style.color = '#4ade80'; }
+                else { el.style.color = '#888'; el.querySelector('svg').style.color = '#888'; isValid = false; }
+            };
+
+            setRuleColor('prof-rule-length', reqLength.test(val));
+            setRuleColor('prof-rule-case', reqCase.test(val));
+            setRuleColor('prof-rule-number', reqNumber.test(val));
+            setRuleColor('prof-rule-symbol', reqSymbol.test(val));
+
+            const doMatch = val === profConfInput.value && val !== '';
+                
+            if (profConfInput.value !== '' && !doMatch) {
+                profMatchError.style.display = 'block';
+            } else {
+                profMatchError.style.display = 'none';
+            }
+
+            btnUpdatePass.disabled = !(isValid && doMatch);
+        }
+
+        if(profPassInput && profConfInput) {
+            profPassInput.addEventListener('input', validateProfilePassword);
+            profConfInput.addEventListener('input', validateProfilePassword);
+        }
     </script>
 
     <div id="receipt-modal" class="custom-modal-overlay">
@@ -578,27 +666,19 @@
         </div>
     </div>
 
-    @if (session('status') === 'Profile updated')
+    @if (session('status') === 'profile-updated' || session('status') === 'password-updated' || session('status') === 'Profile updated')
         <div id="profile-toast" style="position: fixed; top: 120px; right: 20px; opacity: 0; background: var(--color-amarillo); color: #000; padding: 12px 20px; border-radius: 6px; font-family: 'Arial Black', sans-serif; font-size: 13px; text-transform: uppercase; display: flex; align-items: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); transition: opacity 0.3s ease; z-index: 10000; pointer-events: none;">
             <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            Profile Updated!
+            {{ session('status') === 'password-updated' ? 'Password Updated!' : 'Profile Updated!' }}
         </div>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 const toast = document.getElementById('profile-toast');
-                
-                // Aparece en su sitio (debajo del nav)
-                setTimeout(() => {
-                    toast.style.opacity = '1';
-                }, 10); 
-                
-                // Desaparece a los 2 segundos
-                setTimeout(() => {
-                    toast.style.opacity = '0';
-                }, 2000); 
+                setTimeout(() => { toast.style.opacity = '1'; }, 10); 
+                setTimeout(() => { toast.style.opacity = '0'; }, 3000); 
             });
         </script>
     @endif

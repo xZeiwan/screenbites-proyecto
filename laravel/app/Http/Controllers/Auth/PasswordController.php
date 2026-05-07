@@ -15,15 +15,22 @@ class PasswordController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
+        // Usamos el "Error Bag" updatePassword que exige Laravel
         $validated = $request->validateWithBag('updatePassword', [
             'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
+            'password' => ['required', 'confirmed', Password::min(8)
+                ->letters()      // Requiere letras
+                ->mixedCase()    // Mayúsculas y minúsculas
+                ->numbers()      // Requiere números
+                ->symbols()      // Requiere símbolos
+            ],
         ]);
 
         $request->user()->update([
             'password' => Hash::make($validated['password']),
         ]);
 
+        // Redirigimos con un mensaje de éxito
         return back()->with('status', 'password-updated');
     }
 }
