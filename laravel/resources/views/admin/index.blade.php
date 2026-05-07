@@ -14,6 +14,11 @@
         .badge-user { background: #444; }
         .badge-vip { background: #ffd000; color: black; }
         .badge-admin { background: #ff4444; }
+        
+        /* Badges para el Status de las reseñas */
+        .badge-pending { background: rgba(255,165,0,0.2); color: orange; border: 1px solid orange; }
+        .badge-approved { background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80; }
+        
         select { background: #222; color: white; border: 1px solid #333; padding: 5px; border-radius: 4px; }
         .btn { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; text-transform: uppercase; font-size: 11px; }
         .btn-delete { background: transparent; color: #ff4444; border: 1px solid #ff4444; }
@@ -24,8 +29,8 @@
 <body>
     <div class="container">
         <a href="/" style="color: #888; text-decoration: none;">← Back to Home</a>
+        
         <h1>User Management</h1>
-
         @if(session('status'))
             <div style="background: #4ade80; color: black; padding: 15px; border-radius: 8px; margin-bottom: 20px;">{{ session('status') }}</div>
         @endif
@@ -71,18 +76,33 @@
                 <tr>
                     <th>Author</th>
                     <th>Comment</th>
-                    <th>Action</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($reviews as $review)
                 <tr>
-                    <td style="color: #ffd000;">{{ $review->author }}</td>
-                    <td style="font-size: 13px; color: #ccc;">"{{ $review->content }}"</td>
+                    <td style="color: #ffd000;">{{ $review->name ?? $review->author ?? 'User' }}</td>
+                    <td style="font-size: 13px; color: #ccc;">"{{ $review->comment ?? $review->content ?? '' }}"</td>
                     <td>
-                        <form action="{{ route('admin.deleteReview', $review->id) }}" method="POST">
+                        <span class="badge badge-{{ $review->status ?? 'pending' }}">
+                            {{ $review->status ?? 'pending' }}
+                        </span>
+                    </td>
+                    <td>
+                        <form action="{{ route('admin.updateReviewStatus', $review->id) }}" method="POST" style="display:inline;">
+                            @csrf @method('PATCH')
+                            <select name="status">
+                                <option value="pending" {{ ($review->status ?? 'pending') == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="approved" {{ ($review->status ?? 'pending') == 'approved' ? 'selected' : '' }}>Approved</option>
+                            </select>
+                            <button type="submit" class="btn btn-save">Update</button>
+                        </form>
+                        
+                        <form action="{{ route('admin.deleteReview', $review->id) }}" method="POST" style="display:inline; margin-left: 10px;">
                             @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-delete">Remove</button>
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('Delete this review forever?')">Delete</button>
                         </form>
                     </td>
                 </tr>

@@ -118,6 +118,7 @@ class MovieController extends Controller
             'user_id' => auth()->id(),
             'rating' => (int) $request->input('score'), // Obligamos a que lea el selector
             'comment' => $request->input('content'),
+            'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

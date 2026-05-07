@@ -1067,12 +1067,21 @@
                     $localReviews = \Illuminate\Support\Facades\DB::table('reviews')
                         ->join('users', 'reviews.user_id', '=', 'users.id')
                         ->where('movie_id', $id)
+                        ->where(function($query) {
+                            // Mostrar si está aprobada
+                            $query->where('status', 'approved');
+                            // O mostrar si está pendiente PERO es del usuario actual
+                            if (auth()->check()) {
+                                $query->orWhere(function($q) {
+                                    $q->where('status', 'pending')
+                                      ->where('reviews.user_id', auth()->id());
+                                });
+                            }
+                        })
                         ->orderBy('reviews.created_at', 'desc')
-                        ->select('users.name', 'reviews.*') // Traemos todos los campos de la reseña
+                        ->select('users.name', 'reviews.*') 
                         ->get();
-                } catch(\Exception $e) {
-                    // Si no existe la tabla, no rompemos la página
-                }
+                } catch(\Exception $e) { }
             @endphp
 
             @foreach($localReviews as $local)
@@ -1088,7 +1097,12 @@
 
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <strong style="color: #fff;">{{ $local->name }}</strong>
+                            <div>
+                                <strong style="color: #fff;">{{ $local->name }}</strong>
+                                @if($local->status === 'pending')
+                                    <span style="background: rgba(255,165,0,0.2); color: orange; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 10px; border: 1px solid orange;">PENDING APPROVAL</span>
+                                @endif
+                            </div>
                             <span style="color: var(--color-principal);">
                                 {{ str_repeat('★', $estrellas) }}{{ str_repeat('☆', 5 - $estrellas) }}
                             </span>

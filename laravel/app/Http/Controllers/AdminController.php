@@ -14,11 +14,14 @@ class AdminController extends Controller
         // Solo el admin entra aquí
         if (Auth::user()->role !== 'admin') return redirect('/');
 
-        $users = User::where('id', '!=', Auth::id())->get();
-        
-        // Obtenemos las reseñas (asumiendo la estructura de Alex con WordPress)
-        $reviews = DB::table('wp_comments')
-            ->select('comment_ID as id', 'comment_author as author', 'comment_content as content', 'comment_post_ID as movie_id')
+        $users = \App\Models\User::all(); 
+
+        // 2. LA SOLUCIÓN: Cambiamos la consulta para que lea de NUESTRA tabla 'reviews'
+        $reviews = \Illuminate\Support\Facades\DB::table('reviews')
+            ->join('users', 'reviews.user_id', '=', 'users.id')
+            // Le damos alias 'author' y 'content' para que encaje con la vista Blade que ya tienes
+            ->select('reviews.*', 'users.name as author', 'reviews.comment as content')
+            ->orderBy('reviews.created_at', 'desc')
             ->get();
 
         return view('admin.index', compact('users', 'reviews'));
@@ -40,5 +43,15 @@ class AdminController extends Controller
     {
         DB::table('wp_comments')->where('comment_ID', $id)->delete();
         return back()->with('status', 'Review removed.');
+    }
+
+    public function updateReviewStatus(Request $request, $id)
+    {
+        $request->validate(['status' => 'required|in:pending,approved']);
+        \Illuminate\Support\Facades\DB::table('reviews')
+            ->where('id', $id)
+            ->update(['status' => $request->status]);
+
+        return back()->with('status', 'Review status updated successfully!');
     }
 }

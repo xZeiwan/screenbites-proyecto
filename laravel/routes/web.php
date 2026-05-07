@@ -73,6 +73,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/process-payment', [CheckoutController::class, 'processPayment'])->name('checkout.pay');
 
     Route::get('/admin-panel', [AdminController::class, 'index'])->name('admin.index');
+    Route::patch('/admin-panel/review/{id}/status', [\App\Http\Controllers\AdminController::class, 'updateReviewStatus'])->name('admin.updateReviewStatus');
+    Route::delete('/admin-panel/review/{id}', [\App\Http\Controllers\AdminController::class, 'deleteReview'])->name('admin.deleteReview');
     Route::patch('/admin/user/{user}/role', [AdminController::class, 'updateRole'])->name('admin.updateRole');
     Route::delete('/admin/user/{user}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
     Route::delete('/admin/review/{id}', [AdminController::class, 'deleteReview'])->name('admin.deleteReview');
