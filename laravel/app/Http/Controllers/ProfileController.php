@@ -24,7 +24,7 @@ class ProfileController extends Controller
         $bookings = DB::table('bookings')
             ->join('showtimes', 'bookings.showtime_id', '=', 'showtimes.id')
             ->join('rooms', 'showtimes.room_id', '=', 'rooms.id')
-            ->where('bookings.user_id', auth()->id())
+            ->where('bookings.user_id', Auth::id())
             ->select(
                 'bookings.*', 
                 'showtimes.movie_id', 
