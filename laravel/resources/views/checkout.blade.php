@@ -507,7 +507,7 @@
 
         <div class="summary-section">
             <h2>Your Order</h2>
-            <div class="summary-movie">{{ $movie['title'] ?? 'Movie' }} • Today, 20:30</div>
+            <div class="summary-movie" id="checkout-title">Reviewing your cart items</div>
 
             <div class="final-cart" id="final-cart-list">
                 </div>
@@ -566,6 +566,9 @@
         // --- 0. CLAVE DEL CARRITO ---
         const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
         const cartData = localStorage.getItem(CART_KEY);
+        
+        // --- AÑADIMOS EL ROL DEL USUARIO PARA EL DESCUENTO ---
+        const currentUserRole = "{{ Auth::check() ? Auth::user()->role : 'guest' }}";
 
         // --- 1. CONTROL DEL MODAL DE ERROR ---
         function showErrorModal(title, message) {
@@ -683,7 +686,7 @@
             }
         });
 
-        // --- 4. RENDERIZAR EL RESUMEN DEL CARRITO ---
+        // --- 4. RENDERIZAR EL RESUMEN DEL CARRITO (Y APLICAR DESCUENTO VIP) ---
         const cartContainer = document.getElementById('final-cart-list');
         const totalDisplay = document.getElementById('final-total');
         let grandTotal = 0;
@@ -695,7 +698,21 @@
                 cartContainer.innerHTML = ''; 
 
                 globalCart.forEach(order => {
-                    grandTotal += order.orderTotal;
+                    let orderTotal = order.orderTotal;
+                    let discountHtml = '';
+
+                    // LÓGICA VIP: Restamos el 10% si eres VIP
+                    if (currentUserRole === 'vip') {
+                        let discount = orderTotal * 0.10;
+                        orderTotal = orderTotal - discount;
+                        discountHtml = `
+                            <div class="final-item" style="color: #4ade80; font-size: 12px; margin-top: 10px; font-weight: bold; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 5px;">
+                                <span>VIP Discount (10%)</span>
+                                <span>-$${discount.toFixed(2)}</span>
+                            </div>`;
+                    }
+
+                    grandTotal += orderTotal;
 
                     let title = order.movieTitle ? order.movieTitle.toUpperCase() : "MOVIE TICKET";
                     cartContainer.innerHTML += `
@@ -722,6 +739,11 @@
                                 </div>
                             `;
                         });
+                    }
+
+                    // Insertamos la fila visual del descuento después de la comida
+                    if (discountHtml !== '') {
+                        cartContainer.innerHTML += discountHtml;
                     }
                 });
 

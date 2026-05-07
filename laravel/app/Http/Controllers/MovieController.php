@@ -103,4 +103,26 @@ class MovieController extends Controller
             return response()->view('errors.404', [], 404);
         }
     }
+
+    public function storeReview(Request $request, $id)
+    {
+        // 1. Validamos asegurándonos de que 'score' es un número del 1 al 5
+        $request->validate([
+            'score' => 'required|numeric|min:1|max:5',
+            'content' => 'required|string|max:1000',
+        ]);
+
+        // 2. Insertamos en la BD forzando a que lo convierta a número entero (int)
+        \Illuminate\Support\Facades\DB::table('reviews')->insert([
+            'movie_id' => $id,
+            'user_id' => auth()->id(),
+            'rating' => (int) $request->input('score'), // Obligamos a que lea el selector
+            'comment' => $request->input('content'),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // 3. Devolvemos a la página
+        return back()->with('status', 'Review submitted successfully!');
+    }
 }

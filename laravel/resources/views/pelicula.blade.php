@@ -925,7 +925,6 @@
         </div>
     </div>
 
-    <!-- SECCIÓN TRAILER CON LA FUNCIÓN MODIFICADA -->
     <section class="trailer-featured">
         <div class="container">
             <h2 class="section-title">Official Trailer</h2>
@@ -942,7 +941,6 @@
         </div>
     </section>
 
-    <!-- EL NUEVO MODAL PARA EL TRAILER -->
     <div id="trailer-modal" class="trailer-modal-overlay" onclick="closeTrailer()">
         <div class="trailer-modal-content" onclick="event.stopPropagation()">
             <button class="close-trailer-btn" onclick="closeTrailer()">✖</button>
@@ -1061,6 +1059,48 @@
         @endauth
 
         <div class="reviews-list" style="display: grid; gap: 20px;">
+            
+            {{-- 1. MOSTRAMOS LAS RESEÑAS LOCALES DE LA BASE DE DATOS --}}
+            @php
+                $localReviews = [];
+                try {
+                    $localReviews = \Illuminate\Support\Facades\DB::table('reviews')
+                        ->join('users', 'reviews.user_id', '=', 'users.id')
+                        ->where('movie_id', $id)
+                        ->orderBy('reviews.created_at', 'desc')
+                        ->select('users.name', 'reviews.*') // Traemos todos los campos de la reseña
+                        ->get();
+                } catch(\Exception $e) {
+                    // Si no existe la tabla, no rompemos la página
+                }
+            @endphp
+
+            @foreach($localReviews as $local)
+                @php
+                    $userHash = md5(strtolower(trim($local->name))); 
+                    $avatarUrl = "https://www.gravatar.com/avatar/{$userHash}?d=identicon&s=100";
+                    // Compatibilidad por si se guardó como score o como rating
+                    $estrellas = (int) ($local->rating ?? 5); 
+                    $comentario = $local->comment ?? $local->content ?? ''; 
+                @endphp
+                <div style="background: #111; padding: 20px; border-radius: 12px; display: flex; gap: 20px; align-items: flex-start; border: 1px solid #222;">
+                    <img src="{{ $avatarUrl }}" alt="User" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-principal);">
+
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #fff;">{{ $local->name }}</strong>
+                            <span style="color: var(--color-principal);">
+                                {{ str_repeat('★', $estrellas) }}{{ str_repeat('☆', 5 - $estrellas) }}
+                            </span>
+                        </div>
+                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.4; margin: 0;">
+                            "{!! htmlspecialchars($comentario) !!}"
+                        </p>
+                    </div>
+                </div>
+            @endforeach
+
+            {{-- 2. MOSTRAMOS LAS RESEÑAS QUE YA VENÍAN CON EL COMPAÑERO --}}
             @forelse($reviews as $review)
                 <div style="background: #111; padding: 20px; border-radius: 12px; display: flex; gap: 20px; align-items: flex-start; border: 1px solid #222;">
                     
@@ -1084,7 +1124,9 @@
                     </div>
                 </div>
             @empty
-                <p style="color: #666; font-style: italic;">No reviews yet. Be the first one!</p>
+                @if(empty($localReviews))
+                    <p style="color: #666; font-style: italic;">No reviews yet. Be the first one!</p>
+                @endif
             @endforelse
         </div>
     </section>
