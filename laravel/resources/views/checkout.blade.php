@@ -344,6 +344,68 @@
             100% { transform: scale(1); opacity: 1; }
         }
 
+        /* --- CUSTOM MODAL ALERTS (ESTILO PREMIUM) --- */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-modal-overlay.active {
+            opacity: 1; visibility: visible;
+        }
+
+        .custom-modal-box {
+            background: #0a0a0a;
+            border: 2px solid var(--color-principal);
+            padding: 40px; border-radius: 12px;
+            text-align: center; max-width: 420px; width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            transform: translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .custom-modal-overlay.active .custom-modal-box {
+            transform: translateY(0);
+        }
+
+        .custom-modal-box .modal-icon {
+            color: #ff4444; /* Rojo para los errores */
+            margin-bottom: 20px;
+        }
+
+        .custom-modal-box h3 {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 22px; margin-bottom: 15px;
+            color: var(--color-blanco); text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .custom-modal-box p {
+            color: #aaa; font-size: 15px;
+            line-height: 1.6; margin-bottom: 30px;
+        }
+
+        #close-error-btn {
+            background: var(--color-blanco);
+            color: var(--color-negro); border: none;
+            padding: 14px 35px; font-family: 'Arial Black', sans-serif;
+            font-size: 13px; border-radius: 6px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        #close-error-btn:hover {
+            background: var(--color-principal);
+            color: var(--color-texto-principal);
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -462,14 +524,38 @@
         <p>Generating your digital tickets...</p>
     </div>
 
+    <div id="error-modal" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3 id="error-modal-title">Error</h3>
+            <p id="error-modal-message">Something went wrong.</p>
+            <button id="close-error-btn">UNDERSTOOD</button>
+        </div>
+    </div>
+
     <script>
-        // 1. LA CLAVE MAESTRA (Igual que en el resto de tu web)
+        // --- 0. CLAVE DEL CARRITO ---
         const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
-        
-        // 2. LEER LOS DATOS DEL CARRITO GLOBAL DEL USUARIO
         const cartData = localStorage.getItem(CART_KEY);
 
-        // --- 1. SELECCIÓN DE MÉTODO DE PAGO ---
+        // --- 1. CONTROL DEL MODAL DE ERROR ---
+        function showErrorModal(title, message) {
+            document.getElementById('error-modal-title').innerText = title;
+            document.getElementById('error-modal-message').innerText = message;
+            document.getElementById('error-modal').classList.add('active');
+        }
+
+        document.getElementById('close-error-btn').addEventListener('click', () => {
+            document.getElementById('error-modal').classList.remove('active');
+        });
+
+        // --- 2. SELECCIÓN DE MÉTODO DE PAGO ---
         let currentMethod = 'card';
 
         function selectPaymentMethod(method) {
@@ -506,7 +592,7 @@
             }
         }
 
-        // --- VALIDACIÓN PARA BIZUM ---
+        // --- 3. VALIDACIONES FRONTEND EN TIEMPO REAL ---
         document.getElementById('bizum-phone').addEventListener('input', function (e) {
             let value = this.value.replace(/\D/g, ''); 
             let formattedValue = '';
@@ -517,7 +603,6 @@
             this.value = formattedValue;
         });
 
-        // --- VALIDACIONES DE LA TARJETA ---
         document.getElementById('card-name').addEventListener('input', function (e) {
             this.value = this.value.replace(/[^A-Za-z\s]/g, '').toUpperCase();
         });
@@ -532,6 +617,11 @@
             this.value = formattedValue;
         });
 
+        document.getElementById('card-cvc').addEventListener('input', function (e) {
+            this.value = this.value.replace(/\D/g, '');
+        });
+
+        // Formateo visual (Añade la barra MM/YY)
         document.getElementById('card-expiry').addEventListener('input', function (e) {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 2) {
@@ -541,11 +631,38 @@
             }
         });
 
-        document.getElementById('card-cvc').addEventListener('input', function (e) {
-            this.value = this.value.replace(/\D/g, '');
+        // Validación de caducidad al salir del campo (usa el modal nuevo)
+        document.getElementById('card-expiry').addEventListener('change', function (e) {
+            let value = this.value;
+            if (value.length === 5 && value.includes('/')) {
+                let parts = value.split('/');
+                let expMonth = parseInt(parts[0], 10);
+                let expYear = parseInt(parts[1], 10) + 2000;
+                
+                let currentDate = new Date();
+                let currentYear = currentDate.getFullYear();
+                let currentMonth = currentDate.getMonth() + 1;
+
+                if (expMonth < 1 || expMonth > 12) {
+                    showErrorModal("Invalid Month", "Please enter a valid month from 01 to 12.");
+                    this.value = ''; 
+                    return;
+                }
+
+                if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                    showErrorModal("Card Expired", "This card has expired. Please use a valid card.");
+                    this.value = ''; 
+                    return;
+                }
+
+                if (expYear > currentYear + 10) {
+                    showErrorModal("Invalid Year", "The expiration year is invalid.");
+                    this.value = ''; 
+                }
+            }
         });
 
-        // --- 2. RENDERIZAR EL RESUMEN DEL CARRITO (TICKET) ---
+        // --- 4. RENDERIZAR EL RESUMEN DEL CARRITO ---
         const cartContainer = document.getElementById('final-cart-list');
         const totalDisplay = document.getElementById('final-total');
         let grandTotal = 0;
@@ -597,32 +714,31 @@
             document.getElementById('btn-pay').disabled = true;
         }
 
-        // --- 3. SIMULAR EL PROCESO DE PAGO Y ENVIAR A BD ---
+        // --- 5. PROCESO DE PAGO Y ENVÍO A LARAVEL ---
         function processPayment(e) {
             e.preventDefault(); 
             
-            // --- PASO 1: VALIDACIONES ESTRICTAS ANTES DE SEGUIR ---
+            // Validaciones por si no pasaron por el "change" (usa el modal nuevo)
             if (currentMethod === 'card') {
                 const num = document.getElementById('card-number').value.replace(/\s/g, '');
                 const exp = document.getElementById('card-expiry').value;
                 const cvc = document.getElementById('card-cvc').value;
                 
-                if (num.length < 16) return alert("Please enter all 16 digits of your card number.");
-                if (exp.length < 5) return alert("Please enter a valid expiry date (MM/YY).");
-                if (cvc.length < 3) return alert("Please enter the 3-digit CVC.");
+                if (num.length < 16) return showErrorModal("Incomplete Data", "Please enter all 16 digits of your card number.");
+                if (exp.length < 5) return showErrorModal("Incomplete Data", "Please enter a valid expiry date (MM/YY).");
+                if (cvc.length < 3) return showErrorModal("Incomplete Data", "Please enter the 3-digit CVC.");
                 
             } else if (currentMethod === 'bizum') {
                 const phone = document.getElementById('bizum-phone').value.replace(/\s/g, '');
-                if (phone.length < 9) return alert("Please enter a valid 9-digit phone number.");
+                if (phone.length < 9) return showErrorModal("Invalid Phone", "Please enter a valid 9-digit phone number.");
                 
             } else if (currentMethod === 'paypal') {
                 const email = document.getElementById('paypal-email').value;
                 if (!email.includes('@') || !email.includes('.')) {
-                    return alert("Please enter a valid PayPal email address.");
+                    return showErrorModal("Invalid Email", "Please enter a valid PayPal email address.");
                 }
             }
 
-            // --- PASO 2: ACTUALIZAR INTERFAZ (Botón cargando) ---
             const btn = document.getElementById('btn-pay');
             const btnText = document.getElementById('btn-text');
             const loader = document.getElementById('pay-loader');
@@ -632,7 +748,6 @@
             btnText.innerText = 'Processing...';
             loader.style.display = 'block';
 
-            // --- PASO 3: PREPARAR DATOS PARA EL SERVIDOR ---
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let paymentData = {};
 
@@ -648,39 +763,49 @@
                 paymentData = { email: document.getElementById('paypal-email').value };
             }
 
-            // --- PASO 4: ENVIAR A LARAVEL ---
             fetch('/process-payment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json', // Clave para recibir errores de Laravel
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({ 
                     cart: globalCart,
-                    method: currentMethod,       // Le decimos si usó card, bizum o paypal
-                    payment_data: paymentData    // Le pasamos los números limpios
+                    method: currentMethod,       
+                    payment_data: paymentData    
                 })
             })
-            .then(response => response.json())
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw data; // Cazamos los errores
+                }
+                return data;
+            })
             .then(data => {
                 if(data.status === 'success') {
                     successScreen.classList.add('show');
-                    localStorage.removeItem(CART_KEY); // Vaciamos el carrito tras el éxito
+                    localStorage.removeItem(CART_KEY); 
                     
                     setTimeout(() => {
                         window.location.href = "/profile"; 
                     }, 2500);
-                } else {
-                    // Si el servidor (Laravel) rechaza los datos, mostramos error
-                    alert("Error processing payment. Please check your details.");
-                    btn.disabled = false;
-                    btnText.innerText = 'Confirm Payment';
-                    loader.style.display = 'none';
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert("Server error. Please try again later.");
+                console.error('Error del backend:', error);
+                
+                let errorMsg = "An unexpected error occurred processing your payment.";
+                if (error.errors) {
+                    errorMsg = Object.values(error.errors)[0][0]; 
+                } else if (error.message) {
+                    errorMsg = error.message;
+                }
+
+                // Usamos el modal chulo para errores del backend también
+                showErrorModal("Payment Failed", errorMsg);
+                
                 btn.disabled = false;
                 btnText.innerText = 'Confirm Payment';
                 loader.style.display = 'none';
