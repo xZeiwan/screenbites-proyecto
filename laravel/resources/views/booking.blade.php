@@ -483,17 +483,16 @@
                 
                 @if($showtimes->isNotEmpty() && $selectedSession)
                     <p style="color: var(--color-amarillo); font-size: 14px; font-weight: bold; margin-bottom: 25px; letter-spacing: 1px; text-transform: uppercase;">
-                        {{ \Carbon\Carbon::parse($selectedSession->date)->format('l, d M') }} &nbsp;•&nbsp; 
+                        {{ \Carbon\Carbon::parse($selectedSession->date)->locale('en')->format('l, d M') }} &nbsp;•&nbsp; 
                         {{ \Carbon\Carbon::parse($selectedSession->time)->format('H:i') }} &nbsp;•&nbsp; 
-                        {{ $selectedSession->room_name }}
+                        {{ str_replace(['Sala', 'sala'], ['Room', 'Room'], $selectedSession->room_name) }}
                     </p>
 
                     <div class="showtimes-scroll" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;">
                         @foreach($showtimes as $session)
                             @php
-                                // Comprobamos si este botón es el de la sesión actual
                                 $isActive = $selectedSession->id == $session->id;
-                                $dateObj = \Carbon\Carbon::parse($session->date);
+                                $dateObj = \Carbon\Carbon::parse($session->date)->locale('en');
                                 $timeObj = \Carbon\Carbon::parse($session->time);
                             @endphp
                             
@@ -505,20 +504,19 @@
                                 
                                 <span style="display: block; font-size: 10px; text-transform: uppercase;">{{ $dateObj->format('d M') }}</span>
                                 <span style="display: block; font-size: 18px; font-weight: bold; margin: 2px 0;">{{ $timeObj->format('H:i') }}</span>
-                                <span style="display: block; font-size: 9px; opacity: 0.8;">{{ $session->room_name }}</span>
+                                <span style="display: block; font-size: 9px; opacity: 0.8;">{{ str_replace(['Sala', 'sala'], ['Room', 'Room'], $session->room_name) }}</span>
                             </a>
                         @endforeach
                     </div>
                     
                     <style>
-                        /* Ocultar la barra de scroll fea pero mantener funcionalidad */
                         .showtimes-scroll::-webkit-scrollbar { height: 6px; }
                         .showtimes-scroll::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
                         .showtimes-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
                         .showtimes-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-amarillo); }
                     </style>
                 @else
-                    <p style="color: #ff4444; font-size: 14px; margin-top: 15px;">No hay sesiones disponibles para esta película.</p>
+                    <p style="color: #ff4444; font-size: 14px; margin-top: 15px;">No sessions available for this movie.</p>
                 @endif
             </div>
 
@@ -545,10 +543,29 @@
                     <span>Movie</span>
                     <span class="val">{{ $movie['title'] ?? 'Movie' }}</span>
                 </div>
+                
                 <div class="summary-row">
                     <span>Session</span>
-                    <span class="val">Today, 20:30</span>
+                    <span class="val">
+                        @if(isset($selectedSession))
+                            {{ \Carbon\Carbon::parse($selectedSession->date)->locale('en')->format('d M') }}, {{ \Carbon\Carbon::parse($selectedSession->time)->format('H:i') }}
+                        @else
+                            No Session Selected
+                        @endif
+                    </span>
                 </div>
+
+                <div class="summary-row">
+                    <span>Room</span>
+                    <span class="val">
+                        @if(isset($selectedSession))
+                            {{ str_replace(['Sala', 'sala'], ['Room', 'Room'], $selectedSession->room_name) }}
+                        @else
+                            -
+                        @endif
+                    </span>
+                </div>
+
                 <div class="summary-row" style="flex-direction: column; gap: 10px; margin-top: 25px;">
                     <span style="border-bottom: 1px solid #333; padding-bottom: 8px;">Selected Seats:</span>
                     <div class="selected-seats-list" id="selected-seats-display">
@@ -607,11 +624,7 @@
         const seatsPerRow = 10;
         const vipRows = ['D', 'E'];
 
-        // 1. FORMA SEGURA DE RECIBIR DATOS
         const occupiedSeats = {!! json_encode($occupiedArray) !!};
-        
-        // DEBUG: Abre la consola (F12) y comprueba que sale la lista de asientos
-        console.log("Asientos ocupados traídos de la BD:", occupiedSeats);
 
         let selectedSeats = [];
         let currentTotal = 0;
@@ -622,7 +635,6 @@
         const totalPriceDisplay = document.getElementById('total-price');
         const btnContinue = document.getElementById('btn-continue');
 
-        // 2. GENERAR ASIENTOS
         function generateSeats() {
             seatsContainer.innerHTML = ''; 
             
@@ -630,7 +642,6 @@
                 const rowDiv = document.createElement('div');
                 rowDiv.className = 'seat-row';
                 
-                // Etiqueta de fila (A, B, C...)
                 const labelDiv = document.createElement('div');
                 labelDiv.className = 'row-label';
                 labelDiv.innerText = row;
@@ -642,12 +653,10 @@
                     seatDiv.className = 'seat';
                     seatDiv.dataset.seatId = seatId;
 
-                    // PRIORIDAD 1: ¿Está ocupado en la BD?
                     if (occupiedSeats.includes(seatId)) {
                         seatDiv.classList.add('occupied');
                         seatDiv.style.pointerEvents = 'none'; 
                     } 
-                    // PRIORIDAD 2: Si no está ocupado, ¿es VIP o Standard?
                     else {
                         if (vipRows.includes(row)) {
                             seatDiv.classList.add('vip');
@@ -661,7 +670,6 @@
                     rowDiv.appendChild(seatDiv);
                 }
                 
-                // ... resto del código de las etiquetas derechas ...
                 const labelDivRight = document.createElement('div');
                 labelDivRight.className = 'row-label';
                 labelDivRight.innerText = row;
@@ -716,7 +724,6 @@
             btnContinue.disabled = false;
         }
 
-        // 4. BOTÓN CONTINUAR
         btnContinue.addEventListener('click', () => {
             const seatsParam = selectedSeats.map(s => s.id).join(',');
             const totalParam = currentTotal.toFixed(2);
@@ -735,7 +742,6 @@
             document.getElementById('seat-limit-modal').classList.remove('active');
         });
 
-        // --- PRECARGA ---
         document.addEventListener('DOMContentLoaded', () => {
             generateSeats();
             
@@ -748,7 +754,6 @@
                 savedSeats.forEach(seatId => {
                     const seatElement = document.querySelector(`[data-seat-id="${seatId}"]`);
                     
-                    // Solo auto-seleccionamos si el asiento no está ya ocupado en la BD
                     if (seatElement && !seatElement.classList.contains('occupied')) {
                         seatElement.classList.add('selected');
                         const price = parseFloat(seatElement.dataset.price);

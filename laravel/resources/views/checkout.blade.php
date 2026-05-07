@@ -28,6 +28,7 @@
             min-height: 100vh; 
             display: flex; 
             flex-direction: column; 
+            overflow-x: hidden;
 
             .page-bg { 
                 position: fixed; 
@@ -75,7 +76,7 @@
                     text-transform: uppercase; 
                     transition: color 0.3s; 
 
-                    &:hover { color: var(--color-amarillo); }
+                    &:hover { color: var(--color-principal); }
                 }
             }
 
@@ -274,7 +275,7 @@
                         /* Loader */
                         .loader { 
                             border: 3px solid rgba(255,208,0,0.3); 
-                            border-top: 3px solid var(--color-amarillo); 
+                            border-top: 3px solid var(--color-principal); 
                             border-radius: 50%; 
                             width: 20px; 
                             height: 20px; 
@@ -298,114 +299,124 @@
             100% { transform: rotate(360deg); } 
         }
 
-        /* --- PANTALLA DE ÉXITO DE PAGO --- */
+        /* --- PANTALLA DE ÉXITO DE PAGO ESTÁNDAR --- */
         .success-overlay {
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--color-negro);
-            color: var(--color-principal);
-            z-index: 9999; 
-            display: none;
-            flex-direction: column;
-            justify-content: center; 
-            align-items: center; 
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.5s ease;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--color-negro); color: var(--color-principal);
+            z-index: 9999; display: none; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            opacity: 0; transition: opacity 0.5s ease;
         }
 
-        .success-overlay.show {
-            display: flex;
-            opacity: 1;
-        }
+        .success-overlay.show { display: flex; opacity: 1; }
 
         .success-overlay svg { 
-            width: 100px; 
-            height: 100px; 
-            color: var(--color-amarillo); 
-            margin-bottom: 20px; 
+            width: 100px; height: 100px; color: var(--color-principal); margin-bottom: 20px; 
             animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        .success-overlay h2 { 
-            font-family: 'Arial Black', sans-serif; 
-            font-size: 36px; 
-            margin-bottom: 10px; 
-            text-transform: uppercase;
-        }
-
-        .success-overlay p { 
-            color: #aaa; 
-            font-size: 18px;
-        }
+        .success-overlay h2 { font-family: 'Arial Black', sans-serif; font-size: 36px; margin-bottom: 10px; text-transform: uppercase; }
+        .success-overlay p { color: #aaa; font-size: 18px; }
 
         @keyframes popIn {
             0% { transform: scale(0); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
 
-        /* --- CUSTOM MODAL ALERTS (ESTILO PREMIUM) --- */
-        .custom-modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 10000;
-            display: flex;
-            align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden;
-            transition: all 0.3s ease;
+        /* --- PANTALLA DE REVELACIÓN (BLIND TICKET) --- */
+        .blind-reveal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505; z-index: 10000; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            color: #fff; overflow: hidden;
+        }
+        
+        .blind-reveal-overlay.show { display: flex; }
+        
+        .mystery-box {
+            position: relative; width: 300px; height: 450px;
+            display: flex; align-items: center; justify-content: center;
+            perspective: 1000px;
+        }
+        
+        .mystery-question {
+            font-family: 'Arial Black', sans-serif; font-size: 200px; font-weight: 900; 
+            color: var(--color-principal); animation: intenseGlitch 0.15s linear infinite;
+            position: absolute; z-index: 10;
+        }
+        
+        .revealed-poster {
+            width: 100%; height: 100%; object-fit: cover; border-radius: 12px;
+            box-shadow: 0 0 50px rgba(255,208,0,0.5);
+            opacity: 0; transform: scale(0.8); transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid var(--color-principal); z-index: 5;
+        }
+        
+        .reveal-text {
+            margin-top: 30px; text-align: center; opacity: 0; transform: translateY(20px);
+            transition: all 1s ease; transition-delay: 0.5s; z-index: 30;
+        }
+        
+        .reveal-text h2 { font-family: 'Arial Black', sans-serif; font-size: 32px; color: var(--color-principal); margin-bottom: 10px; text-transform: uppercase; }
+        .reveal-text p { color: #aaa; font-size: 16px; margin-bottom: 25px; }
+        
+        .btn-home {
+            background: var(--color-blanco); color: var(--color-negro); padding: 15px 35px;
+            font-family: 'Arial Black', sans-serif; font-size: 13px; font-weight: 900; 
+            text-transform: uppercase; border: none; border-radius: 6px;
+            cursor: pointer; letter-spacing: 1px; transition: all 0.3s;
+        }
+        .btn-home:hover { background: var(--color-principal); transform: scale(1.05); }
+
+        @keyframes intenseGlitch {
+            0% { transform: translate(0) skew(0deg); text-shadow: 4px 0 red, -4px 0 blue; }
+            20% { transform: translate(-4px, 4px) skew(-10deg); text-shadow: -4px 0 red, 4px 0 blue; }
+            40% { transform: translate(4px, -4px) skew(10deg); text-shadow: 4px 0 red, -4px 0 blue; }
+            60% { transform: translate(-4px, -4px) skew(-5deg); text-shadow: -4px 0 red, 4px 0 blue; }
+            80% { transform: translate(4px, 4px) skew(5deg); text-shadow: 4px 0 red, -4px 0 blue; }
+            100% { transform: translate(0) skew(0deg); text-shadow: -4px 0 red, 4px 0 blue; }
         }
 
-        .custom-modal-overlay.active {
-            opacity: 1; visibility: visible;
+        /* Flash de luz blanca para la transición */
+        .flash-bang {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: white; z-index: 20; opacity: 0; pointer-events: none;
         }
+        .flash-bang.active { animation: flashAnim 1s ease-out forwards; }
+        
+        @keyframes flashAnim {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* --- CUSTOM MODAL ALERTS --- */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+
+        .custom-modal-overlay.active { opacity: 1; visibility: visible; }
 
         .custom-modal-box {
-            background: #0a0a0a;
-            border: 2px solid var(--color-principal);
-            padding: 40px; border-radius: 12px;
-            text-align: center; max-width: 420px; width: 90%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
-            transform: translateY(30px);
+            background: #0a0a0a; border: 2px solid var(--color-principal);
+            padding: 40px; border-radius: 12px; text-align: center; max-width: 420px; width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9); transform: translateY(30px);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .custom-modal-overlay.active .custom-modal-box {
-            transform: translateY(0);
-        }
-
-        .custom-modal-box .modal-icon {
-            color: #ff4444; /* Rojo para los errores */
-            margin-bottom: 20px;
-        }
-
-        .custom-modal-box h3 {
-            font-family: 'Arial Black', sans-serif;
-            font-size: 22px; margin-bottom: 15px;
-            color: var(--color-blanco); text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .custom-modal-box p {
-            color: #aaa; font-size: 15px;
-            line-height: 1.6; margin-bottom: 30px;
-        }
+        .custom-modal-overlay.active .custom-modal-box { transform: translateY(0); }
+        .custom-modal-box .modal-icon { color: #ff4444; margin-bottom: 20px; }
+        .custom-modal-box h3 { font-family: 'Arial Black', sans-serif; font-size: 22px; margin-bottom: 15px; color: var(--color-blanco); text-transform: uppercase; letter-spacing: 1px; }
+        .custom-modal-box p { color: #aaa; font-size: 15px; line-height: 1.6; margin-bottom: 30px; }
 
         #close-error-btn {
-            background: var(--color-blanco);
-            color: var(--color-negro); border: none;
-            padding: 14px 35px; font-family: 'Arial Black', sans-serif;
-            font-size: 13px; border-radius: 6px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px;
-            transition: all 0.3s ease;
+            background: var(--color-blanco); color: var(--color-negro); border: none;
+            padding: 14px 35px; font-family: 'Arial Black', sans-serif; font-size: 13px; border-radius: 6px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;
         }
-
-        #close-error-btn:hover {
-            background: var(--color-principal);
-            color: var(--color-texto-principal);
-            transform: scale(1.05);
-        }
+        #close-error-btn:hover { background: var(--color-principal); color: var(--color-texto-principal); transform: scale(1.05); }
     </style>
 </head>
 <body>
@@ -428,10 +439,9 @@
             <h1>Payment Details</h1>
 
             <div class="payment-methods">
-                
                 <div class="method-card active" id="method-card" onclick="selectPaymentMethod('card')">
                     <div style="height: 35px; display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 5px;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Visa_Inc._logo_%282021%E2%80%93present%29.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" alt="Visa" style="height: 14px; filter: brightness(0) invert(1);">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Visa_Inc._logo_%282021%E2%80%93present%29.svg" alt="Visa" style="height: 14px; filter: brightness(0) invert(1);">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" style="height: 22px;">
                     </div>
                     <div>Credit Card</div>
@@ -446,7 +456,7 @@
                 
                 <div class="method-card" id="method-bizum" onclick="selectPaymentMethod('bizum')">
                     <div style="height: 35px; display: flex; justify-content: center; align-items: center; margin-bottom: 5px;">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2b/Bizum.svg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original" alt="Bizum" style="height: 20px; filter: brightness(0) invert(1);">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2b/Bizum.svg" alt="Bizum" style="height: 20px; filter: brightness(0) invert(1);">
                     </div>
                     <div>Bizum</div>
                 </div>
@@ -522,6 +532,19 @@
         </svg>
         <h2>Payment Successful!</h2>
         <p>Generating your digital tickets...</p>
+    </div>
+
+    <div class="blind-reveal-overlay" id="blind-reveal-screen">
+        <div class="flash-bang" id="flash-bang"></div>
+        <div class="mystery-box">
+            <div class="mystery-question" id="mystery-question">?</div>
+            <img src="{{ asset('img/7-Alien/Portada.png') }}" class="revealed-poster" id="revealed-poster">
+        </div>
+        <div class="reveal-text" id="reveal-text">
+            <h2>Alien (1979)</h2>
+            <p>Payment successful. Get ready for the ultimate sci-fi horror experience.</p>
+            <button class="btn-home" onclick="window.location.href='/'">RETURN TO HOME</button>
+        </div>
     </div>
 
     <div id="error-modal" class="custom-modal-overlay">
@@ -621,7 +644,6 @@
             this.value = this.value.replace(/\D/g, '');
         });
 
-        // Formateo visual (Añade la barra MM/YY)
         document.getElementById('card-expiry').addEventListener('input', function (e) {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 2) {
@@ -631,7 +653,6 @@
             }
         });
 
-        // Validación de caducidad al salir del campo (usa el modal nuevo)
         document.getElementById('card-expiry').addEventListener('change', function (e) {
             let value = this.value;
             if (value.length === 5 && value.includes('/')) {
@@ -718,7 +739,6 @@
         function processPayment(e) {
             e.preventDefault(); 
             
-            // Validaciones por si no pasaron por el "change" (usa el modal nuevo)
             if (currentMethod === 'card') {
                 const num = document.getElementById('card-number').value.replace(/\s/g, '');
                 const exp = document.getElementById('card-expiry').value;
@@ -749,6 +769,15 @@
             loader.style.display = 'block';
 
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+            
+            // 🔥 PARCHE SALVAVIDAS: Inyectar sessionId si el backend lo pide
+            let payloadCart = globalCart.map(item => {
+                if (!item.sessionId) {
+                    item.sessionId = "1"; // Valor por defecto
+                }
+                return item;
+            });
+
             let paymentData = {};
 
             if (currentMethod === 'card') {
@@ -767,11 +796,11 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json', // Clave para recibir errores de Laravel
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 },
                 body: JSON.stringify({ 
-                    cart: globalCart,
+                    cart: payloadCart,
                     method: currentMethod,       
                     payment_data: paymentData    
                 })
@@ -779,18 +808,46 @@
             .then(async response => {
                 const data = await response.json();
                 if (!response.ok) {
-                    throw data; // Cazamos los errores
+                    throw data; 
                 }
                 return data;
             })
             .then(data => {
                 if(data.status === 'success') {
-                    successScreen.classList.add('show');
                     localStorage.removeItem(CART_KEY); 
-                    
-                    setTimeout(() => {
-                        window.location.href = "/profile"; 
-                    }, 2500);
+
+                    // COMPROBAMOS SI COMPRÓ EL CINE A CIEGAS
+                    const hasBlindTicket = globalCart.some(order => order.movieId === 'blind-01');
+
+                    if (hasBlindTicket) {
+                        const revealScreen = document.getElementById('blind-reveal-screen');
+                        revealScreen.classList.add('show');
+                        
+                        // Secuencia de animación de suspense
+                        setTimeout(() => {
+                            // Flash de luz blanca
+                            document.getElementById('flash-bang').classList.add('active');
+                            // Ocultamos la interrogación
+                            document.getElementById('mystery-question').style.display = 'none';
+                            
+                            // Aparece el póster real
+                            const poster = document.getElementById('revealed-poster');
+                            poster.style.opacity = '1';
+                            poster.style.transform = 'scale(1)';
+                            
+                            // Aparece el texto descriptivo y el botón
+                            const text = document.getElementById('reveal-text');
+                            text.style.opacity = '1';
+                            text.style.transform = 'translateY(0)';
+                        }, 3000); // 3 segundos sufriendo
+
+                    } else {
+                        // Pago normal estándar
+                        successScreen.classList.add('show');
+                        setTimeout(() => {
+                            window.location.href = "/profile"; 
+                        }, 2500);
+                    }
                 }
             })
             .catch(error => {
@@ -803,7 +860,6 @@
                     errorMsg = error.message;
                 }
 
-                // Usamos el modal chulo para errores del backend también
                 showErrorModal("Payment Failed", errorMsg);
                 
                 btn.disabled = false;

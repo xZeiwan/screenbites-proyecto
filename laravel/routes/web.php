@@ -77,3 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admin/user/{user}', [AdminController::class, 'deleteUser'])->name('admin.deleteUser');
     Route::delete('/admin/review/{id}', [AdminController::class, 'deleteReview'])->name('admin.deleteReview');
 });
+
+Route::get('/event/blind-ticket', function () {
+    return view('special-events.blind-ticket');
+})->name('events.blind');

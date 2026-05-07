@@ -28,15 +28,32 @@ class BookingController extends Controller
             "15" => ["title" => "Kraven", "bgImg" => "img/15-Kraven/Portada.png", "bg" => "#d97706", "textColor" => "white"] 
         ];
 
-        // --- LA SOLUCIÓN DE SEGURIDAD ---
-        // Comprobamos si el ID existe en el array. Si no existe, lanzamos un error 404 y detenemos la ejecución.
         if (!array_key_exists($id, $bookingMovies)) {
             abort(404, "La película que intentas reservar no existe.");
         }
 
+        // --- 🚀 LÓGICA DE AUTO-SINCRONIZACIÓN ETERNA ---
+        // Buscamos si existe alguna sesión que ya haya caducado (fecha anterior a hoy)
+        $hasOldSessions = DB::table('showtimes')->where('date', '<', Carbon::today()->toDateString())->exists();
+
+        if ($hasOldSessions) {
+            // Buscamos la fecha más antigua que tenemos en la base de datos
+            $oldestDateInDb = DB::table('showtimes')->min('date');
+            // Calculamos cuántos días han pasado desde esa fecha hasta hoy
+            $daysToShift = Carbon::parse($oldestDateInDb)->diffInDays(Carbon::today());
+
+            // Actualizamos TODAS las sesiones de la base de datos sumándoles los días necesarios
+            // para que la más vieja empiece hoy. Así el cine siempre está actualizado.
+            DB::statement("UPDATE showtimes SET date = DATE_ADD(date, INTERVAL $daysToShift DAY)");
+            
+            // Opcional: También limpiamos las reservas viejas de la base de datos para que los asientos vuelvan a estar libres
+            DB::table('bookings')->truncate(); 
+        }
+        // --- FIN DE LA SINCRONIZACIÓN ---
+
         $movie = $bookingMovies[$id];
         
-        // 1. Buscamos TODOS los horarios futuros para esta película
+        // 1. Buscamos TODOS los horarios (que ahora estarán garantizados como "Hoy" o futuro)
         $showtimes = DB::table('showtimes')
             ->join('rooms', 'showtimes.room_id', '=', 'rooms.id')
             ->select('showtimes.*', 'rooms.name as room_name')
@@ -46,7 +63,7 @@ class BookingController extends Controller
             ->orderBy('time')
             ->get();
 
-        // 2. Averiguamos qué sesión estamos viendo ahora mismo (Por URL o la primera)
+        // 2. Averiguamos qué sesión estamos viendo (Por URL o la primera disponible)
         $selectedSessionId = $request->query('session');
         $selectedSession = null;
 
@@ -60,7 +77,7 @@ class BookingController extends Controller
             }
         }
 
-        // 3. Sacamos los asientos ocupados SOLO para esta sesión exacta
+        // 3. Sacamos los asientos ocupados
         $occupiedArray = [];
         if ($selectedSessionId) {
             $occupiedSeatsString = DB::table('bookings')

@@ -833,10 +833,311 @@
             }
         }
 
+        /* --- EVENTS SECTION --- */
+        .events-section {
+            padding: 80px 5%;
+            background-color: var(--color-gris-oscuro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-top: 1px solid #222;
+        }
+
+        .events-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .events-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .events-header h2 {
+            font-size: 40px;
+            color: var(--color-blanco);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .events-header h2 span {
+            color: var(--color-amarillo);
+        }
+
+        .events-header p {
+            font-family: Arial, sans-serif;
+            color: #888888;
+            font-size: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Active Event: Blind Ticket */
+        .blind-ticket-card {
+            background: linear-gradient(135deg, #111111 0%, #000000 100%);
+            border: 1px solid var(--color-amarillo);
+            border-radius: 12px;
+            display: flex;
+            overflow: hidden;
+            margin-bottom: 50px;
+            box-shadow: 0 15px 30px rgba(255, 208, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .blind-ticket-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(255, 208, 0, 0.2);
+        }
+
+        .blind-poster {
+            width: 300px;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px dashed #333;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .blind-poster svg {
+            width: 80px;
+            height: 80px;
+            color: var(--color-amarillo);
+            opacity: 0.8;
+            position: relative;
+            z-index: 2;
+        }
+
+        .blind-poster .glitch {
+            position: absolute;
+            font-size: 150px;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.05);
+            font-family: 'Arial Black', sans-serif;
+            z-index: 1;
+            /* La animación se disparará vía JS añadiendo la clase .animating */
+        }
+
+        /* Keyframes para la animación fluida y completa del ? */
+        @keyframes jumpRotate {
+            0% { transform: translateY(0) rotate(0deg); }
+            40% { transform: translateY(-40px) rotate(180deg); }
+            60% { transform: translateY(-40px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+
+        .glitch.animating {
+            animation: jumpRotate 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .blind-info {
+            padding: 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .blind-tag {
+            display: inline-block;
+            background: var(--color-amarillo);
+            color: #000;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            width: fit-content;
+            letter-spacing: 1px;
+        }
+
+        .blind-info h3 {
+            font-size: 32px;
+            color: #fff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .blind-info p {
+            color: #aaa;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        .blind-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .blind-price-btn {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .blind-price {
+            font-size: 28px;
+            color: var(--color-amarillo);
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .btn-blind {
+            background: var(--color-amarillo);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-blind:hover {
+            background: #fff;
+            transform: scale(1.05);
+        }
+
+        .btn-view-event {
+            background: transparent;
+            color: var(--color-blanco);
+            text-decoration: none;
+            padding: 10px 25px;
+            font-size: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border: 2px solid var(--color-blanco);
+            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-view-event:hover {
+            background: var(--color-blanco);
+            color: var(--color-negro);
+        }
+
+        /* Upcoming Events Grid */
+        .upcoming-header {
+            font-size: 24px;
+            color: #fff;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .upcoming-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .upcoming-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 30px;
+            transition: border-color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .upcoming-card:hover {
+            border-color: #555;
+            transform: translateY(-5px);
+        }
+
+        .upcoming-content {
+            margin-bottom: 25px;
+        }
+
+        .upcoming-date {
+            color: var(--color-amarillo);
+            font-size: 12px;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upcoming-card h4 {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .upcoming-card p {
+            color: #888;
+            font-size: 13px;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .btn-outline-small {
+            background: transparent;
+            color: #aaa;
+            border: 1px solid #444;
+            padding: 10px 15px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            letter-spacing: 1px;
+        }
+
+        .upcoming-card:hover .btn-outline-small {
+            color: var(--color-blanco);
+            border-color: var(--color-blanco);
+        }
+
+        .btn-outline-small:hover {
+            background: var(--color-blanco) !important;
+            color: var(--color-negro) !important;
+        }
+
+        @media (max-width: 900px) {
+            .blind-ticket-card {
+                flex-direction: column;
+            }
+            .blind-poster {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px dashed #333;
+            }
+            .upcoming-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
         /* --- TEAM SECTION --- */
         .team-section {
             padding: 80px 5%;
-            background-color: var(--color-gris-oscuro);
+            background-color: var(--color-negro);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -991,7 +1292,7 @@
 
         /* --- FOOTER --- */
         footer {
-            background-color: var(--color-negro);
+            background-color: var(--color-gris-oscuro);
             padding: 60px 5% 40px;
             border-top: 1px solid var(--color-gris-claro);
 
@@ -1111,9 +1412,13 @@
             <div class="logo"><img src="{{ asset('img/img/Logo-Negro.png') }}" alt="Cinema Logo" id="main-logo"></div>
             <nav>
                 <ul>
+                    <li style="color: var(--color-amarillo); font-size: 12px; font-family: monospace; border: 1px dashed var(--color-amarillo); padding: 4px 10px; border-radius: 4px; letter-spacing: 1px;">
+    SYS: {{ \Carbon\Carbon::now()->format('Y-m-d H:i') }}
+</li>
                     <li><a href="#main-hero">HOME</a></li>
                     <li><a href="#cartelera">FILMS</a></li>
                     <li><a href="#bar">MENUS</a></li>
+                    <li><a href="#events">EVENTS</a></li>
 
                     @auth
                     <div class="user-nav">
@@ -1146,12 +1451,13 @@
                                     <circle cx="20" cy="21" r="1"></circle>
                                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                                 </svg>
-                                <div class="cart-badge" id="nav-cart-counter">0</div>
+                                <div class="cart-badge" id="nav-cart-counter"></div>
                             </button>
                         </li>
 
                         <li>
-                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">                                @csrf
+                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">                                
+                                @csrf
                                 <button type="submit" class="logout-btn" title="Sign Out">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1219,7 +1525,6 @@
             // Si no está logueado, usará la caja "guest".
             const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
 
-            // Autodestrucción del mensaje a los 4 segundos
             setTimeout(() => {
                 const toast = document.getElementById('toast-message');
                 if(toast) {
@@ -1295,12 +1600,10 @@
         <div class="food-container">
             <div class="food-header">
                 <h2>Explore the <span>Menu</span></h2>
-                <p>Discover our delicious snacks and drinks. You can add them to your order during the seat selection
-                    process.</p>
+                <p>Discover our delicious snacks and drinks. You can add them to your order during the seat selection process.</p>
             </div>
 
             <div class="food-grid">
-
                 <div class="food-card">
                     <div class="food-card-header">
                         <img src="{{ asset('img/svg/popcorn.svg') }}" alt="Popcorn Icon" class="food-icon-img">
@@ -1390,11 +1693,78 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </section>
 
-    <!-- --- TEAM SECTION --- -->
+    <section class="events-section" id="events">
+        <div class="events-container">
+            <div class="events-header">
+                <h2>Special <span>Events</span></h2>
+                <p>Discover unique cinematic experiences. From mysterious screenings to exclusive director Q&As.</p>
+            </div>
+
+            <div class="blind-ticket-card">
+                <div class="blind-poster">
+                    <span class="glitch">?</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="blind-info">
+                    <span class="blind-tag">Active Event</span>
+                    <h3>Blind Ticket: 80s Sci-Fi Thriller</h3>
+                    <p>Trust us, it's a masterpiece. You won't know what movie it is until the lights go out. A cult classic from the 1980s that redefined the sci-fi genre. Dare to book?</p>
+                    
+                    <div class="blind-actions">
+                        <div class="blind-price-btn">
+                            <span class="blind-price">$5.00</span>
+                            @auth
+                                <button class="btn-blind" onclick="addBlindTicketToCart()">
+                                    BOOK BLIND TICKET
+                                </button>
+                            @else
+                                <button class="btn-blind" onclick="window.location.href='/login'">
+                                    LOGIN TO BOOK
+                                </button>
+                            @endauth
+                        </div>
+                        <a href="{{ route('events.blind') }}" class="btn-view-event">View Details</a>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="upcoming-header">Upcoming Events</h3>
+            <div class="upcoming-grid">
+                <div class="upcoming-card">
+                    <div class="upcoming-content">
+                        <span class="upcoming-date">Nov 12 • 23:00</span>
+                        <h4>Horror Marathon</h4>
+                        <p>Survive the night with 3 back-to-back terrifying modern horror hits. Unlimited coffee included.</p>
+                    </div>
+                    <button class="btn-outline-small">View Details</button>
+                </div>
+                <div class="upcoming-card">
+                    <div class="upcoming-content">
+                        <span class="upcoming-date">Nov 18 • 19:30</span>
+                        <h4>Director's Q&A: Tarantino</h4>
+                        <p>Exclusive screening of Pulp Fiction followed by a live virtual Q&A with Quentin Tarantino.</p>
+                    </div>
+                    <button class="btn-outline-small">View Details</button>
+                </div>
+                <div class="upcoming-card">
+                    <div class="upcoming-content">
+                        <span class="upcoming-date">Dec 01 • 20:00</span>
+                        <h4>Classic 35mm Projection</h4>
+                        <p>Experience the magic of authentic 35mm film projection with a special showing of Casablanca.</p>
+                    </div>
+                    <button class="btn-outline-small">View Details</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <section class="team-section" id="team">
         <div class="team-container">
             <div class="team-header">
@@ -1403,106 +1773,94 @@
             </div>
 
             <div class="team-grid">
-    <!-- ROW 1 -->
-    
-    <!-- Member 1: Elena (Executive Producer - Traje elegante/Ejecutiva) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/1.jpg') }}" alt="Elena Rostova" class="team-avatar">
-        <h3 class="team-name">Elena Rostova</h3>
-        <p class="team-role">Chief Executive Producer</p>
-        <p class="team-description">Oversees all cinema operations, securing exclusive premieres and ensuring top-tier experiences for our VIP members.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/1.jpg') }}" alt="Elena Rostova" class="team-avatar">
+                    <h3 class="team-name">Elena Rostova</h3>
+                    <p class="team-role">Chief Executive Producer</p>
+                    <p class="team-description">Oversees all cinema operations, securing exclusive premieres and ensuring top-tier experiences for our VIP members.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
 
-    <!-- Member 2: Marcus (Projectionist - Look técnico) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/2.jpg') }}" alt="Marcus Sterling" class="team-avatar">
-        <h3 class="team-name">Marcus Sterling</h3>
-        <p class="team-role">Head of Projection</p>
-        <p class="team-description">The mastermind behind our IMAX and 70mm setups, guaranteeing flawless visual immersion in every room.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/2.jpg') }}" alt="Marcus Sterling" class="team-avatar">
+                    <h3 class="team-name">Marcus Sterling</h3>
+                    <p class="team-role">Head of Projection</p>
+                    <p class="team-description">The mastermind behind our IMAX and 70mm setups, guaranteeing flawless visual immersion in every room.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
 
-    <!-- Member 3: Sofia (Culinary - Ropa de chef/hostelería elegante) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/3.jpg') }}" alt="Sofia Laurent" class="team-avatar">
-        <h3 class="team-name">Sofia Laurent</h3>
-        <p class="team-role">Culinary Director</p>
-        <p class="team-description">Curates the exclusive Screenbites menus, elegantly blending high-end gourmet gastronomy with classic cinema snacks.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/3.jpg') }}" alt="Sofia Laurent" class="team-avatar">
+                    <h3 class="team-name">Sofia Laurent</h3>
+                    <p class="team-role">Culinary Director</p>
+                    <p class="team-description">Curates the exclusive Screenbites menus, elegantly blending high-end gourmet gastronomy with classic cinema snacks.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
 
-    <!-- Member 4: Julian (Curator - Look bohemio/vintage) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/4.jpg') }}" alt="Julian Vance" class="team-avatar">
-        <h3 class="team-name">Julian Vance</h3>
-        <p class="team-role">Chief Film Curator</p>
-        <p class="team-description">Handpicks the weekly selections, balancing blockbuster hits with indie gems and classic 35mm retrospectives.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/4.jpg') }}" alt="Julian Vance" class="team-avatar">
+                    <h3 class="team-name">Julian Vance</h3>
+                    <p class="team-role">Chief Film Curator</p>
+                    <p class="team-description">Handpicks the weekly selections, balancing blockbuster hits with indie gems and classic 35mm retrospectives.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
 
-    <!-- ROW 2 -->
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/5.jpg') }}" alt="Isabella Rossi" class="team-avatar">
+                    <h3 class="team-name">Isabella Rossi</h3>
+                    <p class="team-role">Guest Experience Lead</p>
+                    <p class="team-description">Ensures every visitor receives the red-carpet treatment, managing front-of-house staff from box office to credits.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
 
-    <!-- Member 5: Isabella (Guest Experience - Uniforme impecable) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/5.jpg') }}" alt="Isabella Rossi" class="team-avatar">
-        <h3 class="team-name">Isabella Rossi</h3>
-        <p class="team-role">Guest Experience Lead</p>
-        <p class="team-description">Ensures every visitor receives the red-carpet treatment, managing front-of-house staff from box office to credits.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/6.jpg') }}" alt="David Chen" class="team-avatar">
+                    <h3 class="team-name">David Chen</h3>
+                    <p class="team-role">Lead Sound Engineer</p>
+                    <p class="team-description">Calibrates the acoustic architecture of our theaters to deliver bone-rattling bass and crystal-clear dialogue.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
 
-    <!-- Member 6: David (Sound Engineer - Auriculares/Estudio) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/6.jpg') }}" alt="David Chen" class="team-avatar">
-        <h3 class="team-name">David Chen</h3>
-        <p class="team-role">Lead Sound Engineer</p>
-        <p class="team-description">Calibrates the acoustic architecture of our theaters to deliver bone-rattling bass and crystal-clear dialogue.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/7.jpg') }}" alt="Clara Dubois" class="team-avatar">
+                    <h3 class="team-name">Clara Dubois</h3>
+                    <p class="team-role">Art & Marketing Director</p>
+                    <p class="team-description">Designs our vintage posters, manages premiere events, and keeps the cinema's aesthetic flawless across all platforms.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
 
-    <!-- Member 7: Clara (Art Director - Estilo moderno/creativo) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/7.jpg') }}" alt="Clara Dubois" class="team-avatar">
-        <h3 class="team-name">Clara Dubois</h3>
-        <p class="team-role">Art & Marketing Director</p>
-        <p class="team-description">Designs our vintage posters, manages premiere events, and keeps the cinema's aesthetic flawless across all platforms.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
-
-    <!-- Member 8: Oliver (Mixologist - Look de barman de speakeasy) -->
-    <div class="team-card">
-        <img src="{{ asset('img/img/team/8.jpg') }}" alt="Oliver Hayes" class="team-avatar">
-        <h3 class="team-name">Oliver Hayes</h3>
-        <p class="team-role">Head Mixologist</p>
-        <p class="team-description">Crafts exclusive film-inspired signature cocktails at our lounge bar, adding flavor to your pre-show experience.</p>
-        <div class="team-socials">
-            <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-            <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-        </div>
-    </div>
-</div>
+                <div class="team-card">
+                    <img src="{{ asset('img/img/team/8.jpg') }}" alt="Oliver Hayes" class="team-avatar">
+                    <h3 class="team-name">Oliver Hayes</h3>
+                    <p class="team-role">Head Mixologist</p>
+                    <p class="team-description">Crafts exclusive film-inspired signature cocktails at our lounge bar, adding flavor to your pre-show experience.</p>
+                    <div class="team-socials">
+                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -1515,9 +1873,9 @@
             <div class="footer-col">
                 <h4>Explore</h4>
                 <ul class="footer-links">
-                    <li><a href="#cartelera">Now Playing</a></li>
-                    <li><a href="#cartelera">Coming Soon</a></li>
-                    <li><a href="#bar">Food & Drinks</a></li>
+                    <li><a href="/#cartelera">Now Playing</a></li>
+                    <li><a href="/#cartelera">Coming Soon</a></li>
+                    <li><a href="/#bar">Food & Drinks</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1550,7 +1908,9 @@
     </footer>
 
     <script>
+        // 1. AÑADIMOS LA LLAVE MÁGICA AQUÍ
         const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+
         // Le pasamos la información de la sesión al JavaScript usando una variable global
         const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
 
@@ -1684,12 +2044,16 @@
             mainHero.style.color = color;
             document.getElementById('movie-id').style.webkitTextStroke = `2px ${color}`;
 
+            // Actualizar la función del botón Hero según si estamos logueados
             const btnBuyHero = document.getElementById('btn-buy');
+            const btnBuyText = document.getElementById('btn-buy-text');
             
             if (isAuthenticated) {
                 btnBuyHero.setAttribute('onclick', `window.location.href='/booking/${activeMovie.id}'`);
+                if (btnBuyText) btnBuyText.innerText = 'BUY TICKETS';
             } else {
                 btnBuyHero.setAttribute('onclick', `window.location.href='/login'`);
+                if (btnBuyText) btnBuyText.innerText = 'LOGIN TO BUY';
             }
 
             const btnViewHero = document.getElementById('btn-view-film');
@@ -1755,6 +2119,58 @@
                 }
             }
         }
+
+        /* --- SCRIPT PARA CINE A CIEGAS --- */
+        // Animación ininterrumpible
+        const blindCard = document.querySelector('.blind-ticket-card');
+        const glitchIcon = document.querySelector('.glitch');
+        
+        if (blindCard && glitchIcon) {
+            blindCard.addEventListener('mouseenter', () => {
+                // Solo añade la clase si no se está animando ya
+                if (!glitchIcon.classList.contains('animating')) {
+                    glitchIcon.classList.add('animating');
+                }
+            });
+
+            // Se quita la clase cuando termina su ciclo entero (así no se corta a la mitad)
+            glitchIcon.addEventListener('animationend', () => {
+                glitchIcon.classList.remove('animating');
+            });
+        }
+
+        // Función real para añadir el "Blind Ticket" al carrito
+        function addBlindTicketToCart() {
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+            
+            // Creamos un pedido especial tipo "Blind Ticket"
+            let blindOrder = {
+                id: 'ORD-BLIND-' + Date.now(),
+                movieId: 'blind-01',
+                movieTitle: 'Blind Ticket: Mystery Movie',
+                color: '#ffd000',
+                textColor: 'black',
+                tickets: { seats: 'Mystery Seat', price: 5.00 },
+                food: [],
+                orderTotal: 5.00
+            };
+
+            // Comprobamos si ya lo ha comprado para no dejarle meter más de uno (opcional)
+            let existingIndex = globalCart.findIndex(order => order.movieId === 'blind-01');
+            if(existingIndex > -1) {
+                alert("You already have a Blind Ticket in your cart!");
+                window.location.href = '/cart';
+                return;
+            }
+
+            // Metemos al carro, guardamos y redirigimos
+            globalCart.push(blindOrder);
+            localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
+            updateCartBadge();
+            
+            window.location.href = '/cart';
+        }
+
     </script>
 </body>
 

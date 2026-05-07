@@ -147,7 +147,7 @@
         .form-group input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid #333; color: #fff; padding: 15px; border-radius: 10px; font-family: Arial, sans-serif; transition: all 0.3s; }
         .form-group input:focus { outline: none; border-color: var(--color-amarillo); }
 
-        .btn-save { background: var(--color-amarillo); color: #000; border: none; padding: 16px 40px; border-radius: 10px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; }
+        .btn-save { background: var(--color-amarillo); color: #000; border: none; padding: 16px 40px; border-radius: 10px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; margin-top: 10px; }
         .btn-save:hover { background: #fff; transform: translateY(-2px); }
 
         /* BOOKINGS */
@@ -190,11 +190,21 @@
 
                 @auth
                 <div class="user-nav">
+                    {{-- Botón Panel Admin --}}
+                    @if(Auth::user()->role === 'admin')
+                    <li>
+                        <a href="{{ route('admin.index') }}" style="color: #ff4444 !important; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 4px;">
+                            ⚙️ ADMIN
+                        </a>
+                    </li>
+                    @endif
                     <li>
                         <a href="/profile" class="user-profile" title="My Profile">
-                            <img src="{{ asset('img/avatars/' . Auth::user()->avatar) }}" alt="Avatar" class="user-avatar" onerror="this.src='https://via.placeholder.com/35/333/ffd000'">
+                            <img src="{{ asset('img/avatars/' . Auth::user()->avatar) }}" alt="Avatar"
+                                class="user-avatar" onerror="this.src='https://via.placeholder.com/35/333/ffd000'">
                             <span class="user-name">{{ strtoupper(Auth::user()->name) }}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="chevron-icon" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
                         </a>
@@ -202,7 +212,8 @@
 
                     <li>
                         <button class="nav-cart" onclick="window.location.href='/cart'">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="9" cy="21" r="1"></circle>
                                 <circle cx="20" cy="21" r="1"></circle>
                                 <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
@@ -222,6 +233,30 @@
                                 </svg>
                             </button>
                         </form>
+                    </li>
+                </div>
+                @else
+                <div class="user-nav">
+                    <li>
+                        <a href="{{ route('login') }}" title="Sign In">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('register') }}" title="Create Account">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <line x1="19" y1="8" x2="19" y2="14"></line>
+                                <line x1="22" y1="11" x2="16" y2="11"></line>
+                            </svg>
+                        </a>
                     </li>
                 </div>
                 @endauth
@@ -306,13 +341,13 @@
                         <input type="text" name="name" value="{{ Auth::user()->name }}" required>
                     </div>
                     <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" name="email" value="{{ Auth::user()->email }}" required>
-            </div>
+                        <label>Email Address</label>
+                        <input type="email" name="email" value="{{ Auth::user()->email }}" required>
+                    </div>
             
-            <button type="submit" class="btn-save">Save Changes</button>
-        </form>
-    </div>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                </form>
+            </div>
 
             <div id="tab-security" class="tab-content">
                 <h2 class="content-title">Security & Password</h2>
@@ -395,13 +430,28 @@
 
                     @foreach($bookings as $booking)
                         @php
-                            $movie = $movieData[$booking->movie_id] ?? ['title' => 'Película Desconocida', 'poster' => ''];
+                            // 1. LÓGICA DE DATOS SEGÚN EL TIPO DE TICKET
+                            if ($booking->movie_id === 'blind-01') {
+                                $movie = [
+                                    'title' => 'Alien (1979)',
+                                    'poster' => asset('img/7-Alien/Mini.png')
+                                ];
+                                $dateToParse = '2026-11-12';
+                                $timeToParse = '23:00:00';
+                                $roomName = 'Mystery Room'; // Nombre fijo para el evento
+                            } else {
+                                $movie = $movieData[$booking->movie_id] ?? ['title' => 'Unknown Movie', 'poster' => ''];
+                                $dateToParse = $booking->movie_date;
+                                $timeToParse = $booking->movie_time;
+                                
+                                // TRADUCCIÓN: Convertimos "Sala X" en "Room X" si viene en español de la BD
+                                $roomName = str_replace(['Sala', 'sala'], ['Room', 'Room'], $booking->room_name ?? 'Room 4');
+                            }
                             
-                            // Lógica de expiración
-                            $sessionDateTime = \Carbon\Carbon::parse($booking->movie_date . ' ' . $booking->movie_time);
-                            $isExpired = $sessionDateTime->isPast();
+                            // 2. LÓGICA DE EXPIRACIÓN REAL (Peli + 2 horas)
+                            $sessionDateTime = \Carbon\Carbon::parse($dateToParse . ' ' . $timeToParse);
+                            $isExpired = $sessionDateTime->addHours(2)->isPast();
                             
-                            // Clase CSS dinámica para el filtro de Javascript
                             $statusClass = $isExpired ? 'ticket-expired' : 'ticket-active';
                         @endphp
 
@@ -412,12 +462,10 @@
                             </div>
 
                             <div style="flex: 1; display: flex; flex-direction: column;">
-                                
                                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                                     <div>
                                         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
                                             <span style="font-size: 11px; color: var(--color-amarillo); font-weight: bold; letter-spacing: 1px;">BOOKING ID: #BKG-{{ $booking->id }}</span>
-                                            
                                             @if($isExpired)
                                                 <span style="background: #d32f2f; color: #fff; font-size: 10px; font-family: 'Arial Black', sans-serif; padding: 2px 8px; border-radius: 12px; letter-spacing: 1px;">EXPIRED</span>
                                             @else
@@ -425,11 +473,17 @@
                                             @endif
                                         </div>
 
-                                        <h3 style="margin: 5px 0 10px 0; font-size: 24px; text-transform: uppercase;">{!! $movie['title'] !!}</h3>
+                                        <h3 style="margin: 5px 0 10px 0; font-size: 24px; text-transform: uppercase;">
+                                            {!! $movie['title'] !!}
+                                            @if($booking->movie_id === 'blind-01')
+                                                <span style="display:inline-block; font-size: 10px; color: var(--color-negro); background: var(--color-amarillo); padding: 2px 6px; border-radius: 4px; vertical-align: middle; margin-left: 10px; font-weight: 900; letter-spacing: 1px;">BLIND REVEALED</span>
+                                            @endif
+                                        </h3>
+                                        
                                         <p style="color: #ccc; font-size: 14px; margin: 0;">
-                                            <strong>{{ \Carbon\Carbon::parse($booking->movie_date)->format('d M, Y') }}</strong> • 
-                                            {{ \Carbon\Carbon::parse($booking->movie_time)->format('H:i') }} • 
-                                            {{ $booking->room_name }}
+                                            <strong>{{ \Carbon\Carbon::parse($dateToParse)->format('d M, Y') }}</strong> • 
+                                            {{ \Carbon\Carbon::parse($timeToParse)->format('H:i') }} • 
+                                            {{ $roomName }}
                                         </p>
                                     </div>
 
@@ -442,31 +496,27 @@
                                     </div>
                                 </div>
 
+                                {{-- Resumen desplegable --}}
                                 <div id="details-{{ $booking->id }}" style="display: none; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #444;">
-                                    <h4 style="color: var(--color-amarillo); margin-bottom: 20px; font-size: 16px; font-family: 'Arial Black', 'Arial Bold', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Order Summary</h4>
-
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                                        <span style="color: #999; font-size: 12px; font-family: 'Arial Black', 'Arial Bold', sans-serif; text-transform: uppercase; letter-spacing: 1.5px;">Seats</span>
-                                        <span style="color: #fff; font-size: 12px; font-family: 'Arial Black', 'Arial Bold', sans-serif; letter-spacing: 1px;">{{ $booking->seats }}</span>
+                                    <h4 style="color: var(--color-amarillo); margin-bottom: 20px; font-size: 16px; font-family: 'Arial Black', sans-serif; text-transform: uppercase;">Order Summary</h4>
+                                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                        <span style="color: #999; font-size: 12px; text-transform: uppercase;">Seats</span>
+                                        <span style="color: #fff; font-size: 12px;">{{ $booking->seats }}</span>
                                     </div>
 
-                                    @php
-                                        $foodItems = !empty($booking->food) ? json_decode($booking->food, true) : [];
-                                    @endphp
-
+                                    @php $foodItems = !empty($booking->food) ? json_decode($booking->food, true) : []; @endphp
                                     @if(!empty($foodItems))
-                                        <div style="margin-top: 20px;">
-                                            <span style="color: #999; font-size: 12px; font-family: 'Arial Black', 'Arial Bold', sans-serif; text-transform: uppercase; margin-bottom: 12px; display: block; letter-spacing: 1.5px;">Food & Drinks</span>
+                                        <div style="margin-top: 15px;">
+                                            <span style="color: #999; font-size: 12px; text-transform: uppercase; display: block; margin-bottom: 10px;">Food & Drinks</span>
                                             @foreach($foodItems as $item)
-                                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                                    <span style="color: #ddd; font-size: 14px; font-family: 'Arial Black', 'Arial Bold', sans-serif;">{{ $item['qty'] }}x {{ $item['name'] }}</span>
-                                                    <span style="color: #fff; font-size: 14px; font-family: 'Arial Black', 'Arial Bold', sans-serif;">${{ number_format($item['total'], 2) }}</span>
+                                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                                    <span style="color: #ddd; font-size: 14px;">{{ $item['qty'] }}x {{ $item['name'] }}</span>
+                                                    <span style="color: #fff; font-size: 14px;">${{ number_format($item['total'], 2) }}</span>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @endif
                                 </div>
-
                             </div>
                         </div>
                     @endforeach
