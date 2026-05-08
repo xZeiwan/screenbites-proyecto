@@ -287,7 +287,7 @@
                     <span style="color: var(--color-principal); font-weight: bold;">December 01 • 20:00</span>
                 </div>
 
-                <p class="movie-desc">Vuelve a los orígenes. Una experiencia cinematográfica pura proyectada en película física original. Siente el grano, el sonido y la magia del proyector clásico en tu sala.</p>
+                <p class="movie-desc">Back to basics. A pure cinematic experience projected from original film stock. Experience the grain, the sound and the magic of a classic projector in your own living room.</p>
 
                 <div class="action-buttons">
                     <span class="price-tag-big">$8.00</span>
@@ -373,7 +373,7 @@
             <div class="clues-wrapper">
                 <div class="clues-header">
                     <h3>Projection Details</h3>
-                    <p style="color: #aaa; font-family: Arial, sans-serif;">La magia del cine clásico vuelve a la gran pantalla:</p>
+                    <p style="color: #aaa; font-family: Arial, sans-serif;">The magic of classic cinema returns to the big screen:</p>
                 </div>
                 <div class="clues-list">
                     <div class="clue-item">"The print used is an original 1940s distribution copy, preserved in climate control."</div>

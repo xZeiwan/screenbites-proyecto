@@ -9,12 +9,11 @@ use Carbon\Carbon; // Necesitamos Carbon para las fechas
 class CheckoutController extends Controller
 {
     public function processPayment(Request $request)
-{
+    {
     // 1. VALIDACIÓN
     $request->validate([
         'cart' => 'required|array',
         'method' => 'required|string|in:card,paypal,bizum',
-        // ... (tus validaciones de tarjeta/bizum/paypal que ya tienes)
     ]);
 
     $cart = $request->input('cart');

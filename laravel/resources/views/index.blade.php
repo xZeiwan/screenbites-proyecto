@@ -1742,7 +1742,7 @@
                             
                             @auth
                                 @php
-                                    // Laravel busca en las reservas de este usuario si ya existe el 'blind-01'
+                                    // El sistema comprueba si el usuario autenticado ya posee este evento
                                     $yaTieneEsteEvento = \Illuminate\Support\Facades\DB::table('bookings')
                                         ->where('user_id', Auth::id())
                                         ->where('event_id', 'blind-01')
@@ -2169,7 +2169,7 @@
         function updateCartBadge() {
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             
-            // Simplemente contamos cuántos bloques de pedido hay
+            // Contamos cuántos bloques de pedido hay
             let totalOrders = globalCart.length;
 
             const badge = document.getElementById('nav-cart-counter');
@@ -2190,7 +2190,6 @@
         
         if (blindCard && glitchIcon) {
             blindCard.addEventListener('mouseenter', () => {
-                // Solo añade la clase si no se está animando ya
                 if (!glitchIcon.classList.contains('animating')) {
                     glitchIcon.classList.add('animating');
                 }
@@ -2209,7 +2208,7 @@
             // Comprobamos si ya lo ha comprado
             let existingIndex = globalCart.findIndex(order => order.movieId === 'blind-01');
             if(existingIndex > -1) {
-                // AQUÍ ESTÁ LA MAGIA: En lugar del alert, abrimos el modal
+                // En lugar del alert, abrimos el modal
                 document.getElementById('duplicate-event-modal').classList.add('active');
                 return; // Cortamos la ejecución para que no haga nada más
             }
@@ -2229,7 +2228,7 @@
             globalCart.push(blindOrder);
             localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
             
-            // Actualizamos la bolita roja si tienes la función
+            // Actualizamos la bolita roja del cart
             if(typeof updateCartBadge === 'function') updateCartBadge(); 
             
             window.location.href = '/cart';

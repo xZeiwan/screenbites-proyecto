@@ -545,7 +545,7 @@
                 let themeColor = order.color || '#ffd000';
                 let title = order.movieTitle ? order.movieTitle.toUpperCase() : "MOVIE";
                 
-                // --- NUEVA LÓGICA INTELIGENTE DE PÓSTERS ---
+                // --- LÓGICA INTELIGENTE DE PÓSTERS ---
                 let posterHtml = '';
                 if (title.includes('BLIND') || title.includes('MYSTERY')) {
                     // Si es misterio, no cargamos <img>, dibujamos el HTML de la interrogación

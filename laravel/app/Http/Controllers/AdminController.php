@@ -19,7 +19,7 @@ class AdminController extends Controller
         // 2. LA SOLUCIÓN: Cambiamos la consulta para que lea de NUESTRA tabla 'reviews'
         $reviews = \Illuminate\Support\Facades\DB::table('reviews')
             ->join('users', 'reviews.user_id', '=', 'users.id')
-            // Le damos alias 'author' y 'content' para que encaje con la vista Blade que ya tienes
+            // Le damos alias 'author' y 'content' para que encaje con la vista Blade
             ->select('reviews.*', 'users.name as author', 'reviews.comment as content')
             ->orderBy('reviews.created_at', 'desc')
             ->get();

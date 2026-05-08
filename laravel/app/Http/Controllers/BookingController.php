@@ -32,7 +32,7 @@ class BookingController extends Controller
             abort(404, "La película que intentas reservar no existe.");
         }
 
-        // --- 🚀 LÓGICA DE AUTO-SINCRONIZACIÓN ETERNA ---
+        // --- LÓGICA DE AUTO-SINCRONIZACIÓN ETERNA ---
         // Buscamos si existe alguna sesión que ya haya caducado (fecha anterior a hoy)
         $hasOldSessions = DB::table('showtimes')->where('date', '<', Carbon::today()->toDateString())->exists();
 
