@@ -212,6 +212,8 @@
                 <li><a href="/#cartelera">FILMS</a></li>
                 <li><a href="/#bar">MENUS</a></li>
                 <li><a href="/#events">EVENTS</a></li>
+                <li><a href="{{ route('locations') }}">LOCATIONS</a></li>
+                <li><a href="{{ route('contact') }}">CONTACT</a></li>
 
                 @auth
                 <div class="user-nav">

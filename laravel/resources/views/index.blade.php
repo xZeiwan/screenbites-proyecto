@@ -1432,10 +1432,12 @@
                     <li style="color: var(--color-amarillo); font-size: 12px; font-family: monospace; border: 1px dashed var(--color-amarillo); padding: 4px 10px; border-radius: 4px; letter-spacing: 1px;">
     SYS: {{ \Carbon\Carbon::now()->format('Y-m-d H:i') }}
 </li>
-                    <li><a href="#main-hero">HOME</a></li>
-                    <li><a href="#cartelera">FILMS</a></li>
-                    <li><a href="#bar">MENUS</a></li>
-                    <li><a href="#events">EVENTS</a></li>
+                    <li><a href="/">HOME</a></li>
+                    <li><a href="/#cartelera">FILMS</a></li>
+                    <li><a href="/#bar">MENUS</a></li>
+                    <li><a href="/#events">EVENTS</a></li>
+                    <li><a href="{{ route('locations') }}">LOCATIONS</a></li>
+                    <li><a href="{{ route('contact') }}">CONTACT</a></li>
 
                     @auth
                     <div class="user-nav">

@@ -95,3 +95,11 @@ Route::get('/event/director-tarantino', function () {
 Route::get('/event/classic-projection', function () { 
     return view('special-events.classic-projection'); 
 })->name('events.35mm');
+
+Route::get('/locations', function () { 
+    return view('locations'); 
+})->name('locations');
+
+Route::get('/contact', function () { 
+    return view('contact'); 
+})->name('contact');
