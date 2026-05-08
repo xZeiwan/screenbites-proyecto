@@ -173,6 +173,30 @@
         .footer-bottom { max-width: 1200px; margin: 40px auto 0; padding-top: 20px; border-top: 1px solid var(--color-gris-claro); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; font-family: Arial, sans-serif; }
         .footer-credits { display: flex; align-items: center; gap: 8px; color: #888; }
         .footer-credits span { color: var(--color-amarillo); font-weight: bold; }
+
+        /* --- MODAL DE DETALLES DEL TICKET (Order Summary) --- */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .custom-modal-overlay.active { opacity: 1; visibility: visible; }
+        
+        .custom-modal-box {
+            background: #0a0a0a; border: 2px solid var(--color-amarillo);
+            padding: 40px; border-radius: 12px; text-align: center;
+            max-width: 420px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            transform: translateY(30px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-modal-overlay.active .custom-modal-box { transform: translateY(0); }
+
+        #close-modal-btn {
+            background: var(--color-blanco); color: var(--color-negro); border: none;
+            padding: 12px 25px; font-family: 'Arial Black', sans-serif; font-size: 13px; border-radius: 6px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease; margin-top: 10px; width: 100%;
+        }
+        #close-modal-btn:hover { background: var(--color-amarillo); transform: scale(1.02); }
     </style>
 </head>
 
@@ -187,6 +211,7 @@
                 <li><a href="/">HOME</a></li>
                 <li><a href="/#cartelera">FILMS</a></li>
                 <li><a href="/#bar">MENUS</a></li>
+                <li><a href="/#events">EVENTS</a></li>
 
                 @auth
                 <div class="user-nav">

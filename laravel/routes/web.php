@@ -83,3 +83,15 @@ Route::middleware('auth')->group(function () {
 Route::get('/event/blind-ticket', function () {
     return view('special-events.blind-ticket');
 })->name('events.blind');
+
+Route::get('/event/horror-marathon', function () { 
+    return view('special-events.horror-marathon'); 
+})->name('events.horror');
+
+Route::get('/event/director-tarantino', function () { 
+    return view('special-events.director-tarantino'); 
+})->name('events.tarantino');
+
+Route::get('/event/classic-projection', function () { 
+    return view('special-events.classic-projection'); 
+})->name('events.35mm');

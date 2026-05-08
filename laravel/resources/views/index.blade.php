@@ -1783,25 +1783,27 @@
                     <div class="upcoming-content">
                         <span class="upcoming-date">Nov 12 • 23:00</span>
                         <h4>Horror Marathon</h4>
-                        <p>Survive the night with 3 back-to-back terrifying modern horror hits. Unlimited coffee included.</p>
+                        <p>Survive the night with 3 back-to-back terrifying modern horror hits.</p>
                     </div>
-                    <button class="btn-outline-small">View Details</button>
+                    <a href="{{ route('events.horror') }}" class="btn-outline-small" style="text-decoration: none; text-align: center; display: block;">View Details</a>
                 </div>
+
                 <div class="upcoming-card">
                     <div class="upcoming-content">
                         <span class="upcoming-date">Nov 18 • 19:30</span>
                         <h4>Director's Q&A: Tarantino</h4>
-                        <p>Exclusive screening of Pulp Fiction followed by a live virtual Q&A with Quentin Tarantino.</p>
+                        <p>Exclusive screening of Pulp Fiction followed by a live virtual Q&A.</p>
                     </div>
-                    <button class="btn-outline-small">View Details</button>
+                    <a href="{{ route('events.tarantino') }}" class="btn-outline-small" style="text-decoration: none; text-align: center; display: block;">View Details</a>
                 </div>
+
                 <div class="upcoming-card">
                     <div class="upcoming-content">
                         <span class="upcoming-date">Dec 01 • 20:00</span>
                         <h4>Classic 35mm Projection</h4>
-                        <p>Experience the magic of authentic 35mm film projection with a special showing of Casablanca.</p>
+                        <p>Experience the magic of authentic 35mm film projection with Casablanca.</p>
                     </div>
-                    <button class="btn-outline-small">View Details</button>
+                    <a href="{{ route('events.35mm') }}" class="btn-outline-small" style="text-decoration: none; text-align: center; display: block;">View Details</a>
                 </div>
             </div>
         </div>
