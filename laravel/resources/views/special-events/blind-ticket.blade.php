@@ -57,6 +57,14 @@
         .user-profile { display: flex; align-items: center; gap: 10px; color: var(--color-blanco); transition: color 0.3s ease; }
         .user-profile .user-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; transition: transform 0.3s ease; }
         .user-profile:hover .user-avatar { transform: scale(1.1); }
+        .chevron-icon {
+            width: 14px;
+            height: 14px;
+            margin-left: 4px;
+            stroke-width: 2.5;
+            transition: color 0.3s ease, transform 0.3s ease;
+            display: inline-block;
+        }
         .user-profile:hover .user-name, .user-profile:hover .chevron-icon { color: var(--color-principal); }
 
         .nav-cart { position: relative; background: none; border: none; cursor: pointer; display: flex; align-items: center; padding: 5px; color: var(--color-blanco); transition: all 0.3s; }
@@ -290,11 +298,34 @@
 
                 <div class="action-buttons">
                     <span class="price-tag-big">$5.00</span>
-                    
+
                     @auth
-                        <button class="btn-buy" onclick="addBlindTicketToCart()">
-                            <img src="{{ asset('img/img/Ticket-amarillo.png') }}" style="width:20px;"> BOOK BLIND TICKET
-                        </button>
+                        @php
+                            // Laravel busca en las reservas de este usuario si ya existe el 'blind-01'
+                            $yaTieneEsteEvento = \Illuminate\Support\Facades\DB::table('bookings')
+                                ->where('user_id', Auth::id())
+                                ->where('event_id', 'blind-01')
+                                ->exists();
+                        @endphp
+
+                        @if($yaTieneEsteEvento)
+                            <div style="position: relative;">
+                                <button class="btn-buy" style="background: #333; color: #888; cursor: not-allowed; box-shadow: none;" disabled>
+                                    <img src="{{ asset('img/img/Ticket-amarillo.png') }}" style="width:20px; filter: grayscale(1) opacity(0.5);"> 
+                                    <span>TICKET CLAIMED</span>
+                                </button>
+                                <div style="position: absolute; top: 100%; left: 0; margin-top: 8px; background: #388e3c; color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-family: 'Arial Black', sans-serif; letter-spacing: 1px; white-space: nowrap;">
+                                    ✓ ALREADY PURCHASED
+                                </div>
+                            </div>
+                        @else
+                            <div>
+                                <button class="btn-buy" onclick="addBlindTicketToCart()">
+                                    <img src="{{ asset('img/img/Ticket-amarillo.png') }}" style="width:20px;"> 
+                                    <span>BOOK TICKET</span>
+                                </button>
+                            </div>
+                        @endif
                     @else
                         <button class="btn-buy" onclick="window.location.href='/login'">
                             <img src="{{ asset('img/img/Ticket-amarillo.png') }}" style="width:20px;"> LOGIN TO BOOK
@@ -396,11 +427,7 @@
         <div class="footer-bottom">
             <p>&copy; 2026 Screenbites Cinema. All rights reserved.</p>
             <p class="footer-credits">
-                Design with
-                <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px;">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-                for <span>Beni</span>
+                Design for <span>Beni</span>
             </p>
         </div>
     </footer>
@@ -468,6 +495,35 @@
             
             window.location.href = '/cart';
         }
+
+        // --- COMPROBAR SI YA HA COMPRADO EL TICKET MISTERIOSO ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const BLIND_PURCHASED_KEY = 'purchased_blind_{{ Auth::check() ? Auth::id() : "guest" }}';
+            
+            // Si la marca de compra existe en su navegador...
+            if (localStorage.getItem(BLIND_PURCHASED_KEY) === 'true') {
+                const btn = document.getElementById('btn-book-blind');
+                const badge = document.getElementById('purchased-badge');
+                
+                if (btn) {
+                    // Cambiamos el estilo a grisáceo
+                    btn.style.background = '#333';
+                    btn.style.color = '#888';
+                    btn.style.cursor = 'not-allowed';
+                    btn.style.boxShadow = 'none';
+                    
+                    // Quitamos la función de añadir al carrito
+                    btn.onclick = null; 
+                    
+                    // Cambiamos el texto y apagamos el icono
+                    document.getElementById('btn-blind-text').innerText = 'TICKET CLAIMED';
+                    document.getElementById('btn-blind-icon').style.filter = 'grayscale(1) opacity(0.5)';
+                    
+                    // Mostramos la etiqueta verde
+                    badge.style.display = 'block';
+                }
+            }
+        });
     </script>
 </body>
 

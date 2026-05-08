@@ -404,6 +404,20 @@
                 gap: 10px;
             }
         }
+
+        .cart-mystery-poster {
+            width: 100%;
+            height: 100%;
+            min-height: 250px;
+            background: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 100px;
+            color: var(--color-amarillo);
+            text-shadow: 2px 2px 0px #ff0000, -2px -2px 0px #0000ff;
+        }
     </style>
 </head>
 <body>
@@ -522,25 +536,33 @@
                 
                 // --- LÓGICA VIP ---
                 if (currentUserRole === 'vip') {
-                    let discount = orderTotal * 0.10; // 10% de descuento
+                    let discount = orderTotal * 0.10; 
                     orderTotal = orderTotal - discount;
                     discountHtml = `<div style="color: #4ade80; font-size: 14px; margin-top: 5px;">VIP Discount (10%): -$${discount.toFixed(2)}</div>`;
                 }
                 
                 grandTotal += orderTotal;
-                //... (resto de tu código: themeColor, title, posterSrc...)
                 let themeColor = order.color || '#ffd000';
                 let title = order.movieTitle ? order.movieTitle.toUpperCase() : "MOVIE";
-                let posterSrc = moviePosters[order.movieId] || 'https://via.placeholder.com/200x300/111/333?text=Poster';
+                
+                // --- NUEVA LÓGICA INTELIGENTE DE PÓSTERS ---
+                let posterHtml = '';
+                if (title.includes('BLIND') || title.includes('MYSTERY')) {
+                    // Si es misterio, no cargamos <img>, dibujamos el HTML de la interrogación
+                    posterHtml = `<div class="cart-mystery-poster">?</div>`;
+                } else {
+                    // Si es normal, cargamos la <img>
+                    let posterSrc = moviePosters[order.movieId] || 'https://via.placeholder.com/200x300/111/333?text=Poster';
+                    posterHtml = `<img src="${posterSrc}" alt="${title} Poster" onerror="this.src='https://via.placeholder.com/200x300/111/333'">`;
+                }
 
                 html += `
                 <div class="order-card">
                     <div class="order-color-bar" style="background-color: ${themeColor}"></div>
                     
                     <div class="order-main-content">
-                        <!-- PÓSTER DE LA PELÍCULA -->
                         <div class="order-poster-container">
-                            <img src="${posterSrc}" alt="${title} Poster" onerror="this.src='https://via.placeholder.com/200x300/111/333'">
+                            ${posterHtml}
                         </div>
 
                         <!-- DETALLES DEL PEDIDO -->
@@ -573,7 +595,7 @@
                                 <div class="product-row">
                                     <img src="{{ asset('img/img/Ticket-amarillo.png') }}" class="product-thumb svg-icon" alt="Tickets" style="background: transparent;">
                                     <div class="product-info">
-                                        <span class="product-name">Cinema Tickets</span>
+                                        <span class="product-name">Surprise Tickets</span>
                                         <span class="product-meta">Seats: <strong style="color: ${themeColor}">${order.tickets.seats}</strong></span>
                                     </div>
                                     <div class="product-controls-price">

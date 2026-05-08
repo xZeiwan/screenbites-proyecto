@@ -792,16 +792,12 @@
 
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             
-            // 🔥 PARCHE SALVAVIDAS: Inyectar sessionId si el backend lo pide
             let payloadCart = globalCart.map(item => {
-                if (!item.sessionId) {
-                    item.sessionId = "1"; // Valor por defecto
-                }
+                if (!item.sessionId) item.sessionId = "1";
                 return item;
             });
 
             let paymentData = {};
-
             if (currentMethod === 'card') {
                 paymentData = {
                     cardNumber: document.getElementById('card-number').value.replace(/\s/g, ''),
@@ -813,6 +809,25 @@
             } else if (currentMethod === 'paypal') {
                 paymentData = { email: document.getElementById('paypal-email').value };
             }
+
+            // Catálogo de películas para la revelación
+            const movieCatalog = {
+                "01": { title: "Kill Bill", img: "{{ asset('img/1-Kill-Bill/Mini.png') }}" },
+                "02": { title: "Five Nights At Freddy's", img: "{{ asset('img/2-Five-Nights/Mini.png') }}" },
+                "03": { title: "Godzilla", img: "{{ asset('img/3-Godzilla/Mini.png') }}" },
+                "04": { title: "Oppenheimer", img: "{{ asset('img/4-Oppenheimer/Mini.png') }}" },
+                "05": { title: "Up", img: "{{ asset('img/5-Up/Mini.png') }}" },
+                "06": { title: "The Joker", img: "{{ asset('img/6-The-Joker/Mini.png') }}" },
+                "07": { title: "Alien", img: "{{ asset('img/7-Alien/Mini.png') }}" },
+                "08": { title: "Interstellar", img: "{{ asset('img/8-Interstellar/Mini.png') }}" },
+                "09": { title: "Barbie", img: "{{ asset('img/9-Barbie/Mini.png') }}" },
+                "10": { title: "Mamma Mia!", img: "{{ asset('img/10-MammaMia/Mini.jpg') }}" },
+                "11": { title: "Deadpool", img: "{{ asset('img/11-Deadpool/Mini.jpg') }}" },
+                "12": { title: "Gladiator", img: "{{ asset('img/12-Gladiator/Mini.jpg') }}" },
+                "13": { title: "Venom", img: "{{ asset('img/13-Venom/Mini.png') }}" },
+                "14": { title: "Mufasa", img: "{{ asset('img/14-Mufasa/Mini.jpg') }}" },
+                "15": { title: "Kraven", img: "{{ asset('img/15-Kraven/Mini.png') }}" }
+            };
 
             fetch('/process-payment', {
                 method: 'POST',
@@ -829,42 +844,44 @@
             })
             .then(async response => {
                 const data = await response.json();
-                if (!response.ok) {
-                    throw data; 
-                }
+                if (!response.ok) throw data; 
                 return data;
             })
             .then(data => {
                 if(data.status === 'success') {
                     localStorage.removeItem(CART_KEY); 
 
-                    // COMPROBAMOS SI COMPRÓ EL CINE A CIEGAS
                     const hasBlindTicket = globalCart.some(order => order.movieId === 'blind-01');
 
-                    if (hasBlindTicket) {
+                    if (hasBlindTicket && data.revealed_movie_id) {
+                        localStorage.setItem('purchased_blind_{{ Auth::check() ? Auth::id() : "guest" }}', 'true');
+                        
+                        // 1. Conseguimos el ID que nos mandó Laravel, formateado con el "0" delante si hace falta
+                        let recId = String(data.revealed_movie_id).padStart(2, '0');
+                        let revealedMovie = movieCatalog[recId] || { title: "Mystery Screenbites Film", img: "https://via.placeholder.com/300x450/111/ffd000?text=Top+Secret" };
+
+                        // 2. Cambiamos la imagen y el título en el HTML ANTES de que termine el flash
+                        document.getElementById('revealed-poster').src = revealedMovie.img;
+                        document.querySelector('#reveal-text h2').innerText = revealedMovie.title;
+
+                        // 3. Lanzamos la animación
                         const revealScreen = document.getElementById('blind-reveal-screen');
                         revealScreen.classList.add('show');
                         
-                        // Secuencia de animación de suspense
                         setTimeout(() => {
-                            // Flash de luz blanca
                             document.getElementById('flash-bang').classList.add('active');
-                            // Ocultamos la interrogación
                             document.getElementById('mystery-question').style.display = 'none';
                             
-                            // Aparece el póster real
                             const poster = document.getElementById('revealed-poster');
                             poster.style.opacity = '1';
                             poster.style.transform = 'scale(1)';
                             
-                            // Aparece el texto descriptivo y el botón
                             const text = document.getElementById('reveal-text');
                             text.style.opacity = '1';
                             text.style.transform = 'translateY(0)';
-                        }, 3000); // 3 segundos sufriendo
+                        }, 3000); 
 
                     } else {
-                        // Pago normal estándar
                         successScreen.classList.add('show');
                         setTimeout(() => {
                             window.location.href = "/profile"; 
@@ -874,14 +891,12 @@
             })
             .catch(error => {
                 console.error('Error del backend:', error);
-                
                 let errorMsg = "An unexpected error occurred processing your payment.";
                 if (error.errors) {
                     errorMsg = Object.values(error.errors)[0][0]; 
                 } else if (error.message) {
                     errorMsg = error.message;
                 }
-
                 showErrorModal("Payment Failed", errorMsg);
                 
                 btn.disabled = false;

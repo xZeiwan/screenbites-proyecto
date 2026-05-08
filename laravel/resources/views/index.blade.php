@@ -1400,6 +1400,23 @@
                 }
             }
         }
+
+        /* --- CUSTOM MODAL ALERTS --- */
+        .custom-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+            z-index: 10000; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .custom-modal-overlay.active { opacity: 1; visibility: visible; }
+        
+        .custom-modal-box {
+            background: #0a0a0a; border: 2px solid var(--color-amarillo, #ffd000);
+            padding: 40px; border-radius: 12px; text-align: center;
+            max-width: 420px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            transform: translateY(30px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-modal-overlay.active .custom-modal-box { transform: translateY(0); }
     </style>
 </head>
 
@@ -1720,16 +1737,41 @@
                     <div class="blind-actions">
                         <div class="blind-price-btn">
                             <span class="blind-price">$5.00</span>
+                            
                             @auth
-                                <button class="btn-blind" onclick="addBlindTicketToCart()">
-                                    BOOK BLIND TICKET
-                                </button>
+                                @php
+                                    // Laravel busca en las reservas de este usuario si ya existe el 'blind-01'
+                                    $yaTieneEsteEvento = \Illuminate\Support\Facades\DB::table('bookings')
+                                        ->where('user_id', Auth::id())
+                                        ->where('event_id', 'blind-01')
+                                        ->exists();
+                                @endphp
+
+                                @if($yaTieneEsteEvento)
+                                    <div style="position: relative;">
+                                        <button class="btn-blind" style="background: #333; color: #888; cursor: not-allowed; box-shadow: none;" disabled>
+                                            <img src="{{ asset('img/img/Ticket-amarillo.png') }}" style="width:20px; filter: grayscale(1) opacity(0.5);"> 
+                                            <span>TICKET CLAIMED</span>
+                                        </button>
+                                        <div style="position: absolute; top: 100%; left: 0; margin-top: 8px; background: #388e3c; color: white; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-family: 'Arial Black', sans-serif; letter-spacing: 1px; white-space: nowrap;">
+                                            ✓ ALREADY PURCHASED
+                                        </div>
+                                    </div>
+                                @else
+                                    <div>
+                                        <button class="btn-blind" onclick="addBlindTicketToCart()">
+                                            <img src="{{ asset('img/img/Ticket-amarillo.png') }}" style="width:20px;"> 
+                                            <span>BOOK TICKET</span>
+                                        </button>
+                                    </div>
+                                @endif
                             @else
                                 <button class="btn-blind" onclick="window.location.href='/login'">
-                                    LOGIN TO BOOK
+                                    <img src="{{ asset('img/img/Ticket-amarillo.png') }}" style="width:20px;"> LOGIN TO BOOK
                                 </button>
                             @endauth
                         </div>
+                        
                         <a href="{{ route('events.blind') }}" class="btn-view-event">View Details</a>
                     </div>
                 </div>
@@ -1897,18 +1939,35 @@
         <div class="footer-bottom">
             <p>&copy; 2026 Screenbites Cinema. All rights reserved.</p>
             <p class="footer-credits">
-                Design with
-                <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                </svg>
-                for <span>Beni</span>
+                Design for <span>Beni</span>
             </p>
         </div>
     </footer>
 
+    <div id="duplicate-event-modal" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <div class="modal-icon" style="color: var(--color-amarillo, #ffd000); margin-bottom: 20px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+            <h3 style="font-family: 'Arial Black', sans-serif; font-size: 22px; margin-bottom: 15px; color: #fff; text-transform: uppercase;">Already in Cart</h3>
+            <p style="color: #aaa; font-size: 15px; line-height: 1.6; margin-bottom: 30px;">
+                You already have a Blind Ticket in your cart! You can only book one per order.
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button onclick="closeDuplicateModal()" style="background: transparent; border: 1px solid #555; color: #fff; padding: 12px 25px; border-radius: 6px; font-family: 'Arial Black', sans-serif; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-size: 13px;">
+                    Close
+                </button>
+                <button onclick="window.location.href='/cart'" style="background: var(--color-amarillo, #ffd000); border: none; color: #000; padding: 12px 25px; border-radius: 6px; font-family: 'Arial Black', sans-serif; cursor: pointer; text-transform: uppercase; transition: 0.3s; font-size: 13px; box-shadow: 0 5px 15px rgba(255,208,0,0.2);">
+                    Go to Cart
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
-        // 1. AÑADIMOS LA LLAVE MÁGICA AQUÍ
         const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
 
         // Le pasamos la información de la sesión al JavaScript usando una variable global
@@ -2139,10 +2198,18 @@
             });
         }
 
-        // Función real para añadir el "Blind Ticket" al carrito
+        // FUNCIÓN PARA AÑADIR EL TICKET MISTERIOSO AL CARRITO
         function addBlindTicketToCart() {
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             
+            // Comprobamos si ya lo ha comprado
+            let existingIndex = globalCart.findIndex(order => order.movieId === 'blind-01');
+            if(existingIndex > -1) {
+                // AQUÍ ESTÁ LA MAGIA: En lugar del alert, abrimos el modal
+                document.getElementById('duplicate-event-modal').classList.add('active');
+                return; // Cortamos la ejecución para que no haga nada más
+            }
+
             // Creamos un pedido especial tipo "Blind Ticket"
             let blindOrder = {
                 id: 'ORD-BLIND-' + Date.now(),
@@ -2155,22 +2222,51 @@
                 orderTotal: 5.00
             };
 
-            // Comprobamos si ya lo ha comprado para no dejarle meter más de uno (opcional)
-            let existingIndex = globalCart.findIndex(order => order.movieId === 'blind-01');
-            if(existingIndex > -1) {
-                alert("You already have a Blind Ticket in your cart!");
-                window.location.href = '/cart';
-                return;
-            }
-
-            // Metemos al carro, guardamos y redirigimos
             globalCart.push(blindOrder);
             localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
-            updateCartBadge();
+            
+            // Actualizamos la bolita roja si tienes la función
+            if(typeof updateCartBadge === 'function') updateCartBadge(); 
             
             window.location.href = '/cart';
         }
 
+        // FUNCIÓN PARA CERRAR EL MODAL
+        function closeDuplicateModal() {
+            document.getElementById('duplicate-event-modal').classList.remove('active');
+        }
+
+        // --- COMPROBAR SI YA HA COMPRADO EL TICKET MISTERIOSO (EN LA PORTADA) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generamos la misma clave que usamos al comprar en el checkout
+            const BLIND_PURCHASED_KEY = 'purchased_blind_{{ Auth::check() ? Auth::id() : "guest" }}';
+            
+            // Si existe la marca en el navegador...
+            if (localStorage.getItem(BLIND_PURCHASED_KEY) === 'true') {
+                const btnHome = document.getElementById('btn-book-blind-home');
+                const badgeHome = document.getElementById('purchased-badge-home');
+                
+                if (btnHome) {
+                    // Cambiamos el estilo del botón a gris
+                    btnHome.style.background = '#333';
+                    btnHome.style.color = '#888';
+                    btnHome.style.cursor = 'not-allowed';
+                    btnHome.style.boxShadow = 'none';
+                    
+                    // Le quitamos la función de añadir al carrito
+                    btnHome.onclick = null; 
+                    
+                    // Cambiamos el texto y apagamos el icono
+                    document.getElementById('btn-blind-text-home').innerText = 'TICKET CLAIMED';
+                    document.getElementById('btn-blind-icon-home').style.filter = 'grayscale(1) opacity(0.5)';
+                    
+                    // Mostramos la etiqueta verde de completado
+                    if (badgeHome) {
+                        badgeHome.style.display = 'block';
+                    }
+                }
+            }
+        });
     </script>
 </body>
 
