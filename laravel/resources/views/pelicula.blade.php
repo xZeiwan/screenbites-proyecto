@@ -1108,7 +1108,7 @@
             <div style="background: #111; padding: 25px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #333;">
                 <h4 style="margin-bottom: 15px; color: #fff;">Hi {{ Auth::user()->name }}, share your thoughts!</h4>
                 
-                <form action="{{ route('pelicula.review', ['id' => $id]) }}" method="POST">
+                <form action="{{ route('pelicula.review', ['id' => $id]) }}" method="POST" id="reviewForm">
                     @csrf
                     <div style="margin-bottom: 15px;">
                         <label style="color: #888; display: block; margin-bottom: 5px;">Score:</label>
@@ -1125,9 +1125,47 @@
                         <textarea name="content" required placeholder="Write your review here..." rows="4" style="width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 15px; border-radius: 8px; resize: none;"></textarea>
                     </div>
 
-                    <button type="submit" style="background: var(--color-principal); color: var(--color-texto-btn); padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
-                        Submit Review
+                    @error('privacy_policy')
+                        <div style="color: #ff4444; font-size: 14px; font-weight: bold; margin-bottom: 15px; font-family: Arial, sans-serif;">
+                            ⚠️ {{ $message }}
+                        </div>
+                    @enderror
+
+                    <button type="button" onclick="openPrivacyModal()" style="background: var(--color-principal); color: var(--color-texto-btn); padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: transform 0.2s ease;">
+                        Review & Submit
                     </button>
+
+                    <div id="privacy-modal" class="trailer-modal-overlay" onclick="closePrivacyModal()" style="z-index: 10000;">
+                        <div class="trailer-modal-content" style="background: #111; padding: 40px; border-radius: 12px; border: 2px solid var(--color-principal); max-width: 600px; text-align: left;" onclick="event.stopPropagation()">
+                            <h2 style="color: var(--color-principal); margin-bottom: 20px; font-size: 24px;">PRIVACY POLICY</h2>
+                            
+                            <div style="margin-bottom: 25px; color: #ccc; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; border-bottom: 1px solid #333; padding-bottom: 20px;">
+                                <p style="margin-top: 0;">Welcome to Screenbites Cinema. We are committed to protecting your personal information and your right to privacy.</p>
+                                <strong style="color: #fff;">1. Information We Collect</strong>
+                                <p>We collect personal information that you voluntarily provide to us when you participate in activities on the website (such as posting movie reviews).</p>
+                                <strong style="color: #fff;">2. Movie Reviews and Public Data</strong>
+                                <p>When you submit a review for a movie, you agree that your username, avatar, and the content of your review will be publicly visible to other users of the website. We reserve the right to moderate, approve, or delete reviews that violate our community guidelines.</p>
+                                <strong style="color: #fff;">3. Data Security</strong>
+                                <p style="margin-bottom: 0;">We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process.</p>
+                            </div>
+
+                            <div style="margin-bottom: 25px; display: flex; align-items: flex-start; gap: 10px;">
+                                <input type="checkbox" name="privacy_policy" id="privacy_policy" required style="margin-top: 4px; cursor: pointer; accent-color: var(--color-principal); transform: scale(1.2);">
+                                <label for="privacy_policy" style="font-size: 14px; color: #fff; font-family: Arial, sans-serif; cursor: pointer; line-height: 1.4;">
+                                    I read and accept the Privacy Policy.
+                                </label>
+                            </div>
+
+                            <div style="display: flex; gap: 15px;">
+                                <button type="submit" style="background: var(--color-principal); color: var(--color-texto-btn); padding: 12px 25px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; flex: 1;">
+                                    Accept & Publish
+                                </button>
+                                <button type="button" onclick="closePrivacyModal()" style="background: transparent; color: #fff; padding: 12px 25px; border: 1px solid #555; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: background 0.3s;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         @else
@@ -1157,21 +1195,23 @@
                             }
                         })
                         ->orderBy('reviews.created_at', 'desc')
-                        ->select('users.name', 'reviews.*') 
+                        ->select('users.name', 'users.avatar', 'reviews.*') 
                         ->get();
                 } catch(\Exception $e) { }
             @endphp
 
             @foreach($localReviews as $local)
                 @php
-                    $userHash = md5(strtolower(trim($local->name))); 
-                    $avatarUrl = "https://www.gravatar.com/avatar/{$userHash}?d=identicon&s=100";
+                    // Usamos el avatar del usuario, o uno por defecto si por algún motivo está vacío
+                    $avatarImg = !empty($local->avatar) ? $local->avatar : 'avatar-default.png';
+                    $avatarUrl = asset('img/avatars/' . $avatarImg);
+                    
                     // Compatibilidad por si se guardó como score o como rating
                     $estrellas = (int) ($local->rating ?? 5); 
                     $comentario = $local->comment ?? $local->content ?? ''; 
                 @endphp
                 <div style="background: #111; padding: 20px; border-radius: 12px; display: flex; gap: 20px; align-items: flex-start; border: 1px solid #222;">
-                    <img src="{{ $avatarUrl }}" alt="User" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-principal);">
+                    <img src="{{ $avatarUrl }}" alt="{{ $local->name }}" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-principal); object-fit: cover;" onerror="this.src='https://via.placeholder.com/50/333/ffd000?text={{ substr($local->name, 0, 1) }}'">
 
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
@@ -1241,7 +1281,7 @@
                 <h4>Legal</h4>
                 <ul class="footer-links">
                     <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1331,6 +1371,27 @@
             currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
             
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        /* --- MODAL DE PRIVACIDAD --- */
+        function openPrivacyModal() {
+            // Verificamos que el usuario haya escrito algo antes de abrir el modal
+            const textarea = document.querySelector('textarea[name="content"]');
+            if(textarea.value.trim() === '') {
+                textarea.reportValidity(); // Le avisa que rellene el campo
+                return;
+            }
+            document.getElementById('privacy-modal').classList.add('active');
+            
+            // Bloqueamos el scroll de la página de fondo
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePrivacyModal() {
+            document.getElementById('privacy-modal').classList.remove('active');
+            
+            // MAGIA: Restauramos el scroll de la página al cerrar el modal
+            document.body.style.overflow = '';
         }
     </script>
 </body>

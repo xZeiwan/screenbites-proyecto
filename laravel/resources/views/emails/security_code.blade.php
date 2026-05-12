@@ -115,12 +115,12 @@
 
         /* Footer - Espaciado y contraste pulido */
         .footer {
-            background-color: #111111; /* Misma profundidad */
+            background-color: #111111; 
             padding: 25px 30px;
             text-align: center;
             font-size: 12px;
-            color: #888888; /* Un poco más brillante para mejor contraste contra el negro profundo */
-            border-top: 2px solid #ffd000; /* Borde superior dorado para definición */
+            color: #888888;
+            border-top: 2px solid #ffd000;
         }
     </style>
 </head>
@@ -131,14 +131,14 @@
         </div>
 
         <div class="content">
-            <h2>¡Hola, {{ $user->name }}!</h2>
-            <p>Alguien (esperamos que seas tú) está intentando acceder a tu cuenta. Aquí tienes tu código de seguridad para entrar a la sala:</p>
+            <h2>Hello, {{ $user->name }}!</h2>
+            <p>Someone (we hope it's you) is trying to access your account. Here is your security code to enter the theater:</p>
 
             <div class="code-box">
                 <span class="code">{{ $code }}</span>
             </div>
 
-            <p style="font-size: 14px; color: #aaaaaa; font-style: italic;">Este código caducará en 10 minutos. Si no has sido tú, ignora este mensaje.</p>
+            <p style="font-size: 14px; color: #aaaaaa; font-style: italic;">This code will expire in 10 minutes. If you didn't initiate this request, please ignore this message.</p>
         </div>
 
         <div class="logo-section">
@@ -146,7 +146,7 @@
         </div>
 
         <div class="footer">
-            &copy; 2026 Cine Screenbites. Todos los derechos reservados.<br>
+            &copy; 2026 Cine Screenbites. All rights reserved.<br>
             Experience cinema like never before.
         </div>
     </div>

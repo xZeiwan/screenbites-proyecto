@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class FoodController extends Controller
 {
-    public function index(Request $request, $id)
+    public function index(Request $request, string $id)
     {
         $ticketsTotal = $request->query('tickets', 0);
         $seats = $request->query('seats', '');

@@ -543,7 +543,7 @@
             margin-top: 10px; 
             width: 100%;
         }
-        
+
         #close-modal-btn:hover { 
             background: var(--color-amarillo); 
             transform: scale(1.02); 
@@ -921,7 +921,7 @@
                 <h4>Legal</h4>
                 <ul class="footer-links">
                     <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
                 </ul>
             </div>
             <div class="footer-col">

@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class MovieController extends Controller
 {
-    public function show($id)
+    public function show(string $id)
     {
         $wordpressUrl = "http://127.0.0.1/screenbites-proyecto/wp"; 
 
@@ -70,7 +71,7 @@ class MovieController extends Controller
             ];
 
             // 4. Buscamos las sesiones de ESTA película a partir de hoy
-            $showtimes = \DB::table('showtimes')
+            $showtimes = DB::table('showtimes')
                 ->join('rooms', 'showtimes.room_id', '=', 'rooms.id')
                 ->select('showtimes.*', 'rooms.name as room_name')
                 ->where('movie_id', $id)
@@ -104,26 +105,28 @@ class MovieController extends Controller
         }
     }
 
-    public function storeReview(Request $request, $id)
+    public function storeReview(\Illuminate\Http\Request $request, string $id)
     {
-        // 1. Validamos asegurándonos de que 'score' es un número del 1 al 5
+        // 1. Validamos los datos y ponemos el mensaje en INGLÉS
         $request->validate([
-            'score' => 'required|numeric|min:1|max:5',
+            'score' => 'required|integer|min:1|max:5',
             'content' => 'required|string|max:1000',
+            'privacy_policy' => 'accepted', 
+        ], [
+            'privacy_policy.accepted' => 'You must read and accept the Privacy Policy to submit a review.'
         ]);
 
-        // 2. Insertamos en la BD forzando a que lo convierta a número entero (int)
-        \Illuminate\Support\Facades\DB::table('reviews')->insert([
+        // 2. Guardamos SOLO los datos que le importan a la base de datos (ignorando el privacy_policy)
+        DB::table('reviews')->insert([
+            'user_id' => Auth::id(),
             'movie_id' => $id,
-            'user_id' => auth()->id(),
-            'rating' => (int) $request->input('score'), // Obligamos a que lea el selector
-            'comment' => $request->input('content'),
-            'status' => 'pending',
+            'rating' => $request->score,     
+            'comment' => $request->content,
+            'status' => 'pending',            
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        // 3. Devolvemos a la página
-        return back()->with('status', 'Review submitted successfully!');
+        return back()->with('status', 'Review submitted successfully! Waiting for approval.');
     }
 }

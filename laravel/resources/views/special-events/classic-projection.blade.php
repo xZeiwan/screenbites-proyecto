@@ -864,7 +864,7 @@
                 <h4>Legal</h4>
                 <ul class="footer-links">
                     <li><a href="#">Terms & Conditions</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
                 </ul>
             </div>
             <div class="footer-col">
