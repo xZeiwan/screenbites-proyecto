@@ -861,7 +861,7 @@
         <div class="footer-bottom">
             <p>&copy; 2026 Screenbites Cinema. All rights reserved.</p>
             <p class="footer-credits">
-                Design for <span>Beni</span>
+                Design for <span>Enrique & Alex</span>
             </p>
         </div>
     </footer>
