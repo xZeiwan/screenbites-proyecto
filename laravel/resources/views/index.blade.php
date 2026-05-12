@@ -1403,20 +1403,43 @@
 
         /* --- CUSTOM MODAL ALERTS --- */
         .custom-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-            z-index: 10000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(8px);
+            z-index: 10000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: all 0.3s ease;
         }
-        .custom-modal-overlay.active { opacity: 1; visibility: visible; }
+
+        .custom-modal-overlay.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
         
         .custom-modal-box {
-            background: #0a0a0a; border: 2px solid var(--color-amarillo, #ffd000);
-            padding: 40px; border-radius: 12px; text-align: center;
-            max-width: 420px; width: 90%; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
-            transform: translateY(30px); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #0a0a0a; 
+            border: 2px solid var(--color-amarillo, #ffd000);
+            padding: 40px; 
+            border-radius: 12px; 
+            text-align: center;
+            max-width: 420px; 
+            width: 90%; 
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            transform: translateY(30px); 
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .custom-modal-overlay.active .custom-modal-box { transform: translateY(0); }
+        
+        .custom-modal-overlay.active .custom-modal-box { 
+            transform: translateY(0);
+         }
     </style>
 </head>
 

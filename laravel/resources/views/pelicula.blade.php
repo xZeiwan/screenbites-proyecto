@@ -359,11 +359,22 @@
             line-height: 1;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 5%; }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 5%; 
+        }
     
         /* --- ESTILOS AÑADIDOS PARA EL NUEVO TRAILER Y CARRUSEL --- */
-        .trailer-featured { padding: 60px 0 80px 0; background: #050505; }
-        .movie-gallery { padding: 60px 0 60px 0; background: #000; }
+        .trailer-featured { 
+            padding: 60px 0 80px 0; 
+            background: #050505; 
+        }
+
+        .movie-gallery { 
+            padding: 60px 0 60px 0; 
+            background: #000; 
+        }
 
         .video-wrapper {
             position: relative;
@@ -376,9 +387,18 @@
         }
 
         .video-cover {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            cursor: pointer; z-index: 2; display: flex; align-items: center; justify-content: center;
-            background-color: #000; transition: transform 0.3s ease;
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            cursor: pointer; 
+            z-index: 2; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            background-color: #000; 
+            transition: transform 0.3s ease;
         }
         
         .video-cover:hover {
@@ -386,14 +406,25 @@
         }
 
         .video-cover img {
-            width: 100%; height: 100%; object-fit: cover; opacity: 0.8;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            opacity: 0.8;
         }
 
         .custom-play-btn {
-            position: absolute; background: rgba(0,0,0,0.7); color: var(--color-blanco);
-            width: 80px; height: 80px; border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-size: 35px;
-            border: 3px solid var(--color-principal); transition: all 0.3s ease;
+            position: absolute; 
+            background: rgba(0,0,0,0.7); 
+            color: var(--color-blanco);
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            font-size: 35px;
+            border: 3px solid var(--color-principal); 
+            transition: all 0.3s ease;
             padding-left: 6px;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
@@ -405,15 +436,26 @@
         }
 
         .no-video {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0;
-            display: flex; align-items: center; justify-content: center;
-            background: #111; color: #666; font-size: 1.5rem;
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            top: 0; 
+            left: 0;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            background: #111; 
+            color: #666; 
+            font-size: 1.5rem;
         }
 
         /* --- ESTILOS DEL MODAL DEL TRAILER --- */
         .trailer-modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
             background: rgba(0, 0, 0, 0.95);
             backdrop-filter: blur(10px);
             z-index: 9999;
@@ -460,7 +502,7 @@
 
         .video-responsive {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
+            padding-bottom: 56.25%;
             height: 0;
             background: #000;
             border-radius: 12px;
@@ -471,34 +513,70 @@
 
         .video-responsive iframe {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
         }
 
         /* CARRUSEL DE IMÁGENES */
-        .clean-carousel-container { width: 100%; position: relative; }
+        .clean-carousel-container { 
+            width: 100%; 
+            position: relative; 
+        }
+
         .clean-carousel-viewport { 
-            width: 100%; position: relative; overflow: hidden; 
-            border-radius: 15px; border: 1px solid #222; 
-            padding-bottom: 56.25%; height: 0; box-shadow: 0 0 50px rgba(0,0,0, 0.4); 
+            width: 100%; 
+            position: relative;
+            overflow: hidden; 
+            border-radius: 15px; 
+            border: 1px solid #222; 
+            padding-bottom: 56.25%; 
+            height: 0; 
+            box-shadow: 0 0 50px rgba(0,0,0, 0.4); 
         }
+
         .clean-carousel-track { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            display: flex; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
         }
-        .clean-carousel-slide { min-width: 100%; height: 100%; position: relative; }
-        .clean-carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        .clean-carousel-slide { 
+            min-width: 100%; 
+            height: 100%; 
+            position: relative;
+        }
+        .clean-carousel-slide img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
         
         .clean-carousel-controls { 
-            display: flex; justify-content: center; align-items: center; 
-            gap: 40px; margin-top: 20px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 40px; 
+            margin-top: 20px; 
         }
         .clean-arrow { 
-            background: transparent; border: none; color: #666; 
-            font-size: 35px; cursor: pointer; transition: all 0.3s ease; 
-            padding: 0 10px; outline: none;
+            background: transparent; 
+            border: none; 
+            color: #666; 
+            font-size: 35px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            padding: 0 10px; 
+            outline: none;
         }
         .clean-arrow:hover { 
-            color: var(--color-principal); transform: scale(1.2); 
+            color: var(--color-principal); 
+            transform: scale(1.2); 
             filter: drop-shadow(0 0 10px var(--color-principal));
         }
 

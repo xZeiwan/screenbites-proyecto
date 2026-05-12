@@ -295,78 +295,167 @@
         }
 
         @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
+            0% { 
+                transform: rotate(0deg); 
+            } 
+
+            100% { 
+                transform: rotate(360deg); 
+            } 
         }
 
         /* --- PANTALLA DE ÉXITO DE PAGO ESTÁNDAR --- */
         .success-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--color-negro); color: var(--color-principal);
-            z-index: 9999; display: none; flex-direction: column;
-            justify-content: center; align-items: center; text-align: center;
-            opacity: 0; transition: opacity 0.5s ease;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: var(--color-negro); 
+            color: var(--color-principal);
+            z-index: 9999; 
+            display: none; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            text-align: center;
+            opacity: 0; 
+            transition: opacity 0.5s ease;
         }
 
-        .success-overlay.show { display: flex; opacity: 1; }
+        .success-overlay.show { 
+            display: flex;
+            opacity: 1; 
+        }
 
         .success-overlay svg { 
-            width: 100px; height: 100px; color: var(--color-principal); margin-bottom: 20px; 
+            width: 100px; 
+            height: 100px; 
+            color: var(--color-principal); 
+            margin-bottom: 20px; 
             animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        .success-overlay h2 { font-family: 'Arial Black', sans-serif; font-size: 36px; margin-bottom: 10px; text-transform: uppercase; }
-        .success-overlay p { color: #aaa; font-size: 18px; }
+        .success-overlay h2 { 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 36px; 
+            margin-bottom: 10px; 
+            text-transform: uppercase; 
+        }
+
+        .success-overlay p { 
+            color: #aaa; 
+            font-size: 18px; 
+        }
 
         @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+            0% { 
+                transform: scale(0); 
+                opacity: 0; 
+            }
+
+            100% { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
         }
 
         /* --- PANTALLA DE REVELACIÓN (BLIND TICKET) --- */
         .blind-reveal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050505; z-index: 10000; display: none;
-            flex-direction: column; align-items: center; justify-content: center;
-            color: #fff; overflow: hidden;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: #050505; 
+            z-index: 10000; 
+            display: none;
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            color: #fff; 
+            overflow: hidden;
         }
         
-        .blind-reveal-overlay.show { display: flex; }
+        .blind-reveal-overlay.show { 
+            display: flex; 
+        }
         
         .mystery-box {
-            position: relative; width: 300px; height: 450px;
-            display: flex; align-items: center; justify-content: center;
+            position: relative; 
+            width: 300px; 
+            height: 450px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             perspective: 1000px;
         }
         
         .mystery-question {
-            font-family: 'Arial Black', sans-serif; font-size: 200px; font-weight: 900; 
-            color: var(--color-principal); animation: intenseGlitch 0.15s linear infinite;
-            position: absolute; z-index: 10;
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 200px; 
+            font-weight: 900; 
+            color: var(--color-principal); 
+            animation: intenseGlitch 0.15s linear infinite;
+            position: absolute; 
+            z-index: 10;
         }
         
         .revealed-poster {
-            width: 100%; height: 100%; object-fit: cover; border-radius: 12px;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            border-radius: 12px;
             box-shadow: 0 0 50px rgba(255,208,0,0.5);
-            opacity: 0; transform: scale(0.8); transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 3px solid var(--color-principal); z-index: 5;
+            opacity: 0; transform: scale(0.8); 
+            transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid var(--color-principal); 
+            z-index: 5;
         }
         
         .reveal-text {
-            margin-top: 30px; text-align: center; opacity: 0; transform: translateY(20px);
-            transition: all 1s ease; transition-delay: 0.5s; z-index: 30;
+            margin-top: 30px; 
+            text-align: center; 
+            opacity: 0; 
+            transform: translateY(20px);
+            transition: all 1s ease; 
+            transition-delay: 0.5s; 
+            z-index: 30;
         }
         
-        .reveal-text h2 { font-family: 'Arial Black', sans-serif; font-size: 32px; color: var(--color-principal); margin-bottom: 10px; text-transform: uppercase; }
-        .reveal-text p { color: #aaa; font-size: 16px; margin-bottom: 25px; }
+        .reveal-text h2 { 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 32px; 
+            color: var(--color-principal); 
+            margin-bottom: 10px; 
+            text-transform: uppercase; 
+        }
+
+        .reveal-text p { 
+            color: #aaa; 
+            font-size: 16px; 
+            margin-bottom: 25px; 
+        }
         
         .btn-home {
-            background: var(--color-blanco); color: var(--color-negro); padding: 15px 35px;
-            font-family: 'Arial Black', sans-serif; font-size: 13px; font-weight: 900; 
-            text-transform: uppercase; border: none; border-radius: 6px;
-            cursor: pointer; letter-spacing: 1px; transition: all 0.3s;
+            background: var(--color-blanco); 
+            color: var(--color-negro); 
+            padding: 15px 35px;
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 13px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            border: none; 
+            border-radius: 6px;
+            cursor: pointer; 
+            letter-spacing: 1px; 
+            transition: all 0.3s;
         }
-        .btn-home:hover { background: var(--color-principal); transform: scale(1.05); }
+
+        .btn-home:hover { 
+            background: var(--color-principal); 
+            transform: scale(1.05); 
+        }
 
         @keyframes intenseGlitch {
             0% { transform: translate(0) skew(0deg); text-shadow: 4px 0 red, -4px 0 blue; }
@@ -379,44 +468,108 @@
 
         /* Flash de luz blanca para la transición */
         .flash-bang {
-            position: absolute; top:0; left:0; width:100%; height:100%;
-            background: white; z-index: 20; opacity: 0; pointer-events: none;
+            position: absolute; 
+            top:0; 
+            left:0;
+            width:100%; 
+            height:100%;
+            background: white; 
+            z-index: 20; 
+            opacity: 0; 
+            pointer-events: none;
         }
-        .flash-bang.active { animation: flashAnim 1s ease-out forwards; }
+
+        .flash-bang.active { 
+            animation: flashAnim 1s ease-out forwards; 
+        }
         
         @keyframes flashAnim {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
+            0% { 
+                opacity: 1; 
+            }
+            100% { 
+                opacity: 0; 
+            }
         }
 
         /* --- CUSTOM MODAL ALERTS --- */
         .custom-modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
-            z-index: 10000; display: flex; align-items: center; justify-content: center;
-            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85); 
+            backdrop-filter: blur(8px);
+            z-index: 10000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            opacity: 0; 
+            visibility: hidden; 
+            transition: all 0.3s ease;
         }
 
-        .custom-modal-overlay.active { opacity: 1; visibility: visible; }
+        .custom-modal-overlay.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
 
         .custom-modal-box {
-            background: #0a0a0a; border: 2px solid var(--color-principal);
-            padding: 40px; border-radius: 12px; text-align: center; max-width: 420px; width: 90%;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.9); transform: translateY(30px);
+            background: #0a0a0a; 
+            border: 2px solid var(--color-principal);
+            padding: 40px; 
+            border-radius: 12px; 
+            text-align: center; 
+            max-width: 420px; width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9); 
+            transform: translateY(30px);
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .custom-modal-overlay.active .custom-modal-box { transform: translateY(0); }
-        .custom-modal-box .modal-icon { color: #ff4444; margin-bottom: 20px; }
-        .custom-modal-box h3 { font-family: 'Arial Black', sans-serif; font-size: 22px; margin-bottom: 15px; color: var(--color-blanco); text-transform: uppercase; letter-spacing: 1px; }
-        .custom-modal-box p { color: #aaa; font-size: 15px; line-height: 1.6; margin-bottom: 30px; }
+        .custom-modal-overlay.active .custom-modal-box { 
+            transform: translateY(0); 
+        }
+
+        .custom-modal-box .modal-icon { 
+            color: #ff4444; 
+            margin-bottom: 20px; 
+        }
+
+        .custom-modal-box h3 { 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 22px; 
+            margin-bottom: 15px; 
+            color: var(--color-blanco); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+        .custom-modal-box p { 
+            color: #aaa; 
+            font-size: 15px; 
+            line-height: 1.6; 
+            margin-bottom: 30px; 
+        }
 
         #close-error-btn {
-            background: var(--color-blanco); color: var(--color-negro); border: none;
-            padding: 14px 35px; font-family: 'Arial Black', sans-serif; font-size: 13px; border-radius: 6px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;
+            background: var(--color-blanco); 
+            color: var(--color-negro);
+            border: none;
+            padding: 14px 35px; 
+            font-family: 'Arial Black', sans-serif; 
+            font-size: 13px; 
+            border-radius: 6px; 
+            cursor: pointer;
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            transition: all 0.3s ease;
         }
-        #close-error-btn:hover { background: var(--color-principal); color: var(--color-texto-principal); transform: scale(1.05); }
+        
+        #close-error-btn:hover { 
+            background: var(--color-principal); 
+            color: var(--color-texto-principal); 
+            transform: scale(1.05); 
+        }
     </style>
 </head>
 <body>

@@ -200,22 +200,105 @@
         }
 
         /* ESTILOS DE LA SECCIÓN */
-        .page-container { padding: 150px 5% 80px; min-height: 80vh; }
-        .page-header { text-align: center; margin-bottom: 60px; }
-        .page-header h1 { font-size: 50px; text-transform: uppercase; margin-bottom: 15px; }
-        .page-header h1 span { color: var(--color-amarillo); }
-        .page-header p { font-family: Arial, sans-serif; color: #888; font-size: 16px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+        .page-container { 
+            padding: 150px 5% 80px; 
+            min-height: 80vh; 
+        }
+
+        .page-header { 
+            text-align: center; 
+            margin-bottom: 60px; 
+        }
+
+        .page-header h1 { 
+            font-size: 50px; 
+            text-transform: uppercase; 
+            margin-bottom: 15px; 
+        }
+
+        .page-header h1 span { 
+            color: var(--color-amarillo); 
+        }
+
+        .page-header p { 
+            font-family: Arial, sans-serif; 
+            color: #888; 
+            font-size: 16px; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            line-height: 1.6; 
+        }
         
-        .locations-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; max-width: 1200px; margin: 0 auto; }
-        .location-card { background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s; }
-        .location-card:hover { transform: translateY(-10px); border-color: var(--color-amarillo); box-shadow: 0 15px 30px rgba(255,208,0,0.1); }
-        .location-img { width: 100%; height: 250px; object-fit: cover; filter: grayscale(0.8); transition: 0.3s; }
-        .location-card:hover .location-img { filter: grayscale(0); }
-        .location-info { padding: 30px; text-align: center; }
-        .location-info h3 { margin-bottom: 10px; font-size: 24px; text-transform: uppercase; }
-        .location-info p { color: #aaa; font-family: Arial, sans-serif; font-size: 14px; margin-bottom: 25px; line-height: 1.6; }
-        .btn-map { background: transparent; color: var(--color-amarillo); border: 1px solid var(--color-amarillo); padding: 12px 20px; font-size: 12px; font-weight: 900; cursor: pointer; text-transform: uppercase; border-radius: 4px; transition: 0.3s; width: 100%; letter-spacing: 1px; }
-        .btn-map:hover { background: var(--color-amarillo); color: black; }
+        .locations-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 40px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
+
+        .location-card { 
+            background: #111; 
+            border: 1px solid #333; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            transition: transform 0.3s ease, border-color 0.3s; 
+        }
+
+        .location-card:hover { 
+            transform: translateY(-10px); 
+            border-color: var(--color-amarillo); 
+            box-shadow: 0 15px 30px rgba(255,208,0,0.1); 
+        }
+
+        .location-img { 
+            width: 100%; 
+            height: 250px; 
+            object-fit: cover; 
+            filter: grayscale(0.8); 
+            transition: 0.3s; 
+        }
+
+        .location-card:hover .location-img { 
+            filter: grayscale(0); 
+        }
+
+        .location-info { 
+            padding: 30px; 
+            text-align: center; 
+        }
+
+        .location-info h3 { 
+            margin-bottom: 10px; 
+            font-size: 24px; 
+            text-transform: uppercase;
+        }
+
+        .location-info p { 
+            color: #aaa; 
+            font-family: Arial, sans-serif; 
+            font-size: 14px; 
+            margin-bottom: 25px; 
+            line-height: 1.6; 
+        }
+
+        .btn-map { 
+            background: transparent; 
+            color: var(--color-amarillo); 
+            border: 1px solid var(--color-amarillo); 
+            padding: 12px 20px; font-size: 12px; 
+            font-weight: 900; cursor: pointer; 
+            text-transform: uppercase; 
+            border-radius: 4px; 
+            transition: 0.3s;
+            width: 100%; 
+            letter-spacing: 1px; 
+        }
+
+        .btn-map:hover { 
+            background: var(--color-amarillo); 
+            color: black; 
+        }
     </style>
 </head>
 <body>

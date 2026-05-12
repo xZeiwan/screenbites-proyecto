@@ -353,11 +353,35 @@
             box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
 
-        .totals { display: flex; gap: 40px; }
-        .total-block { display: flex; flex-direction: column; }
-        .total-label { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .total-value { font-size: 20px; font-weight: bold; font-family: 'Arial Black', sans-serif; color: #fff; }
-        .grand-total { color: var(--color-principal); font-size: 26px; }
+        .totals { 
+            display: flex; 
+            gap: 40px; 
+        }
+
+        .total-block { 
+            display: flex; 
+            flex-direction: column; 
+        }
+
+        .total-label { 
+            color: #888; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-bottom: 5px; 
+        }
+
+        .total-value { 
+            font-size: 20px; 
+            font-weight: bold; 
+            font-family: 'Arial Black', sans-serif; 
+            color: #fff; 
+        }
+
+        .grand-total { 
+            color: var(--color-principal); 
+            font-size: 26px; 
+        }
 
         .btn-checkout {
             background: var(--color-principal);
