@@ -114,14 +114,26 @@ class CheckoutController extends Controller
         $user = \Illuminate\Support\Facades\Auth::user();
         $isVip = $user && $user->role === 'vip';
 
-        // Guardamos en Base de datos ahora que el banco ha dado el OK
-        $this->saveToDatabase($cart, $user, $isVip);
+        // 1. Guardamos en Base de datos y obtenemos la peli revelada
+        $revealedMovieId = $this->saveToDatabase($cart, $user, $isVip);
 
-        // Limpiamos la memoria
+        // 2. Comprobamos si en el carrito había un "Ticket Ciego"
+        $hasBlindTicket = false;
+        foreach ($cart as $order) {
+            if ($order['movieId'] === 'blind-01') {
+                $hasBlindTicket = true;
+                break;
+            }
+        }
+
+        // 3. Limpiamos la memoria
         session()->forget('pending_checkout_cart');
 
-        // Lo mandamos al perfil con un mensaje de éxito
-        return redirect('/profile')->with('status', 'Tickets purchased successfully!');
+        // 4. CARGAMOS LA PANTALLA ANIMADA DE ÉXITO EN LUGAR DEL PERFIL
+        return view('checkout-success', [
+            'hasBlindTicket' => $hasBlindTicket,
+            'revealedMovieId' => $revealedMovieId
+        ]);
     }
 
     // --- FUNCIÓN QUE RECIBE AL USUARIO SI CANCELA EL PAGO ---
