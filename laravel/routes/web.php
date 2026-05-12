@@ -103,3 +103,6 @@ Route::get('/locations', function () {
 Route::get('/contact', function () { 
     return view('contact'); 
 })->name('contact');
+
+Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/cancel', [App\Http\Controllers\CheckoutController::class, 'cancel'])->name('checkout.cancel');
