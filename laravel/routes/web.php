@@ -133,3 +133,5 @@ Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('che
 Route::get('/privacy-policy', function () {
     return view('privacy-policy');
 })->name('privacy.policy');
+
+Route::post('/contact/send', [\App\Http\Controllers\AdminController::class, 'sendContact'])->name('contact.send');
