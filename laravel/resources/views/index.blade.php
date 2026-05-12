@@ -1452,9 +1452,9 @@
             <div class="logo"><img src="{{ asset('img/img/Logo-Negro.png') }}" alt="Cinema Logo" id="main-logo"></div>
             <nav>
                 <ul>
-                    <li style="color: var(--color-amarillo); font-size: 12px; font-family: monospace; border: 1px dashed var(--color-amarillo); padding: 4px 10px; border-radius: 4px; letter-spacing: 1px;">
-    SYS: {{ \Carbon\Carbon::now()->format('Y-m-d H:i') }}
-</li>
+                    <li id="sys-time" style="color: var(--color-amarillo); font-size: 12px; font-family: monospace; border: 1px dashed var(--color-amarillo); padding: 4px 10px; border-radius: 4px; letter-spacing: 1px;">
+                        SYS: {{ \Carbon\Carbon::now()->format('Y-m-d H:i') }}
+                    </li>
                     <li><a href="/">HOME</a></li>
                     <li><a href="/#cartelera">FILMS</a></li>
                     <li><a href="/#bar">MENUS</a></li>
@@ -2036,14 +2036,39 @@
 
         window.addEventListener('scroll', () => {
             const activeMovie = movies[currentIndex];
+            const sysTime = document.getElementById('sys-time');
+            
             if (window.scrollY >= window.innerHeight - 100) {
                 headerEl.classList.add('scrolled');
                 logoEl.src = "{{ asset('img/img/Logo-Blanco.png') }}";
                 headerEl.style.setProperty('--header-text-color', 'white');
+                
+                // Forzamos SIEMPRE el hover a amarillo cuando bajamos (fondo negro)
+                headerEl.style.setProperty('--hover-color', 'var(--color-amarillo)');
+                
+                if(sysTime) {
+                    sysTime.style.color = 'var(--color-amarillo)';
+                    sysTime.style.borderColor = 'var(--color-amarillo)';
+                }
             } else {
                 headerEl.classList.remove('scrolled');
                 logoEl.src = activeMovie.textColor === "white" ? "{{ asset('img/img/Logo-Blanco.png') }}" : "{{ asset('img/img/Logo-Negro.png') }}";
                 headerEl.style.setProperty('--header-text-color', activeMovie.textColor);
+                
+                // Restauramos el color del reloj y del HOVER según la película activa
+                if (activeMovie.id === "01") {
+                    headerEl.style.setProperty('--hover-color', '#000000'); 
+                    if(sysTime) {
+                        sysTime.style.color = '#000000';
+                        sysTime.style.borderColor = '#000000';
+                    }
+                } else {
+                    headerEl.style.setProperty('--hover-color', 'var(--color-amarillo)');
+                    if(sysTime) {
+                        sysTime.style.color = 'var(--color-amarillo)';
+                        sysTime.style.borderColor = 'var(--color-amarillo)';
+                    }
+                }
             }
         });
 
@@ -2149,22 +2174,25 @@
 
             if (!headerEl.classList.contains('scrolled')) {
                 headerEl.style.setProperty('--header-text-color', color);
+                const sysTime = document.getElementById('sys-time');
                 
                 if (activeMovie.id === "01") {
                     headerEl.style.setProperty('--hover-color', '#000000');
+                    // Si es Kill Bill, ponemos el reloj negro
+                    if(sysTime) {
+                        sysTime.style.color = '#000000';
+                        sysTime.style.borderColor = '#000000';
+                    }
                 } else {
                     headerEl.style.setProperty('--hover-color', 'var(--color-amarillo)');
+                    // Si es otra, se queda amarillo
+                    if(sysTime) {
+                        sysTime.style.color = 'var(--color-amarillo)';
+                        sysTime.style.borderColor = 'var(--color-amarillo)';
+                    }
                 }
                 
                 logoEl.src = color === "white" ? "{{ asset('img/img/Logo-Blanco.png') }}" : "{{ asset('img/img/Logo-Negro.png') }}";
-            }
-
-            if (color === 'white') {
-                btnBuyHero.style.background = '#ffffff';
-                btnBuyHero.style.color = '#000000';
-            } else {
-                btnBuyHero.style.background = '#000000';
-                btnBuyHero.style.color = activeMovie.bg;
             }
         }
 
