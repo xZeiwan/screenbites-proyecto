@@ -8,6 +8,8 @@ use App\Http\Controllers\FoodController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookingController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 // --- 1. PORTADA ---
 Route::get('/', function () {
@@ -51,6 +53,26 @@ Route::middleware('guest')->group(function () {
     Route::post('/registro', [AuthController::class, 'register']);
     Route::get('/2fa', [AuthController::class, 'show2faForm'])->name('2fa.form');
     Route::post('/2fa', [AuthController::class, 'verify2fa'])->name('2fa.verify');
+});
+
+// Rutas de verificación de email
+Route::middleware('auth')->group(function () {
+    // 1. La pantalla que le dice al usuario "Oye, ve a mirar tu correo"
+    Route::get('/email/verify', function () {
+        return view('auth.verify'); // Tendremos que crear esta pequeña vista HTML
+    })->name('verification.notice');
+
+    // 2. La ruta que se ejecuta cuando el usuario hace clic en el enlace del correo
+    Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
+        $request->fulfill(); // Marca el correo como verificado en la Base de Datos
+        return redirect('/')->with('status', 'Email successfully verified!'); // <-- AQUÍ CAMBIAMOS A '/'
+    })->middleware(['signed'])->name('verification.verify');
+
+    // 3. El botón para reenviar el correo si se ha perdido
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('message', 'Verification link sent again!');
+    })->middleware(['throttle:6,1'])->name('verification.send');
 });
 
 
@@ -104,5 +126,5 @@ Route::get('/contact', function () {
     return view('contact'); 
 })->name('contact');
 
-Route::get('/checkout/success', [App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
-Route::get('/checkout/cancel', [App\Http\Controllers\CheckoutController::class, 'cancel'])->name('checkout.cancel');
+Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');

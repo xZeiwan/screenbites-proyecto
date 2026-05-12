@@ -19,30 +19,38 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request) {
-        $request->validate(['email' => 'required|email', 'password' => 'required']);
+    public function login(\Illuminate\Http\Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-        $user = User::where('email', $request->email)->first();
+        // Buscamos al usuario por su email
+        $user = \App\Models\User::where('email', $request->email)->first();
 
-        // Si las credenciales son correctas
-        if ($user && Hash::check($request->password, $user->password)) {
-            
-            // Generar código y guardarlo
-            $code = rand(100000, 999999);
-            $user->update([
-                'two_factor_code' => $code,
-                'two_factor_expires_at' => now()->addMinutes(10)
-            ]);
-
-            // Enviar email usando nuestro diseño personalizado
-            Mail::to($user->email)->send(new SecurityCodeMail($code, $user));
-
-            // Guardar ID y mandar a la pantalla del código
-            session(['2fa_user_id' => $user->id]);
-            return redirect()->route('2fa.form');
+        // 1. Verificamos que exista y la contraseña sea correcta
+        if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['email' => 'Invalid credentials.']);
         }
 
-        return back()->withErrors(['email' => 'El correo o la contraseña no son correctos.']);
+        // 2. --- LÓGICA 2FA REAL ---
+        // Generamos un código aleatorio de 6 cifras
+        $code = rand(100000, 999999);
+
+        // Se lo guardamos al usuario en la base de datos con caducidad de 10 minutos
+        $user->two_factor_code = $code;
+        $user->two_factor_expires_at = now()->addMinutes(10);
+        $user->save();
+
+        // 3. Enviamos el correo electrónico en tiempo real
+        \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\SecurityCodeMail($code, $user));
+
+        // 4. Guardamos la ID del usuario temporalmente en la sesión para saber quién intenta entrar
+        session(['2fa_user_id' => $user->id]);
+
+        // Redirigimos a la pantalla donde tiene que escribir el código
+        return redirect()->route('2fa.form');
     }
 
     // ==========================================
@@ -52,40 +60,31 @@ class AuthController extends Controller
         return view('auth.register'); 
     }
 
-    public function register(Request $request) {
+    public function register(\Illuminate\Http\Request $request)
+    {
+        // 1. Validar el formulario
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Password::min(8)
-                ->letters() 
-                ->mixedCase()    
-                ->numbers()     
-                ->symbols()      
-            ],
-            'avatar' => 'required|string'
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // 1. Creamos al usuario en la base de datos
-        $user = User::create([
-            'name' => $request->name, 
+        // 2. Crear el usuario en la Base de Datos
+        $user = \App\Models\User::create([
+            'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password), 
-            'avatar' => $request->avatar,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            'avatar' => $request->avatar ?? 'avatar-default.png',
         ]);
 
-        // 2. Generamos el código 2FA INMEDIATAMENTE después de registrarse
-        $code = rand(100000, 999999);
-        $user->update([
-            'two_factor_code' => $code,
-            'two_factor_expires_at' => now()->addMinutes(10)
-        ]);
+        // 3. Disparar el correo de VERIFICACIÓN (el del botón)
+        event(new \Illuminate\Auth\Events\Registered($user));
 
-        // 3. Le mandamos el correo de verificación con el diseño personalizado
-        Mail::to($user->email)->send(new SecurityCodeMail($code, $user));
+        // 4. Iniciar sesión automáticamente (Laravel lo necesita para poder verificar)
+        \Illuminate\Support\Facades\Auth::login($user);
 
-        // 4. Guardamos su ID y lo mandamos directo a la pantalla de poner el código
-        session(['2fa_user_id' => $user->id]);
-        return redirect()->route('2fa.form');
+        // 5. Redirigir a la pantalla de "Aviso: Revisa tu correo"
+        return redirect()->route('verification.notice');
     }
 
 
@@ -99,26 +98,40 @@ class AuthController extends Controller
         return view('auth.2fa');
     }
 
-    public function verify2fa(Request $request) {
-        $request->validate(['code' => 'required|numeric']);
-        
-        $user = User::find(session('2fa_user_id'));
+    public function verify2fa(\Illuminate\Http\Request $request)
+    {
+        // El input de tu formulario HTML debe llamarse name="two_factor_code"
+        $request->validate([
+            'two_factor_code' => 'required|numeric',
+        ]);
 
-        // Si el código es correcto y no ha caducado
-        if ($user && $user->two_factor_code == $request->code && now()->lessThan($user->two_factor_expires_at)) {
-            
-            // Borramos el código de la base de datos por seguridad
-            $user->update(['two_factor_code' => null, 'two_factor_expires_at' => null]);
-            
-            // ¡LO LOGUEAMOS OFICIALMENTE!
-            Auth::login($user);
-            session()->forget('2fa_user_id');
-            
-            // Lo mandamos a la portada ya como usuario validado
-            return redirect('/');
+        // Recuperamos quién era el que intentaba iniciar sesión
+        $userId = session('2fa_user_id');
+        if (!$userId) {
+            return redirect()->route('login')->withErrors(['email' => 'Session expired. Please log in again.']);
         }
 
-        return back()->withErrors(['code' => 'El código es incorrecto o ha caducado.']);
+        $user = \App\Models\User::find($userId);
+
+        // Comprobamos si el código coincide Y si la fecha de caducidad aún no ha pasado
+        if ($user->two_factor_code == $request->two_factor_code && $user->two_factor_expires_at > now()) {
+            
+            // Si el código es correcto limpiamos las columnas de 2FA para que no se puedan reutilizar
+            $user->two_factor_code = null;
+            $user->two_factor_expires_at = null;
+            $user->save();
+
+            // Borramos la variable temporal
+            session()->forget('2fa_user_id');
+
+            // ¡Logueamos al usuario de forma oficial en Laravel!
+            \Illuminate\Support\Facades\Auth::login($user);
+
+            // Lo mandamos a la portada (o a su perfil)
+            return redirect()->route('home');
+        }
+
+        return back()->withErrors(['two_factor_code' => 'The security code is invalid or has expired.']);
     }
 
     // ==========================================

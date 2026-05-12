@@ -130,7 +130,7 @@ class CheckoutController extends Controller
         return redirect('/cart')->with('status', 'Payment cancelled.');
     }
 
-    // --- LÓGICA DE BASE DE DATOS (Extraída para no repetir código) ---
+    // --- LÓGICA DE BASE DE DATOS ---
     private function saveToDatabase(array $cart, \App\Models\User $user, bool $isVip)
     {
         $revealedMovieId = null;
