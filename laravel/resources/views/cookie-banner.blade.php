@@ -1,5 +1,5 @@
 @if(!Auth::check() || is_null(Auth::user()->cookie_consent))
-<div id="cookie-banner" class="cookie-banner show">
+<div id="cookie-banner" class="cookie-banner">
     <div class="cookie-content">
         <div class="cookie-header">
             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffd000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -30,7 +30,6 @@
     }
     .cookie-banner.show { visibility: visible; opacity: 1; }
     
-    /* Nuevo estilo para alinear el SVG con el título */
     .cookie-header {
         display: flex;
         align-items: center;
@@ -67,9 +66,29 @@
 </style>
 
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    const banner = document.getElementById('cookie-banner');
+    
+    // Si el banner existe en el HTML
+    if (banner) {
+        // Comprobamos si el usuario es invitado y ya tiene una cookie guardada en LocalStorage
+        @if(!Auth::check())
+            if (!localStorage.getItem('screenbites_cookie_consent')) {
+                // Si no hay respuesta guardada en localStorage, lo mostramos
+                banner.classList.add('show');
+            }
+        @else
+            // Si el usuario ESTÁ logueado y el banner se ha impreso (significa que en DB es null), lo mostramos
+            banner.classList.add('show');
+        @endif
+    }
+});
+
 function saveConsent(type) {
-    // 1. Si el usuario está logueado, enviamos la decisión a la base de datos
+    const banner = document.getElementById('cookie-banner');
+
     @if(Auth::check())
+        // USUARIO REGISTRADO: Guardar en la Base de Datos
         fetch("{{ route('cookie.update') }}", {
             method: "POST",
             headers: {
@@ -80,13 +99,18 @@ function saveConsent(type) {
         })
         .then(response => {
             if(response.ok) {
-                // Una vez guardado en DB, ocultamos el banner
-                document.getElementById('cookie-banner').classList.remove('show');
+                banner.classList.remove('show');
+            } else {
+                console.error("Error saving cookie consent to DB.");
+                // Ocultar de todos modos para mejorar la UX
+                banner.classList.remove('show');
             }
-        });
+        })
+        .catch(error => console.error("Fetch error:", error));
     @else
-        // 2. Si es un invitado (no logueado), solo lo ocultamos en esta sesión.
-        document.getElementById('cookie-banner').classList.remove('show');
+        // USUARIO INVITADO (NO REGISTRADO): Guardar en LocalStorage
+        localStorage.setItem('screenbites_cookie_consent', type);
+        banner.classList.remove('show');
     @endif
 }
 </script>

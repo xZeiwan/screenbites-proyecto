@@ -24,7 +24,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'role',
         'avatar',
         'two_factor_code',       
-        'two_factor_expires_at', 
+        'two_factor_expires_at',
+        'cookie_consent', 
     ];
 
     /**

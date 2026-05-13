@@ -328,7 +328,7 @@
                 <tr>
                     <th>Author</th>
                     <th>Comment</th>
-                    <th>Status</th>
+                    <th>Consent</th> <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -362,6 +362,20 @@
                             </form>
                         </div>
                     </td>
+                </tr>
+                <tr>
+                    <td style="color: #ffd000; font-weight: bold;">{{ $review->author }}</td>
+                    <td style="color: #aaa; font-style: italic;">"{{ $review->content }}"</td>
+
+                    <td>
+                        @if($review->privacy_accepted)
+                            <span class="badge" style="background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid #4ade80; font-size: 9px;">✓ ACCEPTED</span>
+                        @else
+                            <span class="badge" style="background: rgba(255,68,68,0.1); color: #ff4444; border: 1px solid #ff4444; font-size: 9px;">X ERROR</span>
+                        @endif
+                    </td>
+
+                    <td>... resto de celdas ...</td>
                 </tr>
                 @endforeach
             </tbody>

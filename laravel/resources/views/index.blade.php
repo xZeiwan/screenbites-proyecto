@@ -657,177 +657,267 @@
                         margin: 0 auto;
                     }
                 }
+            }
+        }
 
-                .food-grid {
-                    display: grid;
-                    grid-template-columns: repeat(3, 1fr);
-                    gap: 30px;
-                    margin-bottom: 60px;
+        /* --- NUEVO DISEÑO ELEGANTE COMIDA DINÁMICO (WORDPRESS) --- */
+        .food-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
 
-                    .food-card {
-                        background-color: var(--color-gris-tarjeta);
-                        border-top: 4px solid var(--color-amarillo);
-                        padding: 40px 30px;
-                        border-radius: 6px;
+        .tab-btn {
+            background: transparent;
+            border: 1px solid #333;
+            color: #888;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 13px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
 
-                        .food-card-header {
-                            display: flex;
-                            align-items: center;
-                            gap: 15px;
-                            margin-bottom: 30px;
-                            border-bottom: 1px solid #333;
-                            padding-bottom: 15px;
+        .tab-btn img {
+            width: 22px;
+            height: 22px;
+            filter: grayscale(1) opacity(0.5);
+            transition: all 0.3s ease;
+        }
 
-                            .food-icon-img {
-                                width: 35px;
-                                height: 35px;
-                                object-fit: contain;
-                            }
+        .tab-btn.active, .tab-btn:hover {
+            border-color: var(--color-amarillo);
+            color: var(--color-blanco);
+            background: rgba(255, 208, 0, 0.05);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
 
-                            h3 {
-                                color: var(--color-blanco);
-                                text-transform: uppercase;
-                                letter-spacing: 1px;
-                                font-size: 20px;
-                                margin: 0;
-                            }
-                        }
+        .tab-btn.active img, .tab-btn:hover img {
+            filter: none;
+            opacity: 1;
+        }
 
-                        ul {
-                            list-style: none;
+        .tab-content {
+            display: none;
+            animation: fadeInTab 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
 
-                            li {
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                margin-bottom: 15px;
-                                font-family: Arial, sans-serif;
-                                font-size: 15px;
-                                border-bottom: 1px dashed #222;
-                                padding-bottom: 10px;
-                                color: #cccccc;
+        .tab-content.active {
+            display: block;
+        }
 
-                                .price-tag {
-                                    background-color: #222;
-                                    color: var(--color-amarillo);
-                                    font-weight: bold;
-                                    padding: 4px 8px;
-                                    border-radius: 4px;
-                                    font-size: 13px;
-                                    border: 1px solid #444;
-                                }
-                            }
-                        }
+        @keyframes fadeInTab {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .elegant-food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 70px;
+        }
+
+        .elegant-food-card {
+            background: #0f0f0f;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #222;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .elegant-food-card:hover {
+            border-color: #555;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .elegant-food-card .img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background-color: #050505;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .elegant-food-card .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+
+        .elegant-food-card:hover .img-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .elegant-food-card .img-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70%;
+            background: linear-gradient(to top, #0f0f0f 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .elegant-food-card .price-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--color-amarillo);
+            color: var(--color-negro);
+            font-weight: 900;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 14px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            z-index: 2;
+        }
+
+        .elegant-food-card .card-info {
+            padding: 0 25px 25px 25px;
+            position: relative;
+            z-index: 2;
+            margin-top: -30px;
+        }
+
+        .elegant-food-card h3 {
+            font-size: 18px;
+            color: var(--color-blanco);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .elegant-food-card p {
+            font-family: Arial, sans-serif;
+            color: #888;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* --- EXCLUSIVE SECTION --- */
+        .exclusive-section {
+            width: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            border-radius: 8px;
+            border: 1px solid #333;
+            padding: 50px;
+            position: relative;
+            overflow: hidden;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: -50px;
+                right: -50px;
+                width: 150px;
+                height: 150px;
+                background: var(--color-amarillo);
+                filter: blur(100px);
+                opacity: 0.1;
+            }
+
+            .exclusive-title {
+                text-align: center;
+                margin-bottom: 40px;
+                position: relative;
+                z-index: 2;
+
+                h3 {
+                    font-size: 30px;
+                    color: var(--color-amarillo);
+                    text-transform: uppercase;
+                    margin-bottom: 10px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 10px;
+                    
+                    svg {
+                        width: 28px;
+                        height: 28px;
                     }
                 }
 
-                .exclusive-section {
-                    width: 100%;
-                    background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
-                    border-radius: 8px;
+                p {
+                    color: #aaa;
+                    font-family: Arial, sans-serif;
+                    font-size: 15px;
+                }
+            }
+
+            .exclusive-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                position: relative;
+                z-index: 2;
+
+                .exclusive-card {
+                    background-color: #0a0a0a;
                     border: 1px solid #333;
-                    padding: 50px;
-                    position: relative;
+                    border-radius: 8px;
                     overflow: hidden;
+                    transition: transform 0.3s ease, border-color 0.3s;
+                    text-align: center;
+                    padding-bottom: 20px;
 
-                    &::before {
-                        content: '';
-                        position: absolute;
-                        top: -50px;
-                        right: -50px;
-                        width: 150px;
-                        height: 150px;
-                        background: var(--color-amarillo);
-                        filter: blur(100px);
-                        opacity: 0.1;
+                    .exclusive-img {
+                        width: 100%;
+                        height: 200px;
+                        background-color: #111;
+                        object-fit: cover;
+                        border-bottom: 2px solid #222;
                     }
 
-                    .exclusive-title {
-                        text-align: center;
-                        margin-bottom: 40px;
-                        position: relative;
-                        z-index: 2;
-
-                        h3 {
-                            font-size: 30px;
-                            color: var(--color-amarillo);
-                            text-transform: uppercase;
-                            margin-bottom: 10px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 10px;
-                            
-                            svg {
-                                width: 28px;
-                                height: 28px;
-                            }
-                        }
-
-                        p {
-                            color: #aaa;
-                            font-family: Arial, sans-serif;
-                            font-size: 15px;
-                        }
+                    h4 {
+                        font-size: 18px;
+                        color: #fff;
+                        margin: 15px 0 5px;
+                        text-transform: uppercase;
                     }
 
-                    .exclusive-grid {
-                        display: grid;
-                        grid-template-columns: repeat(3, 1fr);
-                        gap: 20px;
-                        position: relative;
-                        z-index: 2;
+                    p {
+                        font-size: 13px;
+                        color: #888;
+                        font-family: Arial, sans-serif;
+                        padding: 0 15px;
+                        margin-bottom: 15px;
+                        height: 40px;
+                    }
 
-                        .exclusive-card {
-                            background-color: #0a0a0a;
-                            border: 1px solid #333;
-                            border-radius: 8px;
-                            overflow: hidden;
-                            transition: transform 0.3s ease, border-color 0.3s;
-                            text-align: center;
-                            padding-bottom: 20px;
+                    .exclusive-tag {
+                        display: inline-block;
+                        background-color: var(--color-amarillo);
+                        color: #000;
+                        font-size: 11px;
+                        font-weight: bold;
+                        padding: 3px 10px;
+                        border-radius: 12px;
+                        text-transform: uppercase;
+                    }
 
-                            .exclusive-img {
-                                width: 100%;
-                                height: 200px;
-                                background-color: #111;
-                                object-fit: cover;
-                                border-bottom: 2px solid #222;
-                            }
-
-                            h4 {
-                                font-size: 18px;
-                                color: #fff;
-                                margin: 15px 0 5px;
-                                text-transform: uppercase;
-                            }
-
-                            p {
-                                font-size: 13px;
-                                color: #888;
-                                font-family: Arial, sans-serif;
-                                padding: 0 15px;
-                                margin-bottom: 15px;
-                                height: 40px;
-                            }
-
-                            .exclusive-tag {
-                                display: inline-block;
-                                background-color: var(--color-amarillo);
-                                color: #000;
-                                font-size: 11px;
-                                font-weight: bold;
-                                padding: 3px 10px;
-                                border-radius: 12px;
-                                text-transform: uppercase;
-                            }
-
-                            &:hover {
-                                transform: translateY(-5px);
-                                border-color: var(--color-amarillo);
-                                box-shadow: 0 10px 20px rgba(255, 208, 0, 0.1);
-                            }
-                        }
+                    &:hover {
+                        transform: translateY(-5px);
+                        border-color: var(--color-amarillo);
+                        box-shadow: 0 10px 20px rgba(255, 208, 0, 0.1);
                     }
                 }
             }
@@ -918,10 +1008,8 @@
             color: rgba(255, 255, 255, 0.05);
             font-family: 'Arial Black', sans-serif;
             z-index: 1;
-            /* La animación se disparará vía JS añadiendo la clase .animating */
         }
 
-        /* Keyframes para la animación fluida y completa del ? */
         @keyframes jumpRotate {
             0% { transform: translateY(0) rotate(0deg); }
             40% { transform: translateY(-40px) rotate(180deg); }
@@ -1031,7 +1119,6 @@
             color: var(--color-negro);
         }
 
-        /* Upcoming Events Grid */
         .upcoming-header {
             font-size: 24px;
             color: #fff;
@@ -1385,18 +1472,6 @@
                         color: var(--color-amarillo);
                         font-weight: bold;
                     }
-
-                    .heart-icon {
-                        width: 16px;
-                        height: 16px;
-                        color: #888;
-                        transition: color 0.3s ease;
-                    }
-
-                    &:hover .heart-icon {
-                        color: #ff4444;
-                        filter: drop-shadow(0 0 3px #ff4444);
-                    }
                 }
             }
         }
@@ -1464,7 +1539,6 @@
 
                     @auth
                     <div class="user-nav">
-                        {{-- Botón Panel Admin --}}
                         @if(Auth::user()->role === 'admin')
                         <li>
                             <a href="{{ route('admin.index') }}" style="color: #ff4444 !important; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 4px;">
@@ -1478,7 +1552,7 @@
                         <li>
                             <a href="/profile" class="user-profile" title="My Profile">
                                 <img src="{{ asset('img/avatars/' . Auth::user()->avatar) }}" alt="Avatar"
-                                    class="user-avatar" onerror="this.src='https://via.placeholder.com/35/333/ffd000'">
+                                    class="user-avatar" onerror="this.onerror=null; this.src='https://via.placeholder.com/35/333/ffd000';">
                                 <span class="user-name">{{ strtoupper(Auth::user()->name) }}</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="chevron-icon" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -1644,59 +1718,156 @@
                 <p>Discover our delicious snacks and drinks. You can add them to your order during the seat selection process.</p>
             </div>
 
-            <div class="food-grid">
-                <div class="food-card">
-                    <div class="food-card-header">
-                        <img src="{{ asset('img/svg/popcorn.svg') }}" alt="Popcorn Icon" class="food-icon-img">
-                        <h3>Popcorn & Food</h3>
-                    </div>
-                    <ul>
-                        <li>Classic Salted Popcorn (M) <span class="price-tag">$5.50</span></li>
-                        <li>Classic Salted Popcorn (L) <span class="price-tag">$7.00</span></li>
-                        <li>Extra Butter Popcorn (L) <span class="price-tag">$8.00</span></li>
-                        <li>Sweet Caramel Popcorn (M) <span class="price-tag">$6.50</span></li>
-                        <li>Family Mega Bucket <span class="price-tag">$9.50</span></li>
-                        <li>Classic Hot Dog <span class="price-tag">$5.00</span></li>
-                        <li>XXL Cheese Hot Dog <span class="price-tag">$6.50</span></li>
-                        <li>Extra Cheese Nachos <span class="price-tag">$6.50</span></li>
-                        <li>Pepperoni Pizza Slice <span class="price-tag">$4.00</span></li>
-                    </ul>
-                </div>
+            <div class="food-tabs">
+                <button class="tab-btn active" onclick="openFoodTab('tab-popcorn', this)"><img src="{{ asset('img/svg/popcorn.svg') }}" alt="Popcorn"> Popcorn & Food</button>
+                <button class="tab-btn" onclick="openFoodTab('tab-drinks', this)"><img src="{{ asset('img/svg/drinks.svg') }}" alt="Drinks"> Fresh Drinks</button>
+                <button class="tab-btn" onclick="openFoodTab('tab-sweets', this)"><img src="{{ asset('img/svg/sweets.svg') }}" alt="Sweets"> Snacks & Sweets</button>
+            </div>
 
-                <div class="food-card">
-                    <div class="food-card-header">
-                        <img src="{{ asset('img/svg/drinks.svg') }}" alt="Drinks Icon" class="food-icon-img">
-                        <h3>Fresh Drinks</h3>
+            <div class="tab-content active" id="tab-popcorn">
+                <div class="elegant-food-grid">
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/popcorn1.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/popcorn.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Popcorn">
+                            <span class="price-badge">$5.50</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Classic Salted Popcorn (M)</h3>
+                            <p>Freshly popped, perfectly salted and golden. The classic cinema experience.</p>
+                        </div>
                     </div>
-                    <ul>
-                        <li>Coca-Cola / Zero (M) <span class="price-tag">$4.00</span></li>
-                        <li>Coca-Cola / Zero (L) <span class="price-tag">$5.50</span></li>
-                        <li>Fanta Orange (M) <span class="price-tag">$4.00</span></li>
-                        <li>Sprite (L) <span class="price-tag">$5.50</span></li>
-                        <li>Blue Icee Slush <span class="price-tag">$5.00</span></li>
-                        <li>Cherry Icee Slush <span class="price-tag">$5.00</span></li>
-                        <li>Bottled Mineral Water <span class="price-tag">$3.00</span></li>
-                        <li>Craft Beer (IPA) <span class="price-tag">$6.50</span></li>
-                        <li>Hot Coffee / Tea <span class="price-tag">$3.50</span></li>
-                    </ul>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/popcorn2.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/popcorn.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Popcorn L">
+                            <span class="price-badge">$7.00</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Classic Salted Popcorn (L)</h3>
+                            <p>Large portion for sharing. Freshly popped and perfectly salted.</p>
+                        </div>
+                    </div>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/popcorn3.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/popcorn.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Butter Popcorn">
+                            <span class="price-badge">$8.00</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Extra Butter Popcorn (L)</h3>
+                            <p>Large popcorn drenched in rich, melted cinema butter.</p>
+                        </div>
+                    </div>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/popcorn4.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/popcorn.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Caramel Popcorn">
+                            <span class="price-badge">$6.50</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Sweet Caramel Popcorn (M)</h3>
+                            <p>Coated in rich, buttery caramel for the perfect sweet treat.</p>
+                        </div>
+                    </div>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/popcorn6.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/popcorn.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Hot Dog">
+                            <span class="price-badge">$5.00</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Classic Hot Dog</h3>
+                            <p>Premium beef sausage in a soft, warm bun.</p>
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div class="food-card">
-                    <div class="food-card-header">
-                        <img src="{{ asset('img/svg/sweets.svg') }}" alt="Sweets Icon" class="food-icon-img">
-                        <h3>Snacks & Sweets</h3>
+            <div class="tab-content" id="tab-drinks">
+                <div class="elegant-food-grid">
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/drink1.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/drinks.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Coca-Cola">
+                            <span class="price-badge">$4.00</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Coca-Cola / Zero (M)</h3>
+                            <p>Medium ice-cold refreshing classic soda.</p>
+                        </div>
                     </div>
-                    <ul>
-                        <li>Pretzel Bites <span class="price-tag">$4.50</span></li>
-                        <li>Chocolate M&M's Bag <span class="price-tag">$3.50</span></li>
-                        <li>Skittles Bag <span class="price-tag">$3.50</span></li>
-                        <li>Gummy Bears <span class="price-tag">$3.00</span></li>
-                        <li>Crispy Maltesers <span class="price-tag">$3.50</span></li>
-                        <li>Lacasitos <span class="price-tag">$3.00</span></li>
-                        <li>Red Licorice <span class="price-tag">$2.50</span></li>
-                        <li>Snickers Bar <span class="price-tag">$2.50</span></li>
-                        <li>Classic Magnum Ice Cream <span class="price-tag">$4.00</span></li>
-                    </ul>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/drink2.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/drinks.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Sprite">
+                            <span class="price-badge">$5.50</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Sprite (L)</h3>
+                            <p>Large crisp, refreshing lemon-lime soda.</p>
+                        </div>
+                    </div>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/drink3.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/drinks.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Slushie">
+                            <span class="price-badge">$5.00</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Blue Icee Slush</h3>
+                            <p>Blue Raspberry flavor. The ultimate brain-freeze treat.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="tab-sweets">
+                <div class="elegant-food-grid">
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/snack2.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/sweets.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="M&Ms">
+                            <span class="price-badge">$3.50</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Chocolate M&M's Bag</h3>
+                            <p>Classic milk chocolate M&M's for a sweet crunch.</p>
+                        </div>
+                    </div>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/snack4.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/sweets.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Gummy Bears">
+                            <span class="price-badge">$3.00</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Gummy Bears</h3>
+                            <p>Assorted fruit flavors, soft and chewy.</p>
+                        </div>
+                    </div>
+                    <div class="elegant-food-card">
+                        <div class="img-wrapper">
+                            <img src="http://localhost/screenbites-proyecto/wp/wp-content/uploads/2026/05/snack9.png" 
+                                 onerror="this.onerror=null; this.src='{{ asset('img/svg/sweets.svg') }}'; this.style.padding='40px'; this.style.objectFit='contain';" 
+                                 alt="Magnum">
+                            <span class="price-badge">$4.00</span>
+                        </div>
+                        <div class="card-info">
+                            <h3>Classic Magnum Ice Cream</h3>
+                            <p>Vanilla ice cream encased in cracking Belgian chocolate.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1764,7 +1935,6 @@
                             
                             @auth
                                 @php
-                                    // El sistema comprueba si el usuario autenticado ya posee este evento
                                     $yaTieneEsteEvento = \Illuminate\Support\Facades\DB::table('bookings')
                                         ->where('user_id', Auth::id())
                                         ->where('event_id', 'blind-01')
@@ -1884,50 +2054,6 @@
                         <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
                     </div>
                 </div>
-
-                <div class="team-card">
-                    <img src="{{ asset('img/img/team/5.jpg') }}" alt="Isabella Rossi" class="team-avatar">
-                    <h3 class="team-name">Isabella Rossi</h3>
-                    <p class="team-role">Guest Experience Lead</p>
-                    <p class="team-description">Ensures every visitor receives the red-carpet treatment, managing front-of-house staff from box office to credits.</p>
-                    <div class="team-socials">
-                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <img src="{{ asset('img/img/team/6.jpg') }}" alt="David Chen" class="team-avatar">
-                    <h3 class="team-name">David Chen</h3>
-                    <p class="team-role">Lead Sound Engineer</p>
-                    <p class="team-description">Calibrates the acoustic architecture of our theaters to deliver bone-rattling bass and crystal-clear dialogue.</p>
-                    <div class="team-socials">
-                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <img src="{{ asset('img/img/team/7.jpg') }}" alt="Clara Dubois" class="team-avatar">
-                    <h3 class="team-name">Clara Dubois</h3>
-                    <p class="team-role">Art & Marketing Director</p>
-                    <p class="team-description">Designs our vintage posters, manages premiere events, and keeps the cinema's aesthetic flawless across all platforms.</p>
-                    <div class="team-socials">
-                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <img src="{{ asset('img/img/team/8.jpg') }}" alt="Oliver Hayes" class="team-avatar">
-                    <h3 class="team-name">Oliver Hayes</h3>
-                    <p class="team-role">Head Mixologist</p>
-                    <p class="team-description">Crafts exclusive film-inspired signature cocktails at our lounge bar, adding flavor to your pre-show experience.</p>
-                    <div class="team-socials">
-                        <a href="#" class="social-link" title="Portfolio"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
-                        <a href="#" class="social-link" title="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
@@ -1993,10 +2119,9 @@
             </div>
         </div>
     </div>
+    
     <script>
         const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
-
-        // Le pasamos la información de la sesión al JavaScript usando una variable global
         const isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
 
         const movies = [
@@ -2041,8 +2166,6 @@
                 headerEl.classList.add('scrolled');
                 logoEl.src = "{{ asset('img/img/Logo-Blanco.png') }}";
                 headerEl.style.setProperty('--header-text-color', 'white');
-                
-                // Forzamos SIEMPRE el hover a amarillo cuando bajamos (fondo negro)
                 headerEl.style.setProperty('--hover-color', 'var(--color-amarillo)');
                 
                 if(sysTime) {
@@ -2054,7 +2177,6 @@
                 logoEl.src = activeMovie.textColor === "white" ? "{{ asset('img/img/Logo-Blanco.png') }}" : "{{ asset('img/img/Logo-Negro.png') }}";
                 headerEl.style.setProperty('--header-text-color', activeMovie.textColor);
                 
-                // Restauramos el color del reloj y del HOVER según la película activa
                 if (activeMovie.id === "01") {
                     headerEl.style.setProperty('--hover-color', '#000000'); 
                     if(sysTime) {
@@ -2081,7 +2203,6 @@
             });
             sliderTrack.appendChild(slideDiv);
 
-            // Generar tarjetas con el botón correcto dependiendo del login
             const buyButtonHtml = isAuthenticated 
                 ? `<button class="btn-card" onclick="window.location.href='/booking/${movie.id}'">Buy Tickets</button>`
                 : `<button class="btn-card" onclick="window.location.href='/login'">Login to Buy</button>`;
@@ -2154,7 +2275,6 @@
             mainHero.style.color = color;
             document.getElementById('movie-id').style.webkitTextStroke = `2px ${color}`;
 
-            // Actualizar la función del botón Hero según si estamos logueados
             const btnBuyHero = document.getElementById('btn-buy');
             const btnBuyText = document.getElementById('btn-buy-text');
             
@@ -2174,23 +2294,19 @@
             if (!headerEl.classList.contains('scrolled')) {
                 headerEl.style.setProperty('--header-text-color', color);
                 const sysTime = document.getElementById('sys-time');
-                
                 if (activeMovie.id === "01") {
                     headerEl.style.setProperty('--hover-color', '#000000');
-                    // Si es Kill Bill, ponemos el reloj negro
                     if(sysTime) {
                         sysTime.style.color = '#000000';
                         sysTime.style.borderColor = '#000000';
                     }
                 } else {
                     headerEl.style.setProperty('--hover-color', 'var(--color-amarillo)');
-                    // Si es otra, se queda amarillo
                     if(sysTime) {
                         sysTime.style.color = 'var(--color-amarillo)';
                         sysTime.style.borderColor = 'var(--color-amarillo)';
                     }
                 }
-                
                 logoEl.src = color === "white" ? "{{ asset('img/img/Logo-Blanco.png') }}" : "{{ asset('img/img/Logo-Negro.png') }}";
             }
         }
@@ -2218,14 +2334,10 @@
 
         function updateCartBadge() {
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-            
-            // Contamos cuántos bloques de pedido hay
             let totalOrders = globalCart.length;
-
             const badge = document.getElementById('nav-cart-counter');
             if(badge) {
                 badge.innerText = totalOrders;
-                
                 if(totalOrders > 0) {
                     badge.style.transform = 'scale(1.2)';
                     setTimeout(() => badge.style.transform = 'scale(1)', 200);
@@ -2233,8 +2345,6 @@
             }
         }
 
-        /* --- SCRIPT PARA CINE A CIEGAS --- */
-        // Animación ininterrumpible
         const blindCard = document.querySelector('.blind-ticket-card');
         const glitchIcon = document.querySelector('.glitch');
         
@@ -2244,26 +2354,18 @@
                     glitchIcon.classList.add('animating');
                 }
             });
-
-            // Se quita la clase cuando termina su ciclo entero (así no se corta a la mitad)
             glitchIcon.addEventListener('animationend', () => {
                 glitchIcon.classList.remove('animating');
             });
         }
 
-        // FUNCIÓN PARA AÑADIR EL TICKET MISTERIOSO AL CARRITO
         function addBlindTicketToCart() {
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
-            
-            // Comprobamos si ya lo ha comprado
             let existingIndex = globalCart.findIndex(order => order.movieId === 'blind-01');
             if(existingIndex > -1) {
-                // En lugar del alert, abrimos el modal
                 document.getElementById('duplicate-event-modal').classList.add('active');
-                return; // Cortamos la ejecución para que no haga nada más
+                return;
             }
-
-            // Creamos un pedido especial tipo "Blind Ticket"
             let blindOrder = {
                 id: 'ORD-BLIND-' + Date.now(),
                 movieId: 'blind-01',
@@ -2274,54 +2376,26 @@
                 food: [],
                 orderTotal: 5.00
             };
-
             globalCart.push(blindOrder);
             localStorage.setItem(CART_KEY, JSON.stringify(globalCart));
-            
-            // Actualizamos la bolita roja del cart
             if(typeof updateCartBadge === 'function') updateCartBadge(); 
-            
             window.location.href = '/cart';
         }
 
-        // FUNCIÓN PARA CERRAR EL MODAL
         function closeDuplicateModal() {
             document.getElementById('duplicate-event-modal').classList.remove('active');
         }
 
-        // --- COMPROBAR SI YA HA COMPRADO EL TICKET MISTERIOSO (EN LA PORTADA) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Generamos la misma clave que usamos al comprar en el checkout
-            const BLIND_PURCHASED_KEY = 'purchased_blind_{{ Auth::check() ? Auth::id() : "guest" }}';
-            
-            // Si existe la marca en el navegador...
-            if (localStorage.getItem(BLIND_PURCHASED_KEY) === 'true') {
-                const btnHome = document.getElementById('btn-book-blind-home');
-                const badgeHome = document.getElementById('purchased-badge-home');
-                
-                if (btnHome) {
-                    // Cambiamos el estilo del botón a gris
-                    btnHome.style.background = '#333';
-                    btnHome.style.color = '#888';
-                    btnHome.style.cursor = 'not-allowed';
-                    btnHome.style.boxShadow = 'none';
-                    
-                    // Le quitamos la función de añadir al carrito
-                    btnHome.onclick = null; 
-                    
-                    // Cambiamos el texto y apagamos el icono
-                    document.getElementById('btn-blind-text-home').innerText = 'TICKET CLAIMED';
-                    document.getElementById('btn-blind-icon-home').style.filter = 'grayscale(1) opacity(0.5)';
-                    
-                    // Mostramos la etiqueta verde de completado
-                    if (badgeHome) {
-                        badgeHome.style.display = 'block';
-                    }
-                }
-            }
-        });
+        // FUNCIÓN PARA LAS PESTAÑAS DE COMIDA
+        function openFoodTab(tabId, btnElement) {
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
     </script>
     @include('cookie-banner')
 </body>
-
 </html>

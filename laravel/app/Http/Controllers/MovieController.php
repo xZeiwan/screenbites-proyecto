@@ -21,7 +21,6 @@ class MovieController extends Controller
             ]);
 
             if ($response->failed()) {
-                // Si la API falla, mostramos el 404 en lugar de texto plano
                 return response()->view('errors.404', [], 404);
             }
 
@@ -33,7 +32,6 @@ class MovieController extends Controller
             });
 
             if (!$wpMovie) {
-                // SOLUCIÓN: Devolvemos tu nueva vista 404 directamente
                 return response()->view('errors.404', [], 404);
             }
 
@@ -97,7 +95,6 @@ class MovieController extends Controller
                 }
             }
 
-            // 6. RETORNAMOS TODO DE GOLPE
             return view('pelicula', compact('id', 'movie', 'showtimes', 'reviews'));
 
         } catch (\Exception $e) {
@@ -107,22 +104,24 @@ class MovieController extends Controller
 
     public function storeReview(\Illuminate\Http\Request $request, string $id)
     {
-        // 1. Validamos los datos y ponemos el mensaje en INGLÉS
+        // 1. Validamos los datos (incluyendo la política de privacidad)
         $request->validate([
             'score' => 'required|integer|min:1|max:5',
             'content' => 'required|string|max:1000',
-            'privacy_policy' => 'accepted', 
+            'privacy_policy' => 'accepted', // Esto obliga a que la casilla esté marcada
         ], [
             'privacy_policy.accepted' => 'You must read and accept the Privacy Policy to submit a review.'
         ]);
 
-        // 2. Guardamos SOLO los datos que le importan a la base de datos (ignorando el privacy_policy)
+        // 2. Guardamos en la base de datos
+        // NOTA: Asegúrate de haber hecho la migración para añadir 'privacy_accepted'
         DB::table('reviews')->insert([
             'user_id' => Auth::id(),
             'movie_id' => $id,
             'rating' => $request->score,     
             'comment' => $request->content,
-            'status' => 'pending',            
+            'status' => 'pending',   
+            'privacy_accepted' => true, // <--- ESTA ES LA LÍNEA NUEVA QUE NECESITAMOS
             'created_at' => now(),
             'updated_at' => now(),
         ]);

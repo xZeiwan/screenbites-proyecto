@@ -17,10 +17,10 @@ class AdminController extends Controller
         $users = \App\Models\User::all(); 
 
         // 2. LA SOLUCIÓN: Cambiamos la consulta para que lea de NUESTRA tabla 'reviews'
+        // Busca esta parte en tu AdminController:
         $reviews = \Illuminate\Support\Facades\DB::table('reviews')
             ->join('users', 'reviews.user_id', '=', 'users.id')
-            // Le damos alias 'author' y 'content' para que encaje con la vista Blade
-            ->select('reviews.*', 'users.name as author', 'reviews.comment as content')
+            ->select('reviews.*', 'users.name as author', 'reviews.comment as content') // AÑADE reviews.privacy_accepted
             ->orderBy('reviews.created_at', 'desc')
             ->get();
 
@@ -80,18 +80,12 @@ class AdminController extends Controller
 
     public function updateCookieConsent(\Illuminate\Http\Request $request)
     {
-        // Solo guardamos si el usuario ha iniciado sesión
         if (\Illuminate\Support\Facades\Auth::check()) {
-            
-            /** @var \App\Models\User $user */
             $user = \Illuminate\Support\Facades\Auth::user();
-            
-            $user->cookie_consent = $request->consent; // 'accepted' o 'rejected'
+            $user->cookie_consent = $request->consent;
             $user->save();
-
-            return response()->json(['status' => 'success']);
+            return response()->json(['message' => 'Cookies actualizadas'], 200);
         }
-        
-        return response()->json(['status' => 'guest'], 401);
+        return response()->json(['error' => 'Usuario no autenticado'], 401);
     }
 }

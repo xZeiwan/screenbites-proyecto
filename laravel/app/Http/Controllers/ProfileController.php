@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,8 +15,6 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    // app/Http/Controllers/ProfileController.php
-
     public function edit(Request $request)
     {
         // 1. Traemos las reservas
@@ -36,13 +33,16 @@ class ProfileController extends Controller
             ->get();
 
         // 2. Traemos TODAS las pelis de WP para tener los nombres y posters
-        // Usamos la misma lógica que ya tienes en MovieController
         $wordpressUrl = "http://127.0.0.1/screenbites-proyecto/wp/wp-json/wp/v2/pelicula?acf_format=standard&per_page=100";
-        $response = \Illuminate\Support\Facades\Http::withoutVerifying()->get($wordpressUrl);
-        $wpMovies = $response->successful() ? $response->json() : [];
+        
+        try {
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()->get($wordpressUrl);
+            $wpMovies = $response->successful() ? $response->json() : [];
+        } catch (\Exception $e) {
+            $wpMovies = [];
+        }
 
         // 3. Mapeamos los nombres para que la vista los encuentre fácil
-        // Creamos un diccionario: ['01' => 'Kill Bill', '02' => 'FNAF'...]
         $movieData = [];
         foreach ($wpMovies as $post) {
             $idLaravel = $post['acf']['id_laravel'] ?? null;
@@ -57,29 +57,41 @@ class ProfileController extends Controller
         return view('profile', [
             'user' => $request->user(),
             'bookings' => $bookings,
-            'movieData' => $movieData // Pasamos este "diccionario" a la vista
+            'movieData' => $movieData 
         ]);
     }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        // 1. Validamos manualmente para incluir el avatar
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . Auth::id(),
+            'avatar' => 'nullable|string',
+        ]);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        $user = $request->user();
 
-        // Guardamos el avatar si viene en la petición
+        // 2. Asignamos los valores
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        // 3. LA CLAVE: Guardamos el avatar que viene del input hidden
         if ($request->has('avatar')) {
-            $request->user()->avatar = $request->avatar;
+            $user->avatar = $request->avatar;
         }
 
-        $request->user()->save();
+        // Si el email cambió, invalidamos la fecha de verificación
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
 
-        return Redirect::route('profile.edit')->with('status', 'Profile updated');
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
     /**
