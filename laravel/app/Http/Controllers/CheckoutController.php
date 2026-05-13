@@ -15,7 +15,7 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'cart' => 'required|array',
-            'method' => 'required|string|in:card,paypal,bizum',
+            'method' => 'required|string|in:card,paypal,bizum,demo',
         ]);
 
         $cart = $request->input('cart');
@@ -38,6 +38,38 @@ class CheckoutController extends Controller
 
         Stripe::setApiKey(config('services.stripe.secret'));
         $amountInCents = (int) round($totalAmount * 100);
+
+        // --- CASO DEMO ---
+        if ($request->input('method') === 'demo' && $totalAmount > 0) {
+            try {
+                // 1. Guardamos en BD directamente (saltando a Stripe)
+                $revealedMovieId = $this->saveToDatabase($cart, $user, $isVip);
+                
+                $hasBlindTicket = false;
+                foreach ($cart as $order) {
+                    if ($order['movieId'] === 'blind-01') {
+                        $hasBlindTicket = true;
+                        break;
+                    }
+                }
+                
+                // 2. Comportamiento exacto al de la tarjeta
+                if ($hasBlindTicket) {
+                    session()->flash('hasBlindTicket', true);
+                    session()->flash('revealedMovieId', $revealedMovieId);
+                    
+                    return response()->json([
+                        'status' => 'redirect',
+                        'url' => route('checkout.success')
+                    ]);
+                } else {
+                    return response()->json(['status' => 'success']);
+                }
+
+            } catch (\Exception $e) {
+                return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
+            }
+        }
 
         // --- CASO 1: PAGO CON TARJETA (Directo y sin salir de la página) ---
         if ($request->input('method') === 'card' && $totalAmount > 0) {
@@ -117,7 +149,6 @@ class CheckoutController extends Controller
         // 1. Guardamos en Base de datos y obtenemos la peli revelada
         $revealedMovieId = $this->saveToDatabase($cart, $user, $isVip);
 
-        // 2. Comprobamos si en el carrito había un "Ticket Ciego"
         $hasBlindTicket = false;
         foreach ($cart as $order) {
             if ($order['movieId'] === 'blind-01') {

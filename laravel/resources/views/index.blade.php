@@ -1563,10 +1563,6 @@
         </style>
 
         <script>
-            // Creamos una llave única basada en el ID del usuario logueado. 
-            // Si no está logueado, usará la caja "guest".
-            const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
-
             setTimeout(() => {
                 const toast = document.getElementById('toast-message');
                 if(toast) {

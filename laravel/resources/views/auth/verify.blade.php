@@ -29,6 +29,26 @@
             @csrf 
             <button type="submit" class="btn-submit">Resend the email</button>
         </form>
+
+        {{-- CAJA MODO DEMO / PRESENTACIÓN MEJORADA --}}
+        <div style="margin-top: 30px; padding-top: 25px; border-top: 1px solid rgba(255, 208, 0, 0.2); text-align: center; display: flex; flex-direction: column; align-items: center;">
+            
+            <span style="background: var(--color-principal, #ffd000); color: #000; font-size: 10px; font-weight: 900; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
+                Demo Mode
+            </span>
+            
+            <p style="color: #aaa; font-size: 13px; margin-bottom: 20px; line-height: 1.5; max-width: 90%;">
+                Skip the email check during this presentation and activate the account instantly:
+            </p>
+
+            <a href="{{ route('verification.verify.demo') }}" 
+               style="background: var(--color-principal, #ffd000); color: #000; padding: 12px 0; width: 100%; border-radius: 4px; font-family: 'Arial Black', sans-serif; font-size: 12px; text-decoration: none; text-transform: uppercase; transition: all 0.3s ease; border: 2px solid var(--color-principal, #ffd000); display: inline-block; letter-spacing: 1px;"
+               onmouseover="this.style.background='transparent'; this.style.color='var(--color-principal, #ffd000)';"
+               onmouseout="this.style.background='var(--color-principal, #ffd000)'; this.style.color='#000';">
+                Verify Account Instantly
+            </a>
+            
+        </div>
     </div>
 </body>
 </html>

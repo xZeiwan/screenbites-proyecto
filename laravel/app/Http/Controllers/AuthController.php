@@ -49,6 +49,8 @@ class AuthController extends Controller
         // 4. Guardamos la ID del usuario temporalmente en la sesión para saber quién intenta entrar
         session(['2fa_user_id' => $user->id]);
 
+        session(['demo_2fa_code' => $code]);
+
         // Redirigimos a la pantalla donde tiene que escribir el código
         return redirect()->route('2fa.form');
     }
@@ -124,14 +126,34 @@ class AuthController extends Controller
             // Borramos la variable temporal
             session()->forget('2fa_user_id');
 
-            // ¡Logueamos al usuario de forma oficial en Laravel!
+            session()->forget('demo_2fa_code');
+
+            // Logueamos al usuario
             \Illuminate\Support\Facades\Auth::login($user);
 
-            // Lo mandamos a la portada (o a su perfil)
+            // Lo mandamos a la portada
             return redirect()->route('home');
         }
 
         return back()->withErrors(['two_factor_code' => 'The security code is invalid or has expired.']);
+    }
+
+    // VERIFICACIÓN RÁPIDA PARA EL MODO DEMO ---
+    // --- NUEVO: VERIFICACIÓN RÁPIDA PARA EL MODO DEMO ---
+    public function verifyEmailDemo()
+    {
+        /** @var \App\Models\User $user */
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        // Comprobamos que el usuario es realmente una instancia de nuestro modelo User
+        if ($user instanceof \App\Models\User && !$user->hasVerifiedEmail()) {
+            // Marcamos el email como verificado en la Base de Datos manualmente
+            $user->markEmailAsVerified();
+            
+            return redirect()->route('home')->with('status', 'Email verified successfully (Demo Mode)!');
+        }
+
+        return redirect('/');
     }
 
     // ==========================================

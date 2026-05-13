@@ -116,6 +116,23 @@
 
             <button type="submit" class="btn-submit">Verify Identity</button>
         </form>
+
+        {{-- CAJA MODO DEMO / PRESENTACIÓN --}}
+        @if(session()->has('demo_2fa_code'))
+        <div style="margin-top: 30px; padding: 20px; border: 2px dashed var(--color-principal, #ffd000); background: rgba(255, 208, 0, 0.05); border-radius: 8px; text-align: center;">
+            
+            <p style="color: var(--color-principal, #ffd000); font-size: 11px; text-transform: uppercase; margin-bottom: 5px; font-weight: 900; letter-spacing: 1px;">
+                Demo Mode
+            </p>
+            <h2 style="color: #fff; letter-spacing: 8px; margin: 0; font-size: 32px; font-family: monospace;">
+                {{ session('demo_2fa_code') }}
+            </h2>
+            <p style="color: #888; font-size: 11px; margin-top: 8px; font-family: Arial, sans-serif;">
+                (The code has also been sent to your email)
+            </p>
+            
+        </div>
+        @endif
     </div>
 </body>
 </html>

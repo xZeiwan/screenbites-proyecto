@@ -628,6 +628,11 @@
                     </div>
                     <div>Bizum</div>
                 </div>
+
+                <div class="method-card" id="method-demo" onclick="selectPaymentMethod('demo')" style="border-color: #ff4444;">
+                    <div style="height: 35px; display: flex; justify-content: center; align-items: center; margin-bottom: 5px; font-size: 24px;"></div>
+                    <div style="color: #ff4444;">Demo Mode</div>
+                </div>
             </div>
 
             <form id="payment-form" onsubmit="processPayment(event)">
@@ -728,6 +733,7 @@
             document.getElementById('method-card').classList.remove('active');
             document.getElementById('method-paypal').classList.remove('active');
             document.getElementById('method-bizum').classList.remove('active');
+            if(document.getElementById('method-demo')) document.getElementById('method-demo').classList.remove('active');
             
             document.getElementById('method-' + method).classList.add('active');
 
@@ -929,6 +935,9 @@
                 const email = document.getElementById('paypal-email').value;
                 if (!email.includes('@')) { resetPayButton(); return showErrorModal("Invalid Email", "Please enter a valid email."); }
                 paymentData = { email: email };
+                
+            } else if (currentMethod === 'demo') {
+                paymentData = { is_demo: true };
             }
 
             let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
