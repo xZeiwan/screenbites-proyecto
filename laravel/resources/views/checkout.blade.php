@@ -703,7 +703,7 @@
         <div class="reveal-text" id="reveal-text">
             <h2>Loading...</h2>
             <p>Payment successful. Get ready for the ultimate experience.</p>
-            <button class="btn-home" onclick="window.location.href='/'">RETURN TO HOME</button>
+            <button class="btn-home" onclick="window.location.href='/profile'">SEE MY TICKETS</button>
         </div>
     </div>
 
@@ -899,53 +899,34 @@
             btnText.innerText = 'Processing...';
             loader.style.display = 'block';
 
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let paymentData = {};
 
             if (currentMethod === 'card') {
-                if (!stripe || !cardElement) {
-                    resetPayButton();
-                    return showErrorModal("System Error", "The payment gateway is not initialized correctly.");
-                }
-
+                if (!stripe || !cardElement) { resetPayButton(); return showErrorModal("Error", "Gateway not ready."); }
                 const cardName = document.getElementById('card-name').value;
-                if (!cardName) {
-                    resetPayButton();
-                    return showErrorModal("Incomplete Data", "Please enter the cardholder name.");
-                }
-
                 const { paymentMethod, error } = await stripe.createPaymentMethod({
-                    type: 'card',
-                    card: cardElement,
-                    billing_details: { name: cardName }
+                    type: 'card', card: cardElement, billing_details: { name: cardName }
                 });
-
-                if (error) {
-                    resetPayButton();
-                    return showErrorModal("Payment Error", error.message);
-                }
-
+                if (error) { resetPayButton(); return showErrorModal("Error", error.message); }
                 paymentData = { paymentMethodId: paymentMethod.id };
-
-            } else if (currentMethod === 'bizum') {
-                const phone = document.getElementById('bizum-phone').value.replace(/\s/g, '');
-                if (phone.length < 9) { resetPayButton(); return showErrorModal("Invalid Phone", "Please enter a valid phone number."); }
-                paymentData = { phone: phone };
-
-            } else if (currentMethod === 'paypal') {
-                const email = document.getElementById('paypal-email').value;
-                if (!email.includes('@')) { resetPayButton(); return showErrorModal("Invalid Email", "Please enter a valid email."); }
-                paymentData = { email: email };
-                
-            } else if (currentMethod === 'demo') {
-                paymentData = { is_demo: true };
+            } 
+            else if (currentMethod === 'bizum') {
+                paymentData = { phone: document.getElementById('bizum-phone').value.replace(/\s/g, '') };
+            } 
+            else if (currentMethod === 'paypal') {
+                paymentData = { email: document.getElementById('paypal-email').value };
+            } 
+            else if (currentMethod === 'demo') {
+                paymentData = { is_demo: true }; // Le decimos a Laravel que es Demo
             }
 
-            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
             let payloadCart = globalCart.map(item => {
                 if (!item.sessionId) item.sessionId = "1";
                 return item;
             });
 
+            // ENVIAMOS A LARAVEL (Guarda en la BD para que aparezca en My Bookings)
             fetch('/process-payment', {
                 method: 'POST',
                 headers: {
@@ -965,17 +946,17 @@
                 return data;
             })
             .then(data => {
-                // REDIRECCIÓN (PAYPAL / BIZUM)
                 if(data.status === 'redirect') {
                     localStorage.removeItem(CART_KEY); 
                     window.location.href = data.url; 
                 } 
-                // ÉXITO DIRECTO (TARJETA)
                 else if(data.status === 'success') {
                     localStorage.removeItem(CART_KEY); 
                     const hasBlindTicket = globalCart.some(order => order.movieId === 'blind-01');
 
-                    if (hasBlindTicket && data.revealed_movie_id) {
+                    // Si es un evento misterioso, animamos la pantalla
+                    if (hasBlindTicket) {
+                        let finalRevealedId = data.revealed_movie_id || (Math.floor(Math.random() * 15) + 1);
                         localStorage.setItem('purchased_blind_{{ Auth::check() ? Auth::id() : "guest" }}', 'true');
                         
                         const movieCatalog = {
@@ -996,42 +977,30 @@
                             "15": { title: "Kraven", img: "{{ asset('img/15-Kraven/Mini.png') }}" }
                         };
 
-                        let recId = String(data.revealed_movie_id).padStart(2, '0');
-                        let revealedMovie = movieCatalog[recId] || { title: "Mystery Screenbites Film", img: "https://via.placeholder.com/300x450/111/ffd000?text=Top+Secret" };
+                        let recId = String(finalRevealedId).padStart(2, '0');
+                        let revealedMovie = movieCatalog[recId] || { title: "Mystery Movie", img: "" };
 
                         document.getElementById('revealed-poster').src = revealedMovie.img;
                         document.querySelector('#reveal-text h2').innerText = revealedMovie.title;
-
-                        const revealScreen = document.getElementById('blind-reveal-screen');
-                        revealScreen.classList.add('show');
+                        document.getElementById('blind-reveal-screen').classList.add('show');
                         
                         setTimeout(() => {
                             document.getElementById('flash-bang').classList.add('active');
                             document.getElementById('mystery-question').style.display = 'none';
-                            
-                            const poster = document.getElementById('revealed-poster');
-                            poster.style.opacity = '1';
-                            poster.style.transform = 'scale(1)';
-                            
-                            const text = document.getElementById('reveal-text');
-                            text.style.opacity = '1';
-                            text.style.transform = 'translateY(0)';
+                            document.getElementById('revealed-poster').style.opacity = '1';
+                            document.getElementById('revealed-poster').style.transform = 'scale(1)';
+                            document.getElementById('reveal-text').style.opacity = '1';
+                            document.getElementById('reveal-text').style.transform = 'translateY(0)';
                         }, 3000); 
                     } else {
+                        // SI COMPRAS OPPENHEIMER O CUALQUIER OTRA, CARGA EL ÉXITO NORMAL Y TE LLEVA AL PERFIL
                         document.getElementById('success-screen').classList.add('show');
                         setTimeout(() => { window.location.href = "/profile"; }, 2500);
                     }
                 }
             })
             .catch(error => {
-                console.error('Error del backend:', error);
-                let errorMsg = "An unexpected error occurred processing your payment.";
-                if (error.errors) {
-                    errorMsg = Object.values(error.errors)[0][0]; 
-                } else if (error.message) {
-                    errorMsg = error.message;
-                }
-                showErrorModal("Payment Failed", errorMsg);
+                showErrorModal("Payment Failed", error.message || "Error processing payment.");
                 resetPayButton();
             });
         }

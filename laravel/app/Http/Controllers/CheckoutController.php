@@ -42,9 +42,10 @@ class CheckoutController extends Controller
         // --- CASO DEMO ---
         if ($request->input('method') === 'demo' && $totalAmount > 0) {
             try {
-                // 1. Guardamos en BD directamente (saltando a Stripe)
+                // 1. Guarda el ticket en tu base de datos para que salga en el Profile
                 $revealedMovieId = $this->saveToDatabase($cart, $user, $isVip);
                 
+                // 2. Comprobamos si hay un evento misterioso en el carrito
                 $hasBlindTicket = false;
                 foreach ($cart as $order) {
                     if ($order['movieId'] === 'blind-01') {
@@ -53,18 +54,12 @@ class CheckoutController extends Controller
                     }
                 }
                 
-                // 2. Comportamiento exacto al de la tarjeta
-                if ($hasBlindTicket) {
-                    session()->flash('hasBlindTicket', true);
-                    session()->flash('revealedMovieId', $revealedMovieId);
-                    
-                    return response()->json([
-                        'status' => 'redirect',
-                        'url' => route('checkout.success')
-                    ]);
-                } else {
-                    return response()->json(['status' => 'success']);
-                }
+                // 3. Devolvemos éxito al navegador para que proceda
+                return response()->json([
+                    'status' => 'success',
+                    'revealed_movie_id' => $revealedMovieId,
+                    'has_blind' => $hasBlindTicket
+                ]);
 
             } catch (\Exception $e) {
                 return response()->json(['status' => 'error', 'message' => $e->getMessage()], 400);
