@@ -137,3 +137,7 @@ Route::get('/privacy-policy', function () {
 Route::post('/contact/send', [\App\Http\Controllers\AdminController::class, 'sendContact'])->name('contact.send');
 
 Route::get('/verify-email-demo', [AuthController::class, 'verifyEmailDemo'])->name('verification.verify.demo')->middleware('auth');
+
+Route::get('/terms', function () {
+    return view('terms');
+})->name('terms');

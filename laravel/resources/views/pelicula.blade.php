@@ -872,6 +872,8 @@
                 <li><a href="/">HOME</a></li>
                 <li><a href="/#cartelera">FILMS</a></li>
                 <li><a href="/#bar">MENUS</a></li>
+                <li><a href="{{ route('locations') }}">LOCATIONS</a></li>
+                <li><a href="{{ route('contact') }}">CONTACT</a></li>
 
                 @auth
                 <div class="user-nav">
@@ -1280,7 +1282,7 @@
             <div class="footer-col">
                 <h4>Legal</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="{{ route('terms') }}">Terms & Conditions</a></li>
                     <li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
                 </ul>
             </div>
