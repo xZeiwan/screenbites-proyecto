@@ -141,3 +141,5 @@ Route::get('/verify-email-demo', [AuthController::class, 'verifyEmailDemo'])->na
 Route::get('/terms', function () {
     return view('terms');
 })->name('terms');
+
+Route::post('/update-cookie-consent', [App\Http\Controllers\AdminController::class, 'updateCookieConsent'])->name('cookie.update');

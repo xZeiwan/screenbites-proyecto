@@ -33,5 +33,6 @@
             If you haven't created an account at Screenbites, please ignore this message.
         </div>
     </div>
+    @include('cookie-banner')
 </body>
 </html>

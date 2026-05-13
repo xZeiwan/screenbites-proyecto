@@ -720,5 +720,6 @@
 
         renderCart();
     </script>
+    @include('cookie-banner')
 </body>
 </html>

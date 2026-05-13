@@ -122,6 +122,6 @@
         <h2>7. Contact Us</h2>
         <p>If you have any questions or concerns regarding these Terms and Conditions, please contact us at terms@screenbitescinema.com or visit our customer service desk at your local cinema.</p>
     </div>
-
+    @include('cookie-banner')
 </body>
 </html>

@@ -77,4 +77,18 @@ class AdminController extends Controller
             return back()->with('error', 'Mail Error: ' . $e->getMessage());
         }
     }
+
+    public function updateCookieConsent(\Illuminate\Http\Request $request)
+    {
+        // Solo guardamos si el usuario ha iniciado sesión
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            $user->cookie_consent = $request->consent; // 'accepted' o 'rejected'
+            $user->save();
+
+            return response()->json(['status' => 'success']);
+        }
+        
+        return response()->json(['status' => 'guest'], 401);
+    }
 }

@@ -150,5 +150,6 @@
             Experience cinema like never before.
         </div>
     </div>
+    @include('cookie-banner')
 </body>
 </html>

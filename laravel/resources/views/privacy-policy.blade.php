@@ -107,6 +107,7 @@
         <h2>5. Contact Us</h2>
         <p>If you have questions or comments about this notice, you may email us at privacy@screenbitescinema.com or by post to our local cinemas.</p>
     </div>
+    @include('cookie-banner')
 
 </body>
 </html>

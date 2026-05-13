@@ -1468,7 +1468,10 @@
                         @if(Auth::user()->role === 'admin')
                         <li>
                             <a href="{{ route('admin.index') }}" style="color: #ff4444 !important; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 4px;">
-                                ⚙️ ADMIN
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: middle;">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path>
+                                </svg>
+                                Admin
                             </a>
                         </li>
                         @endif
@@ -2318,6 +2321,7 @@
             }
         });
     </script>
+    @include('cookie-banner')
 </body>
 
 </html>

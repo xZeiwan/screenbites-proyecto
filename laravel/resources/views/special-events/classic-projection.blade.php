@@ -937,5 +937,6 @@
             window.location.href = '/cart';
         }
     </script>
+    @include('cookie-banner')
 </body>
 </html>

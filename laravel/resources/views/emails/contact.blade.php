@@ -41,5 +41,6 @@
             </td>
         </tr>
     </table>
+    @include('cookie-banner')
 </body>
 </html>

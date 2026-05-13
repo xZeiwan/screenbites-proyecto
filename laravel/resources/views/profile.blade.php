@@ -1112,5 +1112,6 @@
             });
         </script>
     @endif
+    @include('cookie-banner')
 </body>
 </html>

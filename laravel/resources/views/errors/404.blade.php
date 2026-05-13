@@ -133,5 +133,6 @@
             Back to Home
         </a>
     </div>
+    @include('cookie-banner')
 </body>
 </html>

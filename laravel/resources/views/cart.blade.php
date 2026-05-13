@@ -692,5 +692,6 @@
             window.location.href = '/checkout';
         }
     </script>
+    @include('cookie-banner')
 </body>
 </html>

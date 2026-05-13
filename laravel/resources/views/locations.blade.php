@@ -399,6 +399,6 @@
             </div>
         </div>
     </div>
-
+    @include('cookie-banner')
     </body>
 </html>

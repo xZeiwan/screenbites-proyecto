@@ -67,10 +67,18 @@
             color: #eee;
         }
 
-        th:nth-child(1) { width: 20%; } 
-        th:nth-child(2) { width: 35%; } 
-        th:nth-child(3) { width: 15%; }
-        th:nth-child(4) { width: 30%; } 
+        /* --- Anchos para la tabla de Usuarios (5 columnas) --- */
+        .table-users th:nth-child(1) { width: 15%; } 
+        .table-users th:nth-child(2) { width: 25%; } 
+        .table-users th:nth-child(3) { width: 15%; } 
+        .table-users th:nth-child(4) { width: 15%; }
+        .table-users th:nth-child(5) { width: 30%; } 
+
+        /* --- Anchos para la tabla de Reseñas (4 columnas) --- */
+        .table-reviews th:nth-child(1) { width: 20%; }
+        .table-reviews th:nth-child(2) { width: 35%; } 
+        .table-reviews th:nth-child(3) { width: 12%; }
+        .table-reviews th:nth-child(4) { width: 33%; } 
 
         .actions-wrapper {
             display: flex;
@@ -262,12 +270,13 @@
             <div style="background: #4ade80; color: black; padding: 15px; border-radius: 8px; margin-bottom: 20px;">{{ session('status') }}</div>
         @endif
 
-        <table>
+        <table class="table-users">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Current Role</th>
+                    <th>Cookies Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -277,6 +286,16 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td><span class="badge badge-{{ $user->role }}">{{ $user->role }}</span></td>
+                    
+                    <td>
+                        @if(is_null($user->cookie_consent))
+                            <span class="badge" style="background: #444; color: #aaa;">Pending</span>
+                        @elseif($user->cookie_consent === 'accepted')
+                            <span class="badge" style="background: rgba(74,222,128,0.2); color: #4ade80; border: 1px solid #4ade80;">Accepted</span>
+                        @else
+                            <span class="badge" style="background: rgba(255,68,68,0.2); color: #ff4444; border: 1px solid #ff4444;">Rejected</span>
+                        @endif
+                    </td>
                     <td>
                         <div class="actions-wrapper">
                             <form action="{{ route('admin.updateRole', $user) }}" method="POST">
@@ -304,7 +323,7 @@
         </table>
 
         <h1>Review Moderation</h1>
-        <table>
+        <table class="table-reviews">
             <thead>
                 <tr>
                     <th>Author</th>

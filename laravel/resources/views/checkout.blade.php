@@ -949,7 +949,7 @@
                 if(data.status === 'redirect') {
                     window.location.href = data.url; 
                 } 
-                
+
                 else if(data.status === 'success') {
                     localStorage.removeItem(CART_KEY); 
                     const hasBlindTicket = globalCart.some(order => order.movieId === 'blind-01');
@@ -1005,5 +1005,6 @@
             });
         }
     </script>
+    @include('cookie-banner')
 </body>
 </html>

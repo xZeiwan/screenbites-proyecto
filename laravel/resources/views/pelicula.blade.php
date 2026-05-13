@@ -1396,6 +1396,7 @@
             document.body.style.overflow = '';
         }
     </script>
+    @include('cookie-banner')
 </body>
 
 </html>
