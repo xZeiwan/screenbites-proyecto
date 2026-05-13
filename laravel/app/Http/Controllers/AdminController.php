@@ -82,7 +82,10 @@ class AdminController extends Controller
     {
         // Solo guardamos si el usuario ha iniciado sesión
         if (\Illuminate\Support\Facades\Auth::check()) {
+            
+            /** @var \App\Models\User $user */
             $user = \Illuminate\Support\Facades\Auth::user();
+            
             $user->cookie_consent = $request->consent; // 'accepted' o 'rejected'
             $user->save();
 
