@@ -918,7 +918,7 @@
                 paymentData = { email: document.getElementById('paypal-email').value };
             } 
             else if (currentMethod === 'demo') {
-                paymentData = { is_demo: true }; // Le decimos a Laravel que es Demo
+                paymentData = { is_demo: true };
             }
 
             let payloadCart = globalCart.map(item => {
@@ -926,7 +926,6 @@
                 return item;
             });
 
-            // ENVIAMOS A LARAVEL (Guarda en la BD para que aparezca en My Bookings)
             fetch('/process-payment', {
                 method: 'POST',
                 headers: {
@@ -945,11 +944,12 @@
                 if (!response.ok) throw data; 
                 return data;
             })
+
             .then(data => {
                 if(data.status === 'redirect') {
-                    localStorage.removeItem(CART_KEY); 
                     window.location.href = data.url; 
                 } 
+                
                 else if(data.status === 'success') {
                     localStorage.removeItem(CART_KEY); 
                     const hasBlindTicket = globalCart.some(order => order.movieId === 'blind-01');

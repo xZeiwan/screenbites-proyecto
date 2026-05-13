@@ -245,6 +245,9 @@
                 }, 2500);
             }
         });
+
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+        localStorage.removeItem(CART_KEY);
     </script>
 </body>
 </html>
