@@ -41,8 +41,9 @@ class AdminController extends Controller
 
     public function deleteReview($id)
     {
-        DB::table('wp_comments')->where('comment_ID', $id)->delete();
-        return back()->with('status', 'Review removed.');
+        \Illuminate\Support\Facades\DB::table('reviews')->where('id', $id)->delete();
+        
+        return back()->with('status', 'Review removed successfully.');
     }
 
     public function updateReviewStatus(Request $request, $id)
