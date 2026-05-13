@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenbites - Seat Selection</title>
+    <style>
+        :root {
+            --color-negro: #000000;
+            --color-gris-oscuro: #0a0a0a;
+            --color-gris-tarjeta: #141414;
+            --color-gris-claro: #333333;
+            --color-blanco: #ffffff;
+            
+            /* COLOR DINÁMICO DE LA PELÍCULA */
+            --color-amarillo: {{ $movie['bg'] ?? '#ffd000' }}; 
+            --color-texto-btn: {{ $movie['textColor'] ?? 'black' }};
+
+            --color-asiento-libre: #222222;
+            --color-asiento-ocupado: #0f0f0f;
+            --color-asiento-vip: #5a3e90;
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background-color: var(--color-negro); 
+            color: var(--color-blanco); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
+
+            /* --- FONDO INMERSIVO DE LA PELI --- */
+            .page-bg {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                z-index: -2;
+                object-fit: cover;
+                opacity: 0.15;
+                filter: blur(8px);
+            }
+
+            .page-bg-gradient {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                z-index: -1;
+                background: radial-gradient(circle at center, transparent 0%, var(--color-negro) 80%);
+            }
+
+            /* --- HEADER --- */
+            header { 
+                padding: 20px 5%; 
+                display: flex; 
+                justify-content: space-between; 
+                align-items: center; 
+                border-bottom: 1px solid rgba(255,255,255,0.05); 
+                background-color: rgba(0,0,0,0.8);
+                backdrop-filter: blur(10px);
+                position: sticky;
+                top: 0;
+                z-index: 100;
+
+                .logo img { 
+                    height: 40px; 
+                }
+
+                .back-btn { 
+                    color: var(--color-blanco); 
+                    text-decoration: none; 
+                    display: flex; 
+                    align-items: center; 
+                    gap: 8px; 
+                    font-weight: bold; 
+                    font-size: 14px; 
+                    text-transform: uppercase; 
+                    transition: color 0.3s ease; 
+
+                    &:hover { 
+                        color: var(--color-amarillo); 
+                    }
+                }
+            }
+
+            /* --- CONTENEDOR PRINCIPAL --- */
+            .booking-container { 
+                display: flex; 
+                flex: 1; 
+                padding: 40px 5%; 
+                gap: 50px; 
+                max-width: 1400px; 
+                margin: 0 auto; 
+                width: 100%; 
+
+                /* ZONA IZQUIERDA: MAPA DE ASIENTOS */
+                .seating-section { 
+                    flex: 3; 
+                    display: flex; 
+                    flex-direction: column; 
+                    align-items: center; 
+                    
+                    .movie-info { 
+                        text-align: center; 
+                        margin-bottom: 50px; 
+
+                        h1 { 
+                            font-family: 'Arial Black', sans-serif; 
+                            font-size: 42px; 
+                            color: var(--color-blanco); 
+                            text-transform: uppercase; 
+                            letter-spacing: 2px; 
+                            margin-bottom: 10px; 
+                            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+                        }
+
+                        p { 
+                            color: var(--color-amarillo); 
+                            font-size: 16px; 
+                            font-weight: bold;
+                            letter-spacing: 1px;
+                        }
+                    }
+
+                    /* PANTALLA DEL CINE */
+                    .screen-container { 
+                        width: 100%; 
+                        max-width: 600px; 
+                        margin-bottom: 60px; 
+                        perspective: 400px; 
+
+                        .screen { 
+                            height: 70px; 
+                            width: 100%; 
+                            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), transparent); 
+                            transform: rotateX(-45deg); 
+                            box-shadow: 0 15px 50px rgba(255, 255, 255, 0.15); 
+                            border-top: 4px solid var(--color-blanco); 
+                            border-radius: 5px 5px 0 0; 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            color: var(--color-blanco); 
+                            font-weight: 900; 
+                            letter-spacing: 8px; 
+                            text-transform: uppercase; 
+                            font-size: 12px; 
+                            opacity: 0.8;
+                        }
+                    }
+
+                    /* ASIENTOS */
+                    .seats-grid { 
+                        display: flex; 
+                        flex-direction: column; 
+                        gap: 15px; 
+                        margin-bottom: 50px; 
+
+                        .seat-row { 
+                            display: flex; 
+                            gap: 12px; 
+                            justify-content: center; 
+                            align-items: center; 
+
+                            .row-label { 
+                                color: #666; 
+                                font-size: 12px; 
+                                width: 20px; 
+                                text-align: center; 
+                                font-weight: bold; 
+                            }
+
+                            .seat { 
+                                width: 38px; 
+                                height: 38px; 
+                                background-color: var(--color-asiento-libre); 
+                                border-radius: 8px 8px 4px 4px; 
+                                cursor: pointer; 
+                                transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+                                position: relative; 
+                                border: 1px solid #333;
+
+                                &::after { 
+                                    content: ''; 
+                                    position: absolute; 
+                                    bottom: -5px; 
+                                    left: 10%; 
+                                    width: 80%; 
+                                    height: 5px; 
+                                    background-color: rgba(0,0,0,0.5); 
+                                    border-radius: 0 0 4px 4px; 
+                                }
+                                
+                                &:hover:not(.occupied) { 
+                                    transform: translateY(-5px) scale(1.1); 
+                                    background-color: #555; 
+                                    border-color: #777;
+                                }
+
+                                &.selected { 
+                                    background-color: var(--color-amarillo); 
+                                    border-color: var(--color-amarillo);
+                                    box-shadow: 0 0 15px rgba(255, 208, 0, 0.4); 
+                                    transform: scale(1.1);
+                                }
+
+                                &.occupied { 
+                                    background-color: var(--color-asiento-ocupado); 
+                                    border-color: #111;
+                                    cursor: not-allowed; 
+                                    opacity: 0.4; 
+                                }
+
+                                &.vip { 
+                                    background-color: var(--color-asiento-vip); 
+                                    border-color: #724db8; 
+
+                                    &.selected { 
+                                        background-color: var(--color-amarillo); 
+                                        border-color: var(--color-amarillo); 
+                                    }
+                                }
+
+                                /* Pasillo central */
+                                &:nth-child(6) { 
+                                    margin-right: 30px; 
+                                } 
+                            }
+                        }
+                    }
+
+                    /* LEYENDA */
+                    .legend { 
+                        display: flex; 
+                        justify-content: center; 
+                        gap: 30px; 
+                        margin-top: 20px; 
+                        padding: 20px 40px; 
+                        background-color: rgba(20,20,20,0.8); 
+                        border-radius: 50px; 
+                        border: 1px solid #333;
+                        backdrop-filter: blur(5px);
+
+                        .legend-item { 
+                            display: flex; 
+                            align-items: center; 
+                            gap: 10px; 
+                            font-size: 13px; 
+                            color: #aaa; 
+                            font-weight: bold;
+
+                            .legend-seat { 
+                                width: 20px; 
+                                height: 20px; 
+                                border-radius: 4px 4px 2px 2px; 
+                            }
+                        }
+                    }
+                }
+
+                /* ZONA DERECHA: RESUMEN DEL PEDIDO */
+                .summary-section { 
+                    flex: 1; 
+                    min-width: 350px; 
+                    background-color: rgba(20, 20, 20, 0.85); 
+                    backdrop-filter: blur(15px);
+                    border-radius: 12px; 
+                    padding: 35px; 
+                    border: 1px solid rgba(255,255,255,0.1); 
+                    height: fit-content; 
+                    position: sticky; 
+                    top: 120px; 
+                    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+
+                    .summary-title { 
+                        font-family: 'Arial Black', sans-serif; 
+                        font-size: 20px; 
+                        color: var(--color-blanco); 
+                        text-transform: uppercase; 
+                        border-bottom: 2px solid var(--color-amarillo); 
+                        padding-bottom: 15px; 
+                        margin-bottom: 25px; 
+                    }
+                    
+                    .summary-details { 
+                        margin-bottom: 30px; 
+
+                        .summary-row { 
+                            display: flex; 
+                            justify-content: space-between; 
+                            margin-bottom: 18px; 
+                            font-size: 14px; 
+                            color: #ccc; 
+
+                            span.val { 
+                                color: var(--color-blanco); 
+                                font-weight: bold; 
+                                text-align: right; 
+                            }
+                            
+                            .selected-seats-list { 
+                                display: flex; 
+                                flex-wrap: wrap; 
+                                gap: 8px; 
+                                margin-top: 10px; 
+
+                                .seat-badge { 
+                                    background-color: transparent; 
+                                    color: var(--color-amarillo); 
+                                    border: 1px solid var(--color-amarillo);
+                                    padding: 4px 10px; 
+                                    border-radius: 4px; 
+                                    font-size: 12px; 
+                                    font-weight: bold; 
+                                }
+                            }
+                        }
+                    }
+
+                    .total-row { 
+                        display: flex; 
+                        justify-content: space-between; 
+                        align-items: center; 
+                        border-top: 1px dashed #555; 
+                        padding-top: 25px; 
+                        margin-top: 15px; 
+                        
+                        .total-label { 
+                            font-size: 16px; 
+                            color: #888; 
+                            font-weight: bold; 
+                            text-transform: uppercase; 
+                            letter-spacing: 1px;
+                        }
+                        
+                        .total-price { 
+                            font-size: 32px; 
+                            color: var(--color-amarillo); 
+                            font-family: 'Arial Black', sans-serif; 
+                        }
+                    }
+
+                    .btn-checkout { 
+                        width: 100%; 
+                        background-color: var(--color-amarillo); 
+                        color: var(--color-texto-btn); 
+                        border: none; 
+                        padding: 18px; 
+                        border-radius: 6px; 
+                        font-family: 'Arial Black', sans-serif; 
+                        font-size: 14px; 
+                        text-transform: uppercase; 
+                        cursor: pointer; 
+                        transition: all 0.3s ease; 
+                        margin-top: 35px; 
+                        display: flex; 
+                        justify-content: center; 
+                        align-items: center; 
+                        gap: 10px; 
+
+                        &:hover:not(:disabled) { 
+                            background-color: var(--color-blanco); 
+                            color: var(--color-negro);
+                            transform: translateY(-3px); 
+                            box-shadow: 0 10px 20px rgba(0,0,0,0.3); 
+                        }
+
+                        &:disabled { 
+                            background-color: #333; 
+                            color: #666; 
+                            cursor: not-allowed; 
+                        }
+                    }
+                }
+            }
+        }
+
+        /* --- CUSTOM MODAL ALERTS (ESTILO PREMIUM B&W) --- */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .custom-modal-box {
+            background: #0a0a0a;
+            border: 2px solid var(--color-amarillo);
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            transform: translateY(30px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .custom-modal-overlay.active .custom-modal-box {
+            transform: translateY(0);
+        }
+
+        .custom-modal-box .modal-icon {
+            color: var(--color-blanco);
+            margin-bottom: 20px;
+        }
+
+        .custom-modal-box h3 {
+            font-family: 'Arial Black', sans-serif;
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--color-blanco);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .custom-modal-box p {
+            color: #aaa;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        #close-modal-btn {
+            background: var(--color-blanco);
+            color: var(--color-negro);
+            border: none;
+            padding: 14px 35px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        #close-modal-btn:hover {
+            background: var(--color-amarillo);
+            color: var(--color-texto-btn);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <img src="{{ asset($movie['bgImg'] ?? '') }}" class="page-bg" onerror="this.src='https://via.placeholder.com/1920x1080/111/333'">
+    <div class="page-bg-gradient"></div>
+
+    <header>
+        <a href="/pelicula/{{ $id }}" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back to Movie
+        </a>
+        <div class="logo"><a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a></div>
+        <div style="width: 130px;"></div> 
+    </header>
+
+    <div class="booking-container">
+        
+        <div class="seating-section">
+            <div class="movie-info" style="width: 100%; max-width: 600px; margin: 0 auto 50px;">
+                <h1 style="margin-bottom: 10px;">{{ $movie['title'] ?? 'Movie' }}</h1>
+                
+                @if($showtimes->isNotEmpty() && $selectedSession)
+                    <p style="color: var(--color-amarillo); font-size: 14px; font-weight: bold; margin-bottom: 25px; letter-spacing: 1px; text-transform: uppercase;">
+                        {{ \Carbon\Carbon::parse($selectedSession->date)->locale('en')->format('l, d M') }} &nbsp;•&nbsp; 
+                        {{ \Carbon\Carbon::parse($selectedSession->time)->format('H:i') }} &nbsp;•&nbsp; 
+                        {{ str_replace(['Sala', 'sala'], ['Room', 'Room'], $selectedSession->room_name) }}
+                    </p>
+
+                    <div class="showtimes-scroll" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;">
+                        @foreach($showtimes as $session)
+                            @php
+                                $isActive = $selectedSession->id == $session->id;
+                                $dateObj = \Carbon\Carbon::parse($session->date)->locale('en');
+                                $timeObj = \Carbon\Carbon::parse($session->time);
+                            @endphp
+                            
+                            <a href="/booking/{{ $id }}?session={{ $session->id }}" 
+                               style="flex-shrink: 0; text-decoration: none; padding: 10px 20px; border-radius: 8px; text-align: center; transition: all 0.3s;
+                                      border: 2px solid {{ $isActive ? 'var(--color-amarillo)' : '#333' }};
+                                      background-color: {{ $isActive ? 'var(--color-amarillo)' : '#111' }};
+                                      color: {{ $isActive ? '#000' : '#fff' }};">
+                                
+                                <span style="display: block; font-size: 10px; text-transform: uppercase;">{{ $dateObj->format('d M') }}</span>
+                                <span style="display: block; font-size: 18px; font-weight: bold; margin: 2px 0;">{{ $timeObj->format('H:i') }}</span>
+                                <span style="display: block; font-size: 9px; opacity: 0.8;">{{ str_replace(['Sala', 'sala'], ['Room', 'Room'], $session->room_name) }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                    
+                    <style>
+                        .showtimes-scroll::-webkit-scrollbar { height: 6px; }
+                        .showtimes-scroll::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+                        .showtimes-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+                        .showtimes-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-amarillo); }
+                    </style>
+                @else
+                    <p style="color: #ff4444; font-size: 14px; margin-top: 15px;">No sessions available for this movie.</p>
+                @endif
+            </div>
+
+            <div class="screen-container">
+                <div class="screen">Screen</div>
+            </div>
+
+            <div class="seats-grid" id="seats-container">
+                </div>
+
+            <div class="legend">
+                <div class="legend-item"><div class="legend-seat" style="background-color: var(--color-asiento-libre);"></div> Standard ($8.50)</div>
+                <div class="legend-item"><div class="legend-seat" style="background-color: var(--color-asiento-vip);"></div> VIP ($12.00)</div>
+                <div class="legend-item"><div class="legend-seat" style="background-color: var(--color-amarillo);"></div> Selected</div>
+                <div class="legend-item"><div class="legend-seat" style="background-color: var(--color-asiento-ocupado);"></div> Occupied</div>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h2 class="summary-title">Booking Summary</h2>
+            
+            <div class="summary-details">
+                <div class="summary-row">
+                    <span>Movie</span>
+                    <span class="val">{{ $movie['title'] ?? 'Movie' }}</span>
+                </div>
+                
+                <div class="summary-row">
+                    <span>Session</span>
+                    <span class="val">
+                        @if(isset($selectedSession))
+                            {{ \Carbon\Carbon::parse($selectedSession->date)->locale('en')->format('d M') }}, {{ \Carbon\Carbon::parse($selectedSession->time)->format('H:i') }}
+                        @else
+                            No Session Selected
+                        @endif
+                    </span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Room</span>
+                    <span class="val">
+                        @if(isset($selectedSession))
+                            {{ str_replace(['Sala', 'sala'], ['Room', 'Room'], $selectedSession->room_name) }}
+                        @else
+                            -
+                        @endif
+                    </span>
+                </div>
+
+                <div class="summary-row" style="flex-direction: column; gap: 10px; margin-top: 25px;">
+                    <span style="border-bottom: 1px solid #333; padding-bottom: 8px;">Selected Seats:</span>
+                    <div class="selected-seats-list" id="selected-seats-display">
+                        <span style="color: #666; font-size: 13px; font-style: italic;">No seats selected yet.</span>
+                    </div>
+                </div>
+                <div class="summary-row" style="margin-top: 25px;">
+                    <span>Tickets Total</span>
+                    <span class="val" id="tickets-price" style="font-size: 18px;">$0.00</span>
+                </div>
+            </div>
+
+            <div class="total-row">
+                <span class="total-label">Total</span>
+                <span class="total-price" id="total-price">$0.00</span>
+            </div>
+
+            <button class="btn-checkout" id="btn-continue" disabled>
+                Continue to Food
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </div>
+
+    </div>
+
+    @php
+        $seed = crc32($id);
+        mt_srand($seed);
+        $rowsArray = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    @endphp
+
+    <div id="seat-limit-modal" class="custom-modal-overlay">
+        <div class="custom-modal-box">
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+            </div>
+            <h3>Seat Limit Reached</h3>
+            <p>For large group bookings over 8 people, please contact the cinema directly. You can only select up to 8 seats per transaction.</p>
+            <button id="close-modal-btn">UNDERSTOOD</button>
+        </div>
+    </div>
+
+    <script>
+        const STANDARD_PRICE = 8.50;
+        const VIP_PRICE = 12.00;
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+        
+        const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+        const seatsPerRow = 10;
+        const vipRows = ['D', 'E'];
+
+        const occupiedSeats = {!! json_encode($occupiedArray) !!};
+
+        let selectedSeats = [];
+        let currentTotal = 0;
+
+        const seatsContainer = document.getElementById('seats-container');
+        const selectedSeatsDisplay = document.getElementById('selected-seats-display');
+        const ticketsPriceDisplay = document.getElementById('tickets-price');
+        const totalPriceDisplay = document.getElementById('total-price');
+        const btnContinue = document.getElementById('btn-continue');
+
+        function generateSeats() {
+            seatsContainer.innerHTML = ''; 
+            
+            rows.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'seat-row';
+                
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'row-label';
+                labelDiv.innerText = row;
+                rowDiv.appendChild(labelDiv);
+
+                for (let i = 1; i <= seatsPerRow; i++) {
+                    const seatId = `${row}${i}`;
+                    const seatDiv = document.createElement('div');
+                    seatDiv.className = 'seat';
+                    seatDiv.dataset.seatId = seatId;
+
+                    if (occupiedSeats.includes(seatId)) {
+                        seatDiv.classList.add('occupied');
+                        seatDiv.style.pointerEvents = 'none'; 
+                    } 
+                    else {
+                        if (vipRows.includes(row)) {
+                            seatDiv.classList.add('vip');
+                            seatDiv.dataset.price = VIP_PRICE;
+                        } else {
+                            seatDiv.dataset.price = STANDARD_PRICE;
+                        }
+                        seatDiv.addEventListener('click', () => toggleSeat(seatDiv));
+                    }
+
+                    rowDiv.appendChild(seatDiv);
+                }
+                
+                const labelDivRight = document.createElement('div');
+                labelDivRight.className = 'row-label';
+                labelDivRight.innerText = row;
+                rowDiv.appendChild(labelDivRight);
+                seatsContainer.appendChild(rowDiv);
+            });
+        }
+
+        function toggleSeat(seatElement) {
+            const seatId = seatElement.dataset.seatId;
+            const price = parseFloat(seatElement.dataset.price);
+
+            if (seatElement.classList.contains('selected')) {
+                seatElement.classList.remove('selected');
+                selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+            } else {
+                if(selectedSeats.length >= 8) {
+                    document.getElementById('seat-limit-modal').classList.add('active');
+                    return;
+                }
+                seatElement.classList.add('selected');
+                selectedSeats.push({ id: seatId, price: price });
+            }
+            updateSummary();
+        }
+
+        function updateSummary() {
+            if (selectedSeats.length === 0) {
+                selectedSeatsDisplay.innerHTML = '<span style="color: #666; font-size: 13px; font-style: italic;">No seats selected yet.</span>';
+                ticketsPriceDisplay.innerText = '$0.00';
+                totalPriceDisplay.innerText = '$0.00';
+                btnContinue.disabled = true;
+                currentTotal = 0;
+                return;
+            }
+
+            selectedSeatsDisplay.innerHTML = '';
+            currentTotal = 0;
+            selectedSeats.sort((a, b) => a.id.localeCompare(b.id));
+
+            selectedSeats.forEach(seat => {
+                currentTotal += seat.price;
+                const badge = document.createElement('span');
+                badge.className = 'seat-badge';
+                badge.innerText = seat.id;
+                selectedSeatsDisplay.appendChild(badge);
+            });
+
+            const formattedTotal = `$${currentTotal.toFixed(2)}`;
+            ticketsPriceDisplay.innerText = formattedTotal;
+            totalPriceDisplay.innerText = formattedTotal;
+            btnContinue.disabled = false;
+        }
+
+        btnContinue.addEventListener('click', () => {
+            const seatsParam = selectedSeats.map(s => s.id).join(',');
+            const totalParam = currentTotal.toFixed(2);
+            
+            const colorParam = encodeURIComponent('{{ $movie['bg'] ?? '#ffd000' }}');
+            const textColorParam = encodeURIComponent('{{ $movie['textColor'] ?? 'black' }}');
+            
+            const movieTitleText = document.querySelector('.movie-info h1').innerText;
+            const titleParam = encodeURIComponent(movieTitleText);
+            const sessionParam = '{{ $selectedSession ? $selectedSession->id : "" }}';
+            
+            window.location.href = `/booking/{{ $id }}/food?session=${sessionParam}&tickets=${totalParam}&seats=${seatsParam}&color=${colorParam}&textColor=${textColorParam}&title=${titleParam}`;
+        });
+
+        document.getElementById('close-modal-btn').addEventListener('click', () => {
+            document.getElementById('seat-limit-modal').classList.remove('active');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSeats();
+            
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+            let existingOrder = globalCart.find(order => order.movieId === '{{ $id }}');
+
+            if (existingOrder && existingOrder.tickets && existingOrder.tickets.seats !== 'None') {
+                const savedSeats = existingOrder.tickets.seats.split(',');
+
+                savedSeats.forEach(seatId => {
+                    const seatElement = document.querySelector(`[data-seat-id="${seatId}"]`);
+                    
+                    if (seatElement && !seatElement.classList.contains('occupied')) {
+                        seatElement.classList.add('selected');
+                        const price = parseFloat(seatElement.dataset.price);
+                        selectedSeats.push({ id: seatId, price: price });
+                    }
+                });
+                updateSummary();
+            }
+        });
+    </script>
+    @include('cookie-banner')
+</body>
+</html>

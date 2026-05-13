@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screenbites Cinema - {!! $movie['title'] ?? 'Movie' !!}</title>
+
+    <style>
+        :root {
+            --color-negro: #000000;
+            --color-gris-oscuro: #0a0a0a;
+            --color-gris-tarjeta: #141414;
+            --color-gris-claro: #333333;
+            --color-blanco: #ffffff;
+            
+            /* COLOR DINÁMICO BASADO EN LA PELÍCULA (Cae a amarillo si no existe) */
+            --color-principal: {{ $movie['bg'] ?? '#ffd000' }}; 
+            /* COLOR TEXTO BOTON DINÁMICO */
+            --color-texto-btn: {{ $movie['textColor'] ?? 'black' }};
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Arial Black', 'Arial Bold', sans-serif;
+            overflow-x: hidden;
+            background-color: var(--color-negro);
+            color: var(--color-blanco);
+            width: 100%;
+        }
+
+        /* --- HEADER --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5% 0 3%;
+            height: 100px;
+            z-index: 1000;
+            background-color: transparent;
+            border-bottom: 1px solid transparent;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-bottom 0.3s ease;
+
+            &.scrolled {
+                background-color: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .logo img {
+                height: 60px;
+            }
+
+            nav {
+                ul {
+                    list-style: none;
+                    display: flex;
+                    align-items: center;
+                    gap: 30px;
+                }
+
+                a,
+                .logout-btn {
+                    text-decoration: none;
+                    color: var(--header-text-color, var(--color-blanco));
+                    text-transform: uppercase;
+                    font-size: 13px;
+                    font-weight: 900;
+                    letter-spacing: 2px;
+                    transition: color 0.3s ease, transform 0.2s ease;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+
+                    &:hover {
+                        color: var(--color-principal) !important;
+                        transform: scale(1.05);
+                    }
+                }
+            }
+        }
+
+        /* --- USER NAVIGATION --- */
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-left: 2px solid rgba(255, 255, 255, 0.2);
+            padding-left: 20px;
+            margin-left: 10px;
+
+            .user-profile {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: var(--header-text-color, var(--color-blanco));
+                transition: color 0.3s ease;
+
+                .user-avatar {
+                    width: 35px;
+                    height: 35px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    border: none;
+                    transition: transform 0.3s ease;
+                }
+
+                .user-name,
+                .chevron-icon {
+                    color: var(--header-text-color, var(--color-blanco));
+                    transition: color 0.3s ease;
+                }
+
+                .chevron-icon {
+                    width: 16px;
+                    height: 16px;
+                }
+
+                &:hover {
+                    .user-avatar {
+                        transform: scale(1.1);
+                    }
+                    .user-name,
+                    .chevron-icon {
+                        color: var(--color-principal);
+                    }
+                }
+            }
+
+            .nav-cart {
+                position: relative;
+                background: none;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                padding: 5px;
+                color: var(--header-text-color, var(--color-blanco));
+                transition: color 0.3s ease, transform 0.2s ease;
+
+                svg {
+                    width: 26px;
+                    height: 26px;
+                }
+
+                .cart-badge {
+                    position: absolute;
+                    top: -5px;
+                    right: -8px;
+                    background-color: red;
+                    color: white;
+                    font-size: 11px;
+                    font-weight: bold;
+                    font-family: Arial, sans-serif;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+                    pointer-events: none;
+                }
+
+                &:hover {
+                    color: var(--color-principal) !important;
+                    transform: scale(1.1);
+                }
+            }
+        }
+
+        /* --- MOVIE HERO (NETFLIX STYLE) --- */
+        .movie-hero {
+            position: relative;
+            width: 100%;
+            min-height: 65vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 5% 40px;
+
+            .backdrop-img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: top;
+                z-index: 1;
+                opacity: 20%;
+            }
+
+            .backdrop-gradient {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(to top, var(--color-negro) 0%, rgba(0, 0, 0, 0.8) 30%, transparent 100%);
+                z-index: 2;
+            }
+
+            .movie-content {
+                position: relative;
+                z-index: 10;
+                display: flex;
+                gap: 50px;
+                max-width: 1300px;
+                margin: 0 auto;
+                width: 100%;
+                align-items: center;
+
+                .movie-poster {
+                    width: 280px;
+                    border-radius: 8px;
+                    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+                    border: 2px solid var(--color-principal);
+                    flex-shrink: 0;
+                }
+
+                .movie-info {
+                    flex: 1;
+
+                    .movie-id {
+                        color: var(--color-principal);
+                        font-size: 16px;
+                        letter-spacing: 5px;
+                        margin-bottom: 10px;
+                        display: block;
+                    }
+
+                    .movie-title {
+                        font-size: 60px;
+                        margin: 0 0 15px 0;
+                        text-transform: uppercase;
+                        line-height: 1.1;
+                        text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+                        filter: brightness(1.3);
+                    }
+
+                    .movie-meta {
+                        display: flex;
+                        gap: 20px;
+                        align-items: center;
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                        margin-bottom: 25px;
+                        color: #ddd;
+
+                        .age-badge {
+                            border: 2px solid currentColor;
+                            padding: 4px 8px;
+                            border-radius: 4px;
+                            font-weight: bold;
+                        }
+                    }
+
+                    .movie-desc {
+                        font-family: Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #ccc;
+                        margin-bottom: 35px;
+                        font-size: 16px;
+                        max-width: 800px;
+                    }
+
+                    .action-buttons {
+                        display: flex;
+                        gap: 15px;
+                        align-items: center;
+
+                        .btn-buy {
+                            background: var(--color-principal);
+                            color: var(--color-texto-btn);
+                            padding: 12px 30px;
+                            font-size: 13px;
+                            font-weight: 900;
+                            text-transform: uppercase;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            letter-spacing: 1px;
+                            transition: all 0.3s ease;
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 10px;
+
+                            &:hover:not(:disabled) {
+                                background: var(--color-blanco);
+                                color: var(--color-negro);
+                                transform: scale(1.05);
+                                
+                                img {
+                                    filter: invert(1);
+                                }
+                            }
+                            
+                            &:disabled {
+                                opacity: 0.5;
+                                cursor: not-allowed;
+                                background-color: var(--color-principal);
+                            }
+                        }
+
+                        .btn-back {
+                            background: transparent;
+                            color: var(--color-blanco);
+                            padding: 12px 30px;
+                            font-size: 13px;
+                            font-weight: 900;
+                            text-transform: uppercase;
+                            border: 2px solid var(--color-blanco);
+                            border-radius: 4px;
+                            cursor: pointer;
+                            letter-spacing: 1px;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+
+                            &:hover {
+                                background: var(--color-blanco);
+                                color: var(--color-negro);
+                                transform: scale(1.05);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /* --- TÍTULOS DE SECCIÓN --- */
+        .section-title {
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            color: var(--color-blanco);
+            border-left: 5px solid var(--color-principal);
+            padding-left: 15px;
+            margin-bottom: 30px;
+            line-height: 1;
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 5%; 
+        }
+    
+        /* --- ESTILOS AÑADIDOS PARA EL NUEVO TRAILER Y CARRUSEL --- */
+        .trailer-featured { 
+            padding: 60px 0 80px 0; 
+            background: #050505; 
+        }
+
+        .movie-gallery { 
+            padding: 60px 0 60px 0; 
+            background: #000; 
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0, 0.4);
+            border: 1px solid #222;
+        }
+
+        .video-cover {
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            cursor: pointer; 
+            z-index: 2; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            background-color: #000; 
+            transition: transform 0.3s ease;
+        }
+        
+        .video-cover:hover {
+            transform: scale(1.02);
+        }
+
+        .video-cover img {
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            opacity: 0.8;
+        }
+
+        .custom-play-btn {
+            position: absolute; 
+            background: rgba(0,0,0,0.7); 
+            color: var(--color-blanco);
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%; 
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            font-size: 35px;
+            border: 3px solid var(--color-principal); 
+            transition: all 0.3s ease;
+            padding-left: 6px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .video-cover:hover .custom-play-btn {
+            transform: scale(1.1);
+            background: var(--color-principal);
+            color: var(--color-negro);
+        }
+
+        .no-video {
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            top: 0; 
+            left: 0;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            background: #111; 
+            color: #666; 
+            font-size: 1.5rem;
+        }
+
+        /* --- ESTILOS DEL MODAL DEL TRAILER --- */
+        .trailer-modal-overlay {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .trailer-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .trailer-modal-content {
+            width: 90%;
+            max-width: 1100px;
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .trailer-modal-overlay.active .trailer-modal-content {
+            transform: scale(1);
+        }
+
+        .close-trailer-btn {
+            position: absolute;
+            top: -45px;
+            right: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 35px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-trailer-btn:hover {
+            color: var(--color-principal);
+        }
+
+        .video-responsive {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            border: 2px solid #333;
+        }
+
+        .video-responsive iframe {
+            position: absolute;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+        }
+
+        /* CARRUSEL DE IMÁGENES */
+        .clean-carousel-container { 
+            width: 100%; 
+            position: relative; 
+        }
+
+        .clean-carousel-viewport { 
+            width: 100%; 
+            position: relative;
+            overflow: hidden; 
+            border-radius: 15px; 
+            border: 1px solid #222; 
+            padding-bottom: 56.25%; 
+            height: 0; 
+            box-shadow: 0 0 50px rgba(0,0,0, 0.4); 
+        }
+
+        .clean-carousel-track { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            display: flex; 
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
+        }
+
+        .clean-carousel-slide { 
+            min-width: 100%; 
+            height: 100%; 
+            position: relative;
+        }
+        .clean-carousel-slide img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+        
+        .clean-carousel-controls { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 40px; 
+            margin-top: 20px; 
+        }
+        .clean-arrow { 
+            background: transparent; 
+            border: none; 
+            color: #666; 
+            font-size: 35px; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            padding: 0 10px; 
+            outline: none;
+        }
+        .clean-arrow:hover { 
+            color: var(--color-principal); 
+            transform: scale(1.2); 
+            filter: drop-shadow(0 0 10px var(--color-principal));
+        }
+
+        /* --- EXCLUSIVE MENU --- */
+        .exclusive-movie-menu {
+            padding: 20px 5% 80px;
+            background-color: var(--color-negro);
+            max-width: 1400px;
+            margin: 0 auto;
+
+            .exclusive-banner {
+                background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+                border: 1px solid #333;
+                border-radius: 12px;
+                padding: 40px;
+                display: flex;
+                align-items: center;
+                gap: 40px;
+                position: relative;
+                overflow: hidden;
+
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: -50px;
+                    right: -50px;
+                    width: 200px;
+                    height: 200px;
+                    background: var(--color-principal);
+                    filter: blur(120px);
+                    opacity: 0.15;
+                }
+
+                .exclusive-img-container {
+                    flex-shrink: 0;
+                    width: 380px; 
+                    height: 260px; 
+                    border-radius: 8px;
+                    overflow: hidden;
+                    border: 2px solid var(--color-principal);
+                    position: relative;
+                    z-index: 2;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                }
+
+                .exclusive-info {
+                    position: relative;
+                    z-index: 2;
+                    flex: 1;
+
+                    .tag {
+                        display: inline-block;
+                        background-color: var(--color-principal);
+                        color: var(--color-texto-btn);
+                        font-size: 11px;
+                        font-weight: 900;
+                        padding: 4px 10px;
+                        border-radius: 12px;
+                        text-transform: uppercase;
+                        margin-bottom: 15px;
+                    }
+
+                    h3 {
+                        font-size: 32px;
+                        color: var(--color-blanco);
+                        text-transform: uppercase;
+                        margin-bottom: 10px;
+                        line-height: 1.1;
+                    }
+
+                    p {
+                        font-family: Arial, sans-serif;
+                        color: #aaa;
+                        font-size: 15px;
+                        line-height: 1.6;
+                        margin-bottom: 25px;
+                        max-width: 500px;
+                    }
+
+                    .btn-unlock {
+                        background: transparent;
+                        color: var(--color-principal);
+                        padding: 12px 25px;
+                        font-size: 13px;
+                        font-weight: 900;
+                        text-transform: uppercase;
+                        border: 2px solid var(--color-principal);
+                        border-radius: 4px;
+                        cursor: pointer;
+                        letter-spacing: 1px;
+                        transition: all 0.3s ease;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 10px;
+
+                        svg {
+                            width: 18px;
+                            height: 18px;
+                        }
+
+                        &:hover {
+                            background: var(--color-principal);
+                            color: var(--color-texto-btn);
+                            transform: scale(1.02);
+                        }
+                    }
+                }
+            }
+        }
+
+        /* --- REVIEWS SECTION --- */
+        .reviews-section {
+            padding: 20px 5% 80px;
+            background-color: var(--color-negro);
+            max-width: 1400px;
+            margin: 0 auto;
+
+            .reviews-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: 20px;
+
+                .review-card {
+                    background: #0a0a0a;
+                    border: 1px solid #222;
+                    border-radius: 8px;
+                    padding: 25px;
+                    transition: border-color 0.3s ease, transform 0.3s ease;
+
+                    &:hover { 
+                        border-color: var(--color-principal); 
+                        transform: translateY(-5px);
+                    }
+
+                    .review-stars {
+                        color: var(--color-principal);
+                        margin-bottom: 10px;
+                        font-size: 20px;
+                        letter-spacing: 2px;
+                    }
+
+                    h4 {
+                        font-size: 18px;
+                        color: var(--color-blanco);
+                        margin-bottom: 10px;
+                        text-transform: uppercase;
+                    }
+
+                    p {
+                        color: #aaa;
+                        font-size: 14px;
+                        line-height: 1.6;
+                        font-family: Arial, sans-serif;
+                    }
+                }
+            }
+
+            .no-reviews {
+                color: #666;
+                font-family: Arial, sans-serif;
+                font-style: italic;
+                padding: 20px 0;
+            }
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: var(--color-negro);
+            padding: 60px 5% 40px;
+            border-top: 1px solid var(--color-gris-claro);
+
+            .footer-content {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 40px;
+                max-width: 1200px;
+                margin: 0 auto;
+
+                .footer-col {
+                    flex: 1;
+                    min-width: 200px;
+
+                    &:first-child {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        text-align: center;
+                        
+                        .footer-logo img {
+                            height: 60px;
+                            margin-bottom: 20px;
+                            display: block;
+                        }
+
+                        p {
+                            max-width: 250px;
+                        }
+                    }
+
+                    p {
+                        font-family: Arial, sans-serif;
+                        color: #888;
+                        font-size: 13px;
+                        line-height: 1.6;
+                    }
+
+                    h4 {
+                        font-size: 16px;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        margin-bottom: 20px;
+                        color: var(--color-principal);
+                    }
+
+                    .footer-links {
+                        list-style: none;
+
+                        li {
+                            margin-bottom: 10px;
+
+                            a {
+                                color: var(--color-blanco);
+                                text-decoration: none;
+                                font-family: Arial, sans-serif;
+                                font-size: 14px;
+                                transition: color 0.3s ease;
+
+                                &:hover {
+                                    color: var(--color-principal);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .footer-bottom {
+                max-width: 1200px;
+                margin: 40px auto 0;
+                padding-top: 20px;
+                border-top: 1px solid var(--color-gris-claro);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                color: #666;
+
+                .footer-credits {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: #888;
+                    font-family: Arial, sans-serif;
+
+                    span {
+                        color: var(--color-principal);
+                        font-weight: bold;
+                    }
+
+                    .heart-icon {
+                        width: 16px;
+                        height: 16px;
+                        color: #888;
+                        transition: color 0.3s ease;
+                    }
+
+                    &:hover .heart-icon {
+                        color: #ff4444;
+                        filter: drop-shadow(0 0 3px #ff4444);
+                    }
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header id="main-header">
+        <div class="logo">
+            <a href="/"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Screenbites Logo"></a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/">HOME</a></li>
+                <li><a href="/#cartelera">FILMS</a></li>
+                <li><a href="/#bar">MENUS</a></li>
+                <li><a href="{{ route('locations') }}">LOCATIONS</a></li>
+                <li><a href="{{ route('contact') }}">CONTACT</a></li>
+
+                @auth
+                <div class="user-nav">
+                    {{-- Botón Panel Admin --}}
+                    @if(Auth::user()->role === 'admin')
+                    <li>
+                        <a href="{{ route('admin.index') }}" style="color: #ff4444 !important; border: 1px solid #ff4444; padding: 5px 10px; border-radius: 4px;">
+                            ⚙️ ADMIN
+                        </a>
+                    </li>
+                    @endif
+                    <li>
+                        <a href="/profile" class="user-profile" title="My Profile">
+                            <img src="{{ asset('img/avatars/' . Auth::user()->avatar) }}" alt="Avatar"
+                                class="user-avatar" onerror="this.src='https://via.placeholder.com/35/333/ffd000'">
+                            <span class="user-name">{{ strtoupper(Auth::user()->name) }}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="chevron-icon" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </a>
+                    </li>
+
+                    <li>
+                        <button class="nav-cart" onclick="window.location.href='/cart'">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <div class="cart-badge" id="nav-cart-counter">0</div>
+                        </button>
+                    </li>
+
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="logout-btn" title="Sign Out">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                            </button>
+                        </form>
+                    </li>
+                </div>
+                @else
+                <div class="user-nav">
+                    <li>
+                        <a href="{{ route('login') }}" title="Sign In">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('register') }}" title="Create Account">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <line x1="19" y1="8" x2="19" y2="14"></line>
+                                <line x1="22" y1="11" x2="16" y2="11"></line>
+                            </svg>
+                        </a>
+                    </li>
+                </div>
+                @endauth
+            </ul>
+        </nav>
+    </header>
+
+    <div class="movie-hero">
+        <img src="{{ $movie['bgImg'] ?? '' }}" class="backdrop-img" onerror="this.src='https://via.placeholder.com/1920x1080/111/ffd000?text=Backdrop'">
+        <div class="backdrop-gradient"></div>
+
+        <div class="movie-content">
+            <img src="{{ $movie['poster'] ?? '' }}" class="movie-poster" onerror="this.src='https://via.placeholder.com/280x420/111/ffd000?text=Poster'">
+
+            <div class="movie-info">
+                <span class="movie-id">TICKET #{{ $id }}</span>
+                <h1 class="movie-title">{!! $movie['title'] ?? 'Movie Title' !!}</h1>
+
+                <div class="movie-meta">
+                    <span class="age-badge">{{ $movie['age'] ?? '+18' }}</span>
+                    <span>{{ $movie['genre'] ?? 'Action' }}</span>
+                    <span>2h 15m</span>
+                    <span style="color: var(--color-principal); font-weight: bold;">
+                        {{ isset($movie['isComingSoon']) && $movie['isComingSoon'] ? 'Coming Soon' : 'Available Now' }}
+                    </span>
+                </div>
+
+                <p class="movie-desc">{!! $movie['desc'] ?? 'Overview of the movie...' !!}</p>
+
+                <div class="action-buttons">
+                    @if(isset($movie['isComingSoon']) && $movie['isComingSoon'])
+                        <button class="btn-buy" disabled>
+                            AVAILABLE {{ $movie['releaseDate'] ?? 'SOON' }}
+                        </button>
+                    @else
+                        @auth
+                            <button class="btn-buy" onclick="window.location.href='/booking/{{ $id }}'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/>
+                                    <path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>
+                                </svg>
+                                BUY TICKETS
+                            </button>
+                        @else
+                            <button class="btn-buy" onclick="window.location.href='/login'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                                LOGIN TO BUY
+                            </button>
+                        @endauth
+                        {{-- FIN DEL BLOQUE --}}
+                    @endif
+                    <a href="/#cartelera" class="btn-back">BACK TO FILMS</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="trailer-featured">
+        <div class="container">
+            <h2 class="section-title">Official Trailer</h2>
+            <div class="video-wrapper">
+                @if(!empty($movie['trailer']))
+                    <div class="video-cover" id="video-cover" onclick="playVideo('{{ $movie['trailer'] }}')">
+                        <img src="{{ $movie['bgImg'] ?? $movie['poster'] }}" alt="Trailer Cover">
+                        <div class="custom-play-btn">▶</div>
+                    </div>
+                @else
+                    <div class="no-video">Tráiler no disponible</div>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    <div id="trailer-modal" class="trailer-modal-overlay" onclick="closeTrailer()">
+        <div class="trailer-modal-content" onclick="event.stopPropagation()">
+            <button class="close-trailer-btn" onclick="closeTrailer()">✖</button>
+            <div class="video-responsive">
+                <iframe id="trailer-iframe" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <section class="movie-gallery">
+        <div class="container">
+            <h2 class="section-title">Movie Stills</h2>
+            
+            <div class="clean-carousel-container">
+                <div class="clean-carousel-viewport">
+                    <div class="clean-carousel-track" id="clean-track">
+                        @if(!empty($movie['gallery']) && count($movie['gallery']) > 0)
+                            @foreach($movie['gallery'] as $img)
+                                <div class="clean-carousel-slide">
+                                    <img src="{{ $img }}" alt="Movie Scene">
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="clean-carousel-slide">
+                                <div class="no-video">Imágenes no disponibles</div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="clean-carousel-controls">
+                    <button class="clean-arrow" onclick="moveCleanCarousel(-1)">&#10094;</button>
+                    <button class="clean-arrow" onclick="moveCleanCarousel(1)">&#10095;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @if(!empty($movie['menuSpecial']) && $movie['menuSpecial']['enabled'])
+        <section class="exclusive-movie-menu">
+            <h2 class="section-title">Exclusive For This Movie</h2>
+            
+            <div class="exclusive-banner">
+                <div class="exclusive-img-container">
+                    @if(!empty($movie['menuSpecial']['image']))
+                        <img src="{{ $movie['menuSpecial']['image'] }}" alt="Special Menu" style="object-fit: cover; width: 100%; height: 100%;">
+                    @else
+                        <div style="width: 100%; height: 100%; background: #333; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #fff;">No Image</span>
+                        </div>
+                    @endif
+                </div>
+                
+                <div class="exclusive-info">
+                    <span class="tag">Limited Edition</span>
+                    <h3>{!! $movie['menuSpecial']['title'] ?? 'Exclusive Menu' !!}</h3>
+                    <p>{!! $movie['menuSpecial']['text'] ?? 'Available for a limited time.' !!}</p>
+                    
+                    <button class="btn-unlock" onclick="window.location.href='/booking/{{ $id }}'">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        GET TICKET TO UNLOCK
+                    </button>
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <section class="reviews-section" style="padding: 50px 10% 100px; background: #000; color: white;">
+        @if(session('error'))
+            <div style="background: #721c24; color: #f8d7da; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if(session('status'))
+            <div style="background: #155724; color: #d4edda; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                {{ session('status') }}
+            </div>
+        @endif
+
+        <h2 style="color: var(--color-principal); margin-bottom: 30px; font-size: 2rem;">Audience Reviews</h2>
+
+        @auth
+            <div style="background: #111; padding: 25px; border-radius: 12px; margin-bottom: 40px; border: 1px solid #333;">
+                <h4 style="margin-bottom: 15px; color: #fff;">Hi {{ Auth::user()->name }}, share your thoughts!</h4>
+                
+                <form action="{{ route('pelicula.review', ['id' => $id]) }}" method="POST" id="reviewForm">
+                    @csrf
+                    <div style="margin-bottom: 15px;">
+                        <label style="color: #888; display: block; margin-bottom: 5px;">Score:</label>
+                        <select name="score" required style="background: #222; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 5px; width: 100px;">
+                            <option value="5">5 ★★★★★</option>
+                            <option value="4">4 ★★★★</option>
+                            <option value="3">3 ★★★</option>
+                            <option value="2">2 ★★</option>
+                            <option value="1">1 ★</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <textarea name="content" required placeholder="Write your review here..." rows="4" style="width: 100%; background: #222; color: #fff; border: 1px solid #444; padding: 15px; border-radius: 8px; resize: none;"></textarea>
+                    </div>
+
+                    @error('privacy_policy')
+                        <div style="color: #ff4444; font-size: 14px; font-weight: bold; margin-bottom: 15px; font-family: Arial, sans-serif;">
+                            ⚠️ {{ $message }}
+                        </div>
+                    @enderror
+
+                    <button type="button" onclick="openPrivacyModal()" style="background: var(--color-principal); color: var(--color-texto-btn); padding: 12px 30px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: transform 0.2s ease;">
+                        Review & Submit
+                    </button>
+
+                    <div id="privacy-modal" class="trailer-modal-overlay" onclick="closePrivacyModal()" style="z-index: 10000;">
+                        <div class="trailer-modal-content" style="background: #111; padding: 40px; border-radius: 12px; border: 2px solid var(--color-principal); max-width: 600px; text-align: left;" onclick="event.stopPropagation()">
+                            <h2 style="color: var(--color-principal); margin-bottom: 20px; font-size: 24px;">PRIVACY POLICY</h2>
+                            
+                            <div style="margin-bottom: 25px; color: #ccc; font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6; border-bottom: 1px solid #333; padding-bottom: 20px;">
+                                <p style="margin-top: 0;">Welcome to Screenbites Cinema. We are committed to protecting your personal information and your right to privacy.</p>
+                                <strong style="color: #fff;">1. Information We Collect</strong>
+                                <p>We collect personal information that you voluntarily provide to us when you participate in activities on the website (such as posting movie reviews).</p>
+                                <strong style="color: #fff;">2. Movie Reviews and Public Data</strong>
+                                <p>When you submit a review for a movie, you agree that your username, avatar, and the content of your review will be publicly visible to other users of the website. We reserve the right to moderate, approve, or delete reviews that violate our community guidelines.</p>
+                                <strong style="color: #fff;">3. Data Security</strong>
+                                <p style="margin-bottom: 0;">We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process.</p>
+                            </div>
+
+                            <div style="margin-bottom: 25px; display: flex; align-items: flex-start; gap: 10px;">
+                                <input type="checkbox" name="privacy_policy" id="privacy_policy" required style="margin-top: 4px; cursor: pointer; accent-color: var(--color-principal); transform: scale(1.2);">
+                                <label for="privacy_policy" style="font-size: 14px; color: #fff; font-family: Arial, sans-serif; cursor: pointer; line-height: 1.4;">
+                                    I read and accept the Privacy Policy.
+                                </label>
+                            </div>
+
+                            <div style="display: flex; gap: 15px;">
+                                <button type="submit" style="background: var(--color-principal); color: var(--color-texto-btn); padding: 12px 25px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; flex: 1;">
+                                    Accept & Publish
+                                </button>
+                                <button type="button" onclick="closePrivacyModal()" style="background: transparent; color: #fff; padding: 12px 25px; border: 1px solid #555; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: background 0.3s;">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        @else
+            <div style="background: #111; padding: 20px; border-radius: 10px; border: 1px dashed #444; text-align: center; margin-bottom: 40px;">
+                <p style="color: #aaa;">You must be <a href="{{ route('login') }}" style="color: var(--color-principal); text-decoration: none; font-weight: bold;">logged in</a> to write a review.</p>
+            </div>
+        @endauth
+
+        <div class="reviews-list" style="display: grid; gap: 20px;">
+            
+            {{-- 1. MOSTRAMOS LAS RESEÑAS LOCALES DE LA BASE DE DATOS --}}
+            @php
+                $localReviews = [];
+                try {
+                    $localReviews = \Illuminate\Support\Facades\DB::table('reviews')
+                        ->join('users', 'reviews.user_id', '=', 'users.id')
+                        ->where('movie_id', $id)
+                        ->where(function($query) {
+                            // Mostrar si está aprobada
+                            $query->where('status', 'approved');
+                            // O mostrar si está pendiente PERO es del usuario actual
+                            if (auth()->check()) {
+                                $query->orWhere(function($q) {
+                                    $q->where('status', 'pending')
+                                      ->where('reviews.user_id', auth()->id());
+                                });
+                            }
+                        })
+                        ->orderBy('reviews.created_at', 'desc')
+                        ->select('users.name', 'users.avatar', 'reviews.*') 
+                        ->get();
+                } catch(\Exception $e) { }
+            @endphp
+
+            @foreach($localReviews as $local)
+                @php
+                    // Usamos el avatar del usuario, o uno por defecto si por algún motivo está vacío
+                    $avatarImg = !empty($local->avatar) ? $local->avatar : 'avatar-default.png';
+                    $avatarUrl = asset('img/avatars/' . $avatarImg);
+                    
+                    // Compatibilidad por si se guardó como score o como rating
+                    $estrellas = (int) ($local->rating ?? 5); 
+                    $comentario = $local->comment ?? $local->content ?? ''; 
+                @endphp
+                <div style="background: #111; padding: 20px; border-radius: 12px; display: flex; gap: 20px; align-items: flex-start; border: 1px solid #222;">
+                    <img src="{{ $avatarUrl }}" alt="{{ $local->name }}" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-principal); object-fit: cover;" onerror="this.src='https://via.placeholder.com/50/333/ffd000?text={{ substr($local->name, 0, 1) }}'">
+
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <div>
+                                <strong style="color: #fff;">{{ $local->name }}</strong>
+                                @if($local->status === 'pending')
+                                    <span style="background: rgba(255,165,0,0.2); color: orange; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 10px; border: 1px solid orange;">PENDING APPROVAL</span>
+                                @endif
+                            </div>
+                            <span style="color: var(--color-principal);">
+                                {{ str_repeat('★', $estrellas) }}{{ str_repeat('☆', 5 - $estrellas) }}
+                            </span>
+                        </div>
+                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.4; margin: 0;">
+                            "{!! htmlspecialchars($comentario) !!}"
+                        </p>
+                    </div>
+                </div>
+            @endforeach
+
+            {{-- 2. MOSTRAMOS LAS RESEÑAS QUE YA VENÍAN CON EL COMPAÑERO --}}
+            @forelse($reviews as $review)
+                <div style="background: #111; padding: 20px; border-radius: 12px; display: flex; gap: 20px; align-items: flex-start; border: 1px solid #222;">
+                    
+                    @php
+                        // Generamos un hash del nombre o email para tener una imagen única
+                        $userHash = md5(strtolower(trim($review['title']))); 
+                        $avatarUrl = "https://www.gravatar.com/avatar/{$userHash}?d=identicon&s=100";
+                    @endphp
+                    <img src="{{ $avatarUrl }}" alt="User" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--color-principal);">
+
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #fff;">{!! str_replace('Review by ', '', $review['title']) !!}</strong>
+                            <span style="color: var(--color-principal);">
+                                {{ str_repeat('★', $review['score']) }}{{ str_repeat('☆', 5 - $review['score']) }}
+                            </span>
+                        </div>
+                        <p style="color: #aaa; font-size: 0.95rem; line-height: 1.4; margin: 0;">
+                            "{!! $review['content'] !!}"
+                        </p>
+                    </div>
+                </div>
+            @empty
+                @if(empty($localReviews))
+                    <p style="color: #666; font-style: italic;">No reviews yet. Be the first one!</p>
+                @endif
+            @endforelse
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <div class="footer-logo"><img src="{{ asset('img/img/Logo-Blanco.png') }}" alt="Cine Screenbites"></div>
+                <p>Experience cinema like never before. Grab your popcorn, find your seat, and let the magic begin.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Explore</h4>
+                <ul class="footer-links">
+                    <li><a href="/#cartelera">Now Playing</a></li>
+                    <li><a href="/#cartelera">Coming Soon</a></li>
+                    <li><a href="/#bar">Food & Drinks</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="{{ route('terms') }}">Terms & Conditions</a></li>
+                    <li><a href="{{ route('privacy.policy') }}">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter / X</a></li>
+                    <li><a href="#">TikTok</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Screenbites Cinema. All rights reserved.</p>
+            <p class="footer-credits">
+                Design for <span>Enrique & Alex</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Creamos una llave única basada en el ID del usuario logueado. 
+        // Si no está logueado, usará la caja "guest".
+        const CART_KEY = 'screenbites_cart_{{ Auth::check() ? Auth::id() : "guest" }}';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartBadge();
+        });
+
+        function updateCartBadge() {
+            let globalCart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+            let totalOrders = globalCart.length;
+
+            const badge = document.getElementById('nav-cart-counter');
+            if(badge) {
+                badge.innerText = totalOrders;
+                if(totalOrders > 0) {
+                    badge.style.transform = 'scale(1.2)';
+                    setTimeout(() => badge.style.transform = 'scale(1)', 200);
+                }
+            }
+        }
+
+        /* --- SCRIPT DEL TRAILER (Extrae el ID y abre el Modal) --- */
+        function playVideo(url) {
+            let videoId = '';
+            // Expresión regular infalible para sacar el ID de cualquier enlace de YouTube
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                videoId = match[2];
+            } else {
+                alert("El enlace del tráiler no es válido.");
+                return;
+            }
+
+            const iframe = document.getElementById('trailer-iframe');
+            // Le añadimos autoplay=1 para que arranque solo
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`;
+            
+            const modal = document.getElementById('trailer-modal');
+            modal.classList.add('active');
+        }
+
+        // Función para cerrar el pop-up y apagar el vídeo
+        function closeTrailer() {
+            const modal = document.getElementById('trailer-modal');
+            modal.classList.remove('active');
+            
+            // Borramos el src para que el vídeo se pare al cerrar la ventana
+            const iframe = document.getElementById('trailer-iframe');
+            iframe.src = '';
+        }
+
+        /* --- SCRIPT DEL CARRUSEL DE IMÁGENES --- */
+        let currentSlide = 0;
+        function moveCleanCarousel(direction) {
+            const track = document.getElementById('clean-track');
+            if (!track) return;
+            
+            const slides = track.children;
+            if (slides.length === 0) return;
+            
+            const totalSlides = slides.length;
+            
+            // Fórmula mágica para avanzar y retroceder en bucle
+            currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+            
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+
+        /* --- MODAL DE PRIVACIDAD --- */
+        function openPrivacyModal() {
+            // Verificamos que el usuario haya escrito algo antes de abrir el modal
+            const textarea = document.querySelector('textarea[name="content"]');
+            if(textarea.value.trim() === '') {
+                textarea.reportValidity(); // Le avisa que rellene el campo
+                return;
+            }
+            document.getElementById('privacy-modal').classList.add('active');
+            
+            // Bloqueamos el scroll de la página de fondo
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePrivacyModal() {
+            document.getElementById('privacy-modal').classList.remove('active');
+            
+            // MAGIA: Restauramos el scroll de la página al cerrar el modal
+            document.body.style.overflow = '';
+        }
+    </script>
+    @include('cookie-banner')
+</body>
+
+</html>
